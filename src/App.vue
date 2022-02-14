@@ -1,30 +1,27 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+   <component :is="layout">
+      <router-view/>
+    </component>
 </template>
 
+<script>
+import AppLayoutDefault from '@/layouts/AppLayoutDefault';
+import AppLayoutHome from '@/layouts/AppLayoutHome'
+import AppLayoutAdmin from '@/layouts/AppLayoutAdmin'
+export default {
+components: {AppLayoutDefault, AppLayoutHome , AppLayoutAdmin},
+  computed: {
+    layout () {
+      // console.log(this.$route);
+       return 'app-layout-'+ (this.$route.meta.layout || 'default')
+      
+    }
+  }
+}
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+body {
+  background: #191919;
 }
 </style>
