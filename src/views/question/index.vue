@@ -1,17 +1,22 @@
 <template>
   <div class="content">
     <div class="container">
-      <h2 class="mb-5">Questions</h2>
-      <hr class="bg-secondary" />
-      <div class="d-flex" v-if="questions">
-        <router-link
+      <div class="d-flex justify-content-between">
+        <div> <h2 class="mb-5">Questions</h2></div>
+        <div> 
+          <router-link
           class="btn btn-outline-light"
           :to="{ name: 'CreateQuestion' }"
           >Create</router-link
         >
-        <div class="d-flex mx-4">
-          <label for="" class="labels text-white w-auto fw-bolder mx-2"
-            >Filter by category</label
+        </div>
+      </div>
+      <hr class="bg-secondary" />
+      <div class="d-flex" v-if="questions">
+        
+        <div class="d-flex  text-center mx-4">
+          <label  class="labels text-white w-auto fw-bolder mx-2"
+            >Filter</label
           >
           <select
             class="form-select bg-transparent text-white"
@@ -59,14 +64,14 @@
               <tr scope="row">
                 <td>{{ question.id }}</td>
                 <td>{{ question.context }}</td>
-                <td>{{ question.releaseDate }}</td>
+                <td>{{ new Date(question.releaseDate).toLocaleDateString() }}</td>
                 <td>{{ question.category }}</td>
                 <td>
                   <router-link
                     class="btn btn-outline-light"
-                    :to="{ name: 'EditCategory', params: { id: question.id } }"
+                    :to="{ name: 'EditQuestion', params: { id: question.id, categoryId: question.questionCategoryId} }"
                   >
-                    <i class="bx bxs-edit-alt icon"></i>
+                    <i class="fa-solid fa-pen-to-square icon"></i>
                   </router-link>
                 </td>
               </tr>
@@ -127,22 +132,21 @@ export default {
 
             if (res && res.value) {
               if (res.value.status === 200) {
-                console.log(res.value.data);
                 res.value.data.forEach((q) => {
                   questions.value.push({ ...q, category: cat.name });
                 });
               }
             }
           });
-
-         
-
           currentPage.value = 1;
           paggination.value = paginate(
             questions.value.length,
             currentPage.value,
             pageSize
           );
+        } else {
+          toast.error("Some errors");
+          error.value = JSON.stringify(handleResponse(res.value), undefined, 2);
         }
       }
     });

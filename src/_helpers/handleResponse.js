@@ -6,7 +6,7 @@ const handleResponse =(response) => {
 
         if (response.status == 400) {
             if (response.data.error || response.data.errors) {
-                return response.data.error ? JSON.stringify(response.data.error) : JSON.stringify(response.data.errors);
+                return response.data.error ? response.data.error : response.data.errors;
             }
         }
         if (response.status == 500) {

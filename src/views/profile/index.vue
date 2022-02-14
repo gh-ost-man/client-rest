@@ -5,7 +5,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right">
-              <i class="bx bxs-user"></i>
+            <i class="fa-solid fa-circle-user"></i>
               Profile
             </h4>
           </div>
@@ -61,7 +61,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right">
-              <i class="bx bx-user-circle"></i>
+            <i class="fa-solid fa-user-gear"></i>
               Profile Settings
             </h4>
           </div>
@@ -127,7 +127,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right">
-              <i class="bx bx-lock"></i>
+              <i class="fa-solid fa-lock"></i>
               Change password
             </h4>
           </div>

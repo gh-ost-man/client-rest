@@ -1,10 +1,27 @@
 <template>
   <div class="sidebar" :class="{ close: isClosedSideBar }">
     <div class="logo-details">
-      <i class="bx bxl-c-plus-plus"></i>
+      <i class="fa-solid fa-user-secret fs-1"></i>
       <span class="logo_name">IT STEP</span>
     </div>
     <ul class="nav-links">
+         <li>
+        <!-- <a href="#">
+          <i class="bx bx-compass"></i>
+          <span class="link_name">Profile</span>
+        </a> -->
+        <router-link :to="{ name: 'ProfileAdmin' }">
+          <i class="fa-solid fa-user"></i>
+          <span class="link_name">Profile</span>
+        </router-link>
+
+        <ul class="sub-menu blank">
+          <li>
+            <!-- <a class="link_name" href="#">Profile</a> -->
+            <router-link :to="{ name: 'ProfileAdmin' }">Profile</router-link>
+          </li>
+        </ul>
+      </li>
       <li>
         <router-link :to="{ name: 'Users' }">
           <i class="fas fa-users"></i>
@@ -28,10 +45,11 @@
             <span class="link_name">Tests</span>
           </a>
 
-          <i
+          <!-- <i
             class="bx bxs-chevron-down arrow"
             @click="showSubMenuService = !showSubMenuService"
-          ></i>
+          ></i> -->
+          <i class="fa-solid fa-angle-down arrow"  @click="showSubMenuService = !showSubMenuService"></i>
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Tests</a></li>
@@ -46,26 +64,10 @@
               Questions
             </router-link>
           </li>
-          <li><a href="#">Answers</a></li>
+          <!-- <li><a href="#">Answers</a></li> -->
         </ul>
       </li>
-      <li>
-        <!-- <a href="#">
-          <i class="bx bx-compass"></i>
-          <span class="link_name">Profile</span>
-        </a> -->
-        <router-link :to="{ name: 'ProfileAdmin' }">
-          <i class="bx bxs-user"></i>
-          <span class="link_name">Profile</span>
-        </router-link>
-
-        <ul class="sub-menu blank">
-          <li>
-            <!-- <a class="link_name" href="#">Profile</a> -->
-            <router-link :to="{ name: 'ProfileAdmin' }">Profile</router-link>
-          </li>
-        </ul>
-      </li>
+   
       <li>
         <a href="#">
           <i class="bx bx-history"></i>
@@ -88,28 +90,31 @@
         <div class="profile-details">
           <div class="profile-content">
             <!-- <img src="image/profile.jpg" alt="profileImg" /> -->
+           
           </div>
           <div class="name-job">
             <div class="profile_name truncate-text">{{ authFullName }}</div>
             <div class="job">{{ authEmail }}</div>
           </div>
-          <i class="bx bx-log-out" @click="logout"></i>
+          <!-- <i class="bx bx-log-out" @click="logout"></i> -->
+          <i class="fa-solid fa-arrow-right-from-bracket" @click="logout"></i>
           <!-- <div class="name-job">
           <div class="profile_name truncate-text">Hello world asdj kajdl jaskl;dj klasdkl </div>
         </div> -->
         </div>
         <div class="logout" v-if="isClosedSideBar">
-          <a @click="logout"><i class="bx bx-log-out"></i></a>
+          <a @click="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
         </div>
       </li>
     </ul>
   </div>
   <section class="home-section body-background">
     <div class="home-content sticky-top text-white">
-      <i
+      <!-- <i
         class="bx bx-menu text-white"
         @click="isClosedSideBar = !isClosedSideBar"
-      ></i>
+      ></i> -->
+      <i class="fa-solid fa-bars fs-4" style="cursor:pointer;"  @click="isClosedSideBar = !isClosedSideBar"></i>
     </div>
     <div class="container">
       <router-view></router-view>

@@ -19,25 +19,27 @@ const requireAuth = (to, from, next) => {
         if(!userRoles.includes("Student")) {
           next({name: 'ProfileAdmin'});
         } 
-      }
-
-      if (userRoles) {
-        userRoles.forEach(role => {
-          if (authorize.includes(role)) {
-            flag = true;
+      } else {
+        if (userRoles) {
+          userRoles.forEach(role => {
+            if (authorize.includes(role)) {
+              flag = true;
+            }
+          });
+  
+          if (flag) {
+            next();
+          } else {
+            console.log("Forbidden 1");
+            next({ name: 'Forbidden' });
           }
-        });
-
-        if (flag) {
-          next();
         } else {
-          console.log("Forbidden 1");
+          console.log("Forbidden 2");
           next({ name: 'Forbidden' });
         }
-      } else {
-        console.log("Forbidden 2");
-        next({ name: 'Forbidden' });
       }
+
+    
     } else {
       next({ name: 'Login' });
     }
@@ -45,7 +47,6 @@ const requireAuth = (to, from, next) => {
     next();
   }
 }
-
 
 const routes = [
   { 
@@ -203,23 +204,24 @@ const routes = [
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      // component: () => import(/* webpackChunkName: "about" */ '../views/question/create.vue'),
+      component: () => import(/* webpackChunkName: "about" */ '../views/question/create.vue'),
       beforeEnter: requireAuth,
       meta: {
         layout: 'admin', authorize: ["Teacher"],
       },
     },
     {
-      path: '/d/questions/edit/:id',
+      path: '/d/questions/edit/:categoryId/:id',
       name: 'EditQuestion',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      // component: () => import(/* webpackChunkName: "about" */ '../views/question/edit.vue'),
+      component: () => import(/* webpackChunkName: "about" */ '../views/question/edit.vue'),
       beforeEnter: requireAuth,
       meta: {
         layout: 'admin', authorize: ["Teacher"],
       },
+      props: true
     },
 
 

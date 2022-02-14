@@ -30,7 +30,7 @@
                     class="btn btn-outline-light"
                     :to="{ name: 'EditCategory', params: { id: category.id } }"
                   >
-                    <i class="bx bxs-edit-alt icon"></i>
+                     <i class="fa-solid fa-pen-to-square icon"></i>
                   </router-link>
                 </td>
               </tr>
