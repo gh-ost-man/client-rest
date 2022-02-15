@@ -1,0 +1,149 @@
+<template>
+  <div class="p-3 text-white">
+    <h3>Create test</h3>
+    <div v-if="error">
+      <textarea
+        class="form-control bg-dark text-secondary border-0"
+        style="overflow: hidden"
+        cols="30"
+        rows="15"
+        :value="error"
+        readonly
+      ></textarea>
+    </div>
+    <form @submit.prevent="submitHandle">
+      <div class="mb-3">
+        <label class="labels">Title</label
+        ><input
+          type="test"
+          class="form-control bg-transparent text-white"
+          placeholder="enter title"
+          v-model="examObj.title"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="labels">Description</label>
+        <textarea
+          class="form-control bg-dark text-white border-0"
+          placeholder="enter description"
+          v-model="examObj.description"
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="labels">Duration time</label
+        ><input
+          type="number"
+          step="5"
+          min="30"
+          max="360"
+          class="form-control bg-transparent text-white"
+          placeholder="enter duration time"
+          v-model="examObj.durationTime"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="labels">Passing Score</label
+        ><input
+          type="number"
+          step="1"
+          min="40"
+          max="100"
+          class="form-control bg-transparent text-white"
+          placeholder="enter passing score"
+          v-model="examObj.passingScore"
+        />
+      </div>
+      <div class="mb-3">
+        <label class="labels">Status</label>
+        <select
+          class="form-select bg-transparent text-white"
+          aria-label="Default select example"
+          v-model="examObj.status"
+        >
+          <option
+            class="text-dark"
+            v-for="s in statuses"
+            :key="s.value"
+            :value="s.value"
+          >
+            {{ s.title }}
+          </option>
+        </select>
+      </div>
+      <button class="btn btn-outline-light" :disabled="loading">
+        <span v-if="!loading">Create</span>
+        <span v-else>Creating...</span>
+      </button>
+    </form>
+  </div>
+</template>
+
+<script>
+import { ref, getCurrentInstance } from "vue";
+import examService from "@/_services/examService.js";
+import handleResponse from "@/_helpers/handleResponse.js";
+
+export default {
+  setup() {
+    const error = ref(null);
+    const loading = ref(false);
+    const toast = getCurrentInstance().appContext.app.$toast;
+    const { createExam } = examService();
+
+    const statuses = ref([
+      {
+        title: "NotAvailable",
+        value: 0,
+      },
+      {
+        title: "Available",
+        value: 1,
+      },
+      {
+        title: "Finished",
+        value: 2,
+      },
+    ]);
+    const examObj = ref({
+      title: null,
+      description: null,
+      durationTime: 30,
+      passingScore: 40,
+      status: 0,
+    });
+
+    const submitHandle = async () => {
+      error.value = null;
+      loading.value = true;
+
+      let response = await createExam(examObj.value);
+
+      loading.value = false;
+
+      if (response && response.value) {
+        if (response.value.status === 201) {
+          toast.success("The test created successfully");
+          examObj.value = {
+            title: null,
+            description: null,
+            durationTime: 30,
+            passingScore: 40,
+            status: 0,
+          };
+        } else {
+          error.value = JSON.stringify(
+            handleResponse(response.value),
+            undefined,
+            2
+          );
+        }
+      }
+    };
+
+    return { error, loading, examObj, statuses, submitHandle };
+  },
+};
+</script>
+
+<style>
+</style>

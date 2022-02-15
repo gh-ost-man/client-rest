@@ -16,16 +16,12 @@ import Roles from "@/_helpers/_role.js"
 export default {
   methods: {
     clickHangle() {
-      console.log(localStorage.user);
-      console.log(localStorage.user.roles);
       if (localStorage.user) {
         let user = JSON.parse(localStorage.user);
 
         if (user.roles) {
           let user_roles = user.roles.split(",");
           let roles = Roles.filter(x=>x!== "Student");
-
-          console.log(roles);
 
           let isStaff = false;
 

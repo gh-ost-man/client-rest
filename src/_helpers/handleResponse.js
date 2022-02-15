@@ -33,6 +33,8 @@ const handleResponse =(response) => {
                 if(response.data.title) {
                     return JSON.stringify(response.data.title);
                 }
+            } else {
+                return "Not found";
             }
         }
     }

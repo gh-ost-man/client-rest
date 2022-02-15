@@ -70,7 +70,7 @@
           <label class="labels">Coeficient</label
           ><input
             type="number"
-            step="0.1"
+            step="0.01"
             min="0"
             max="1"
             class="form-control bg-transparent text-white"

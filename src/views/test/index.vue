@@ -1,46 +1,18 @@
 <template>
   <div class="content">
     <div class="container">
-      <div class="d-flex justify-content-between">
-        <div><h2 class="mb-5">Questions</h2></div>
-        <div>
-          <router-link
-            class="btn btn-outline-light"
-            :to="{ name: 'CreateQuestion' }"
-            >Create</router-link
-          >
-        </div>
+      <h2 class="mb-5">Tests</h2>
+      <hr class="bg-secondary" />
+      <div>
+        <!-- <button class="btn btn-outline-light">Create</button> -->
+        <router-link
+          class="btn btn-outline-light"
+          :to="{ name: 'CreateTest' }"
+          >Create</router-link
+        >
       </div>
       <hr class="bg-secondary" />
-      <div class="d-flex" v-if="questions">
-        <div class="d-flex text-center mx-4">
-          <label class="labels text-white w-auto fw-bolder mx-2">Filter</label>
-          <select
-            class="form-select bg-transparent text-white"
-            aria-label="Default select example"
-            v-model="filterCategory"
-          >
-            <option disabled selected class="text-white">
-              Select category
-            </option>
-            <option
-              class="text-dark"
-              v-for="cat in categories"
-              :key="cat.id"
-              :value="cat.id"
-            >
-              {{ cat.name }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <button class="btn btn-outline-light" @click="resetFilter">
-            Reset
-          </button>
-        </div>
-      </div>
-      <hr class="bg-secondary" />
-      <div class="table-responsive custom-table-responsive" v-if="questions">
+      <div class="table-responsive custom-table-responsive" v-if="tests">
         <paggination
           :pages="paggination.pages"
           :currentPage="currentPage"
@@ -50,31 +22,35 @@
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Context</th>
-              <th scope="col">ReleaseDate</th>
-              <th scope="col">Category</th>
+              <th scope="col">Title</th>
+              <th scope="col">Description</th>
+              <th scope="col">DurationTime</th>
+              <th scope="col">PassingScore</th>
+              <th scope="col">Status</th>
+              <th scope="col">Qty of questions</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <template v-for="question in questionsItems" :key="question.id">
+            <template v-for="test in testsItems" :key="test.id">
               <tr scope="row">
-                <td>{{ question.id }}</td>
-                <td>{{ question.context }}</td>
-                <td>
-                  {{ new Date(question.releaseDate).toLocaleDateString() }}
-                </td>
-                <td>{{ question.category }}</td>
+                <td>{{ test.id }}</td>
+                <td>{{ test.title }}</td>
+                <td>{{ test.description }}</td>
+                <td>{{ test.durationTime }}</td>
+                <td>{{ test.passingScore }}</td>
+                <td>{{ test.status }}</td>
+                <td>{{ test.qtyOfQuestions }}</td>
                 <td>
                   <router-link
+                    class="btn btn-outline-light mx-1"
+                    :to="{ name: 'TestQuestions', params: { id: test.id } }"
+                  >
+                   <i class="fa-solid fa-list-ul icon"></i>
+                  </router-link>
+                  <router-link
                     class="btn btn-outline-light"
-                    :to="{
-                      name: 'EditQuestion',
-                      params: {
-                        id: question.id,
-                        categoryId: question.questionCategoryId,
-                      },
-                    }"
+                    :to="{ name: 'EditTest', params: { id: test.id } }"
                   >
                     <i class="fa-solid fa-pen-to-square icon"></i>
                   </router-link>
@@ -88,7 +64,7 @@
         </table>
       </div>
     </div>
-    <div class="d-flex justify-content-center" v-if="!questions">
+    <div class="d-flex justify-content-center" v-if="!tests">
       <div
         class="spinner-border align-center text-primary text-center"
         role="status"
@@ -102,8 +78,7 @@
 <script>
 import { ref, onMounted, getCurrentInstance, computed } from "vue";
 import { useRouter } from "vue-router";
-import questionService from "@/_services/questionService.js";
-import categoryService from "@/_services/categoryService.js";
+import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import paginate from "@/_helpers/paginate.js";
 import Paggination from "@/components/Paggination";
@@ -112,91 +87,106 @@ export default {
   components: { Paggination },
   setup() {
     const error = ref(null);
-    const questions = ref(null);
-    const categories = ref(null);
+    const tests = ref(null);
     const router = useRouter();
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { getQuestions } = questionService();
-    const { getAllCategories } = categoryService();
+    const { getAllExams, getAllExamQuestions } = examService();
     const currentPage = ref(1);
     const pageSize = 15;
-    const filterCategory = ref(null);
+    const statuses = [
+      {
+        title: "NotAvailable",
+        value: 0,
+      },
+      {
+        title: "Available",
+        value: 1,
+      },
+      {
+        title: "Finished",
+        value: 2,
+      },
+    ];
 
     const paggination = ref(null);
 
     onMounted(async () => {
-      let response = await getAllCategories();
+      let response = await getAllExams();
 
       if (response && response.value) {
         if (response.value.status === 200) {
-          categories.value = response.value.data;
-          questions.value = [];
-          categories.value.forEach(async (cat) => {
-            let res = await getQuestions(cat.id);
+          tests.value = response.value.data;
 
-            if (res && res.value) {
-              if (res.value.status === 200) {
-                res.value.data.forEach((q) => {
-                  questions.value.push({ ...q, category: cat.name });
-                });
-              }
-            }
+          tests.value.forEach(async (element) => {
+            element.status = statuses.find(
+              (x) => x.value === element.status
+            ).title;
+
+           let res  = await getAllExamQuestions(element.id); 
+
+           if(res && res.value) {
+               if(res.value.status === 200) {
+                   element.qtyOfQuestions = res.value.data.length;
+               } else {
+                   error.value = JSON.stringify(handleResponse(res.value), undefined, 2);
+                   return;
+               }
+           }
+
           });
+
           currentPage.value = 1;
           paggination.value = paginate(
-            questions.value.length,
+            tests.value.length,
             currentPage.value,
             pageSize
           );
         } else {
-          toast.error("Some errors");
-          error.value = JSON.stringify(handleResponse(res.value), undefined, 2);
+          error.value = JSON.stringify(
+            handleResponse(response.value),
+            undefined,
+            2
+          );
         }
       }
     });
 
-    const resetFilter = () => {
-      filterCategory.value = null;
-      currentPage.value = 1;
-    };
+    // onMounted(async () => {
+    //   var response = await getAllCategories();
+
+    //   if (response && response.value) {
+    //     if (response.value.status === 200) {
+    //       categories.value = response.value.data;
+
+    //       currentPage.value = 1;
+    //       paggination.value = paginate(categories.value.length, currentPage.value, pageSize);
+    //     } else {
+    //       error.value = JSON.stringify(
+    //         handleResponse(response.value),
+    //         undefined,
+    //         2
+    //       );
+    //     }
+    //   }
+    // });
 
     const changePage = (pag) => {
       currentPage.value = pag;
     };
 
-    const filterByCategory = computed(() => {
-      currentPage.value = 1;
-      return filterCategory.value
-        ? questions.value.filter(
-            (x) => x.questionCategoryId == filterCategory.value
-          )
-        : questions.value;
-    });
-
-    const questionsItems = computed(() => {
+    const testsItems = computed(() => {
       paggination.value = paginate(
-        filterByCategory.value.length,
+        tests.value.length,
         currentPage.value,
         pageSize
       );
-
-      return filterByCategory.value.slice(
+      return tests.value.slice(
         paggination.value.startIndex,
         paggination.value.endIndex + 1
       );
     });
 
-    return {
-      categories,
-      questions,
-      error,
-      questionsItems,
-      currentPage,
-      paggination,
-      filterCategory,
-      changePage,
-      resetFilter,
-    };
+    return { tests, error, testsItems, currentPage, paggination, changePage };
   },
 };
 </script>

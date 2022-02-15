@@ -40,10 +40,14 @@
       </li>
       <li :class="{ showMenu: showSubMenuService }">
         <div class="iocn-link">
-          <a href="#">
+          <!-- <a href="#">
            <i class="fa-solid fa-graduation-cap"></i>
             <span class="link_name">Tests</span>
-          </a>
+          </a> -->
+          <router-link :to="{name: 'Tests'}">
+             <i class="fa-solid fa-graduation-cap"></i>
+            <span class="link_name">Tests</span>
+          </router-link>
 
           <!-- <i
             class="bx bxs-chevron-down arrow"
@@ -52,7 +56,7 @@
           <i class="fa-solid fa-angle-down arrow"  @click="showSubMenuService = !showSubMenuService"></i>
         </div>
         <ul class="sub-menu">
-          <li><a class="link_name" href="#">Tests</a></li>
+          <li><router-link :to="{name: 'Tests'}">Tests</router-link></li>
           <li>
             <!-- <a href="#">Categories</a> -->
             <router-link :to="{ name: 'Categories' }">
