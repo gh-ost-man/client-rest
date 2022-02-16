@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar" :class="{ close: isClosedSideBar }">
-    <div class="logo-details">
-      <i class="fa-solid fa-user-secret fs-1"></i>
-      <span class="logo_name">IT STEP</span>
+    <div class="logo-details c-logo">
+      <span> <i class="fa-solid fa-user-secret fs-1"></i></span>
+      <span class="logo_name fs-3">IT STEP</span>
     </div>
     <ul class="nav-links">
          <li>
@@ -10,8 +10,10 @@
           <i class="bx bx-compass"></i>
           <span class="link_name">Profile</span>
         </a> -->
-        <router-link :to="{ name: 'ProfileAdmin' }">
-          <i class="fa-solid fa-user"></i>
+        <!-- <p class="text-white">{{$router.currentRoute}}</p> -->
+        <p class="text-white">{{}}</p>
+        <router-link :to="{ name: 'ProfileAdmin' }" :class="{'menu-active': $route.fullPath.includes('profile')}">
+          <i class="fa-solid fa-circle-user"></i>
           <span class="link_name">Profile</span>
         </router-link>
 
@@ -23,7 +25,7 @@
         </ul>
       </li>
       <li>
-        <router-link :to="{ name: 'Users' }">
+        <router-link :to="{ name: 'Users' }" :class="{'menu-active': $route.fullPath.includes('users')}">
           <i class="fas fa-users"></i>
           <span class="link_name">Users</span>
         </router-link>
@@ -44,7 +46,7 @@
            <i class="fa-solid fa-graduation-cap"></i>
             <span class="link_name">Tests</span>
           </a> -->
-          <router-link :to="{name: 'Tests'}">
+          <router-link :to="{name: 'Tests'}" :class="{'menu-active': $route.fullPath.includes('tests')}">
              <i class="fa-solid fa-graduation-cap"></i>
             <span class="link_name">Tests</span>
           </router-link>
@@ -71,19 +73,9 @@
           <!-- <li><a href="#">Answers</a></li> -->
         </ul>
       </li>
-   
       <li>
         <a href="#">
-          <i class="bx bx-history"></i>
-          <span class="link_name">Tests</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Tests</a></li>
-        </ul>
-      </li>
-      <li>
-        <a href="#">
-          <i class="bx bx-cog"></i>
+          <i class="fa-solid fa-clipboard-list"></i>
           <span class="link_name">Report</span>
         </a>
         <ul class="sub-menu blank">
@@ -113,12 +105,12 @@
     </ul>
   </div>
   <section class="home-section body-background">
-    <div class="home-content sticky-top text-white">
+    <div class="home-content bg-transparent sticky-top text-white">
       <!-- <i
         class="bx bx-menu text-white"
         @click="isClosedSideBar = !isClosedSideBar"
       ></i> -->
-      <i class="fa-solid fa-bars fs-4" style="cursor:pointer;"  @click="isClosedSideBar = !isClosedSideBar"></i>
+      <i class="fa-solid fa-bars mx-3 fs-4" style="cursor:pointer;"  @click="isClosedSideBar = !isClosedSideBar"></i>
     </div>
     <div class="container">
       <router-view></router-view>
@@ -165,6 +157,50 @@ export default {
 </script>
 
 <style scopped>
+
+.c-logo {
+  -webkit-box-reflect: below -30px linear-gradient(transparent, #0004);
+ color:#fff;
+        text-shadow:  0 0 10px #03bcf4,
+        0 0 20px #03bcf4,
+        0 0 40px #03bcf4,
+        0 0 80px #03bcf4,
+        0 0 160px #03bcf4,
+        0 0 400px #03bcf4;
+}
+
+.c-logo span {
+  animation:  animate 5s linear infinite;
+}
+
+@keyframes animate {
+    0%, 18%, 50.1%, 60%, 65.1%, 80%, 90.1%, 92%{
+        color: #0e3742 !important;
+        text-shadow: none;
+    }
+    18.1%, 20.1%,30%,50%, 60.1%, 65%,80.1%, 90%, 92.1%, 100% {
+        color:#fff;
+        text-shadow:
+        0 0 10px #03bcf4,
+        0 0 20px #03bcf4,
+        0 0 40px #03bcf4,
+        0 0 80px #03bcf4,
+        0 0 160px #03bcf4,
+        0 0 400px #03bcf4;
+    }
+}
+
+.menu-active {
+  /* background:  darkcyan;; */
+   /* -webkit-box-reflect: below -30px linear-gradient(transparent, #0004); */
+ color:#fff;
+        text-shadow:  0 0 10px #03bcf4,
+        0 0 20px #03bcf4,
+        0 0 40px #03bcf4,
+        0 0 80px #03bcf4,
+        0 0 160px #03bcf4,
+        0 0 400px #03bcf4;
+}
 /* Google Fonts Import Link */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 * {
@@ -248,7 +284,14 @@ export default {
 }
 .sidebar .nav-links li:hover {
   /* background: #1d1b31; */
-  background: #2b2b2b;
+  /* background: #2b2b2b; */
+  /* color:#fff;
+        text-shadow:  0 0 10px #03bcf4,
+        0 0 20px #03bcf4,
+        0 0 40px #03bcf4,
+        0 0 80px #03bcf4,
+        0 0 160px #03bcf4,
+        0 0 400px #03bcf4; */
 }
 .sidebar .nav-links li .iocn-link {
   display: flex;

@@ -55,11 +55,12 @@ export default {
           name.value = null;
         } else {
           toast.error("Some errors");
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          // error.value = JSON.stringify(
+          //   handleResponse(response.value),
+          //   undefined,
+          //   2
+          // );
+          error.value =  handleResponse(response.value);
         }
       }
     };

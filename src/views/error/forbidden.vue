@@ -25,27 +25,31 @@ export default {
 
           let isStaff = false;
 
-          user_roles.forEach((element) => {
-            if (roles.includes(element)) {
+          // user_roles.forEach((element) => {
+          //   if (roles.includes(element)) {
+          //     isStaff = true;
+          //   }
+          // });
+
+           for (let role of user_roles) {
+            if (roles.includes(role)) {
               isStaff = true;
+              break;
             }
-          });
+          }
 
           if (isStaff) {
             this.$router.push({ name: "ProfileAdmin" });
           } else if (user_roles.includes("Student")) {
             this.$router.push({ name: "Home" });
           } else {
-            console.log("SUB ELSE");
 
             this.$router.push({ name: "Login" });
           }
         } else {
-          console.log("SUB SUB ELSE");
           this.$router.push({ name: "Login" });
         }
       } else {
-        console.log("MIAN ELSE");
         this.$router.push({ name: "Login" });
       }
     },

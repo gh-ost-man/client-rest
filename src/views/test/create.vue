@@ -82,6 +82,7 @@
 import { ref, getCurrentInstance } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
@@ -89,6 +90,7 @@ export default {
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { createExam } = examService();
+    const router = useRouter();
 
     const statuses = ref([
       {
@@ -130,12 +132,11 @@ export default {
             passingScore: 40,
             status: 0,
           };
+
+        router.push({name: 'TestQuestions', params: {id: response.value.data.id}});
+
         } else {
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
     };

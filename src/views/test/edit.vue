@@ -117,7 +117,7 @@ export default {
             if(response.value.status === 200) {
                 examObj.value = response.value.data;
             } else {
-                error.value = JSON.stringify(handleResponse(response.value), undefined, 2);
+                error.value =handleResponse(response.value);
             }
         }
     });
@@ -135,11 +135,7 @@ export default {
         if (response.value.status === 204) {
           toast.success("The test updated successfully");
         } else {
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          error.value =handleResponse(response.value);
         }
       }
     };

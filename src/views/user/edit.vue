@@ -367,11 +367,7 @@ export default {
             confirmPassword: null,
           };
         } else {
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          error.value =  handleResponse(response.value);
         }
       }
     };
@@ -427,13 +423,7 @@ export default {
                 confirmPassword: null,
               };
             } else {
-              // JSON.parse(handleResponse(response.value))
-              // error.value = handleResponse(response.value);
-              error.value = JSON.stringify(
-                JSON.parse(handleResponse(response.value)),
-                undefined,
-                2
-              );
+              error.value =handleResponse(response.value);
             }
           }
         }
@@ -458,11 +448,7 @@ export default {
           await fetchData();
         } else {
           toast.error("Some errors");
-          error.value = JSON.stringify(
-            JSON.parse(handleResponse(response.value)),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
     };
@@ -483,11 +469,7 @@ export default {
           await fetchData();
         } else {
           toast.error("Some errors");
-          error.value = JSON.stringify(
-            JSON.parse(handleResponse(response.value)),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
     };
@@ -503,11 +485,7 @@ export default {
           toast.success(`User ${user.value.email} removed successfully`);
           router.push({ name: "Users" });
         } else {
-          error.value = JSON.stringify(
-            JSON.parse(handleResponse(response.value)),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
     };

@@ -1,6 +1,17 @@
 <template>
   <div class="p-3">
-    <h3 class="text-white">Test questions</h3>
+    <div class="d-flex">
+      <h3 class="text-white">Test questions</h3>
+      <button
+        class="btn btn-outline-light mx-3"
+        @click="removeQuestionFromTestHandle"
+        v-if="selectedRemoveQuestions.length"
+        :disabled="loading"
+      >
+        <span v-if="!loading">Remove from test</span>
+        <span v-else>Removing ...</span>
+      </button>
+    </div>
     <hr class="text-white" />
     <div v-if="error">
       <textarea
@@ -12,6 +23,7 @@
         readonly
       ></textarea>
     </div>
+
     <div class="table-responsive custom-table-responsive" v-if="examQuestions">
       <!-- <paggination
         :pages="paggination.pages"
@@ -21,19 +33,42 @@
       <table class="table custom-table">
         <thead>
           <tr>
+            <th scope="col" style="width: 60px">
+              <label class="control control--checkbox">
+                <input
+                  type="checkbox"
+                  class="js-check-all"
+                  :checked="selectedRemoveAll"
+                  @change="changeRemoveHandle"
+                />
+                <div class="control__indicator"></div>
+              </label>
+            </th>
             <th scope="col">#</th>
             <th scope="col">Question</th>
-            <th scope="col">QuestionItemId</th>
-            <th scope="col">ExamItemId</th>
           </tr>
         </thead>
         <tbody>
           <template v-for="eq in examQuestions" :key="eq.id">
-            <tr scope="row">
+            <tr
+              scope="row"
+              :class="{ 'checked-row': checkedRemoveHandle(eq.id) }"
+            >
+              <td scope="row">
+                <label
+                  class="control control--checkbox"
+                  :class="{ 'checked-row': checkedRemoveHandle(eq.id) }"
+                >
+                  <input
+                    type="checkbox"
+                    :value="eq"
+                    v-model="selectedRemoveQuestions"
+                  />
+                  <div class="control__indicator"></div>
+                </label>
+              </td>
               <td>{{ eq.id }}</td>
-              <td>{{ eq.question }}</td>
-              <td>{{ eq.questionItemId }}</td>
-              <td>{{ eq.examItemId }}</td>
+              <td style="max-width: 10%">{{ eq.question }}</td>
             </tr>
             <tr class="spacer">
               <td colspan="100"></td>
@@ -42,16 +77,43 @@
         </tbody>
       </table>
     </div>
-    <h3 class="text-white mt-3">All questions</h3>
-    <button
-      class="btn btn-outline-light mt-3"
-      @click="addQuestionToTestHandle"
-      v-if="selectedQuestions.length"
-      :disabled="loading"
-    >
-      <span v-if="!loading"> Add to test</span>
-      <span v-else>Adding ...</span>
-    </button>
+    <div class="d-flex mt-3">
+      <h3 class="text-white">All questions</h3>
+      <div class="d-flex text-center mx-4">
+        <label class="labels text-white w-auto fw-bolder mx-2">Filter</label>
+        <select
+          class="form-select bg-transparent text-white"
+          aria-label="Default select example"
+          v-model="filterCategory"
+        >
+          <option disabled selected class="text-white">Select category</option>
+          <option
+            class="text-dark"
+            v-for="cat in categories"
+            :key="cat.id"
+            :value="cat.id"
+            :v-model="filterCategory"
+          >
+            {{ cat.name }}
+          </option>
+        </select>
+      </div>
+      <div>
+          <button class="btn btn-outline-light" @click="resetFilter">
+            Reset
+          </button>
+        </div>
+      <button
+        class="btn btn-outline-light mx-3"
+        @click="addQuestionToTestHandle"
+        v-if="selectedAddQuestions.length"
+        :disabled="loading"
+      >
+        <span v-if="!loading"> Add to test</span>
+        <span v-else>Adding ...</span>
+      </button>
+    </div>
+
     <hr class="text-white" />
     <div class="table-responsive custom-table-responsive" v-if="questions">
       <!-- <paggination
@@ -67,8 +129,8 @@
                 <input
                   type="checkbox"
                   class="js-check-all"
-                  :checked="isAll"
-                  @change="changeHandle"
+                  :checked="selectedAddAll"
+                  @change="changeAddHandle"
                 />
                 <div class="control__indicator"></div>
               </label>
@@ -83,17 +145,17 @@
           <template v-for="question in questionItems" :key="question.id">
             <tr
               scope="row"
-              :class="{ 'checked-row': checkedHandle(question.id) }"
+              :class="{ 'checked-row': checkedAddHandle(question.id) }"
             >
               <th scope="row">
                 <label
                   class="control control--checkbox"
-                  :class="{ 'checked-row': checkedHandle(question.id) }"
+                  :class="{ 'checked-row': checkedAddHandle(question.id) }"
                 >
                   <input
                     type="checkbox"
                     :value="question"
-                    v-model="selectedQuestions"
+                    v-model="selectedAddQuestions"
                   />
                   <div class="control__indicator"></div>
                 </label>
@@ -136,11 +198,15 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getQuestions } = questionService();
     const { getAllCategories } = categoryService();
-    const { getAllExamQuestions, addQuestionToExam } = examService();
+    const { getAllExamQuestions, addQuestionToExam, removeQuestionFromExam } =
+      examService();
     const currentPage = ref(1);
     const pageSize = 15;
-    const isAll = ref(false);
-    const selectedQuestions = ref([]);
+    const selectedAddAll = ref(false);
+    const selectedRemoveAll = ref(false);
+    const selectedAddQuestions = ref([]);
+    const selectedRemoveQuestions = ref([]);
+    const filterCategory = ref(null);
 
     const fetchExamQuestions = async () => {
       let resExamQues = await getAllExamQuestions(route.params.id);
@@ -149,11 +215,7 @@ export default {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data;
         } else {
-          error.value = JSON.stringify(
-            handleResponse(resExamQues.value),
-            undefined,
-            2
-          );
+          error.value = handleResponse(resExamQues.value);
         }
       }
     };
@@ -177,62 +239,77 @@ export default {
                   questions.value.push({ ...q, category: cat.name });
                 });
               } else {
-                error.value = JSON.stringify(
-                  handleResponse(res.value),
-                  undefined,
-                  2
-                );
+                error.value =  handleResponse(res.value);
               }
             }
           });
         } else {
-          error.value = JSON.stringify(
-            handleResponse(resCategory.value),
-            undefined,
-            2
-          );
+          error.value =  handleResponse(resCategory.value);
         }
       }
     });
 
-    const changeHandle = () => {
-      isAll.value = !isAll.value;
+    const changeAddHandle = () => {
+      selectedAddAll.value = !selectedAddAll.value;
 
-      if (isAll.value) {
-        selectedQuestions.value = questions.value;
+      if (selectedAddAll.value) {
+        selectedAddQuestions.value = questions.value;
       } else {
-        selectedQuestions.value = [];
+        selectedAddQuestions.value = [];
       }
     };
 
-    const checkedHandle = (value) => {
-      return selectedQuestions.value.find((x) => x.id == value);
+    const checkedAddHandle = (value) => {
+      return selectedAddQuestions.value.find((x) => x.id == value);
     };
+
+    const changeRemoveHandle = () => {
+      selectedRemoveAll.value = !selectedRemoveAll.value;
+
+      if (selectedRemoveAll.value) {
+        selectedRemoveQuestions.value = examQuestions.value;
+      } else {
+        selectedRemoveQuestions.value = [];
+      }
+    };
+
+    const checkedRemoveHandle = (value) => {
+      return selectedRemoveQuestions.value.find((x) => x.id == value);
+    };
+
+    const filterByCategory = computed(() => {
+      currentPage.value = 1;
+      return filterCategory.value
+        ? questions.value.filter(
+            (x) => x.questionCategoryId == filterCategory.value
+          )
+        : questions.value;
+    });
 
     // питання який немає в тесті
 
     const questionItems = computed(() => {
-      let arr = [];
+      // let arr = [];
 
-      console.log("HERE");
+      // filterByCategory.value.forEach((element) => {
+      //   if (
+      //     !examQuestions.value.filter((x) => x.questionItemId === element.id)
+      //       .length
+      //   ) {
+      //     arr.push(element);
+      //   }
+      // });
 
-      questions.value.forEach((element) => {
-        if (
-          !examQuestions.value.filter((x) => x.questionItemId === element.id)
-            .length
-        ) {
-          arr.push(element);
-        }
-      });
+      // return arr;
 
-      return arr;
+      return  filterByCategory.value.filter(element=> !examQuestions.value.filter((x) => x.questionItemId === element.id).length);
+            
     });
 
     const addQuestionToTestHandle = async () => {
-
       loading.value = true;
 
-      await selectedQuestions.value.reduce(async (a,element) => {
+      await selectedAddQuestions.value.reduce(async (a, element) => {
         let res = await addQuestionToExam(route.params.id, {
           question: element.context,
           questionItemId: element.id,
@@ -240,11 +317,7 @@ export default {
 
         if (res && res.value) {
           if (res.value.status !== 201) {
-            error.value = JSON.stringify(
-              handleResponse(res.value),
-              undefined,
-              2
-            );
+            error.value = handleResponse(res.value);
           }
         }
       }, Promise.resolve());
@@ -253,9 +326,33 @@ export default {
 
       await fetchExamQuestions();
 
-      selectedQuestions.value = [];
-      isAll.value = false;
+      selectedAddQuestions.value = [];
+      selectedAddAll.value = false;
     };
+
+    const removeQuestionFromTestHandle = async () => {
+      loading.value = true;
+
+      await selectedRemoveQuestions.value.reduce(async (a, element) => {
+        let res = await removeQuestionFromExam(route.params.id, element.id);
+        if (res && res.value) {
+          if (res.value.status !== 204) {
+            error.value =  handleResponse(res.value);
+          }
+        }
+      }, Promise.resolve());
+
+      loading.value = false;
+
+      await fetchExamQuestions();
+      selectedRemoveQuestions.value = [];
+      selectedRemoveAll.value = false;
+    };
+
+    const resetFilter = () => {
+       filterCategory.value = null;
+      currentPage.value = 1;
+    }
 
     return {
       error,
@@ -265,12 +362,19 @@ export default {
       examQuestions,
       currentPage,
       pageSize,
-      isAll,
+      selectedAddAll,
+      selectedRemoveAll,
+      selectedRemoveQuestions,
+      filterCategory,
       questionItems,
-      selectedQuestions,
-      changeHandle,
-      checkedHandle,
+      selectedAddQuestions,
+      changeAddHandle,
+      checkedAddHandle,
       addQuestionToTestHandle,
+      changeRemoveHandle,
+      checkedRemoveHandle,
+      removeQuestionFromTestHandle,
+      resetFilter,
     };
   },
 };
@@ -464,7 +568,7 @@ h2 {
 }
 
 .control__indicator:after {
-  font-family: "icomoon";
+  /* font-family: "icomoon"; */
   content: "\2714";
   position: absolute;
   display: none;

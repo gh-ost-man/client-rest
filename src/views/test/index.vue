@@ -4,7 +4,6 @@
       <h2 class="mb-5">Tests</h2>
       <hr class="bg-secondary" />
       <div>
-        <!-- <button class="btn btn-outline-light">Create</button> -->
         <router-link
           class="btn btn-outline-light"
           :to="{ name: 'CreateTest' }"
@@ -17,6 +16,7 @@
           :pages="paggination.pages"
           :currentPage="currentPage"
           @changePage="changePage"
+          v-if="paggination.pages.length>1"
         ></paggination>
         <table class="table custom-table">
           <thead>
@@ -27,7 +27,7 @@
               <th scope="col">DurationTime</th>
               <th scope="col">PassingScore</th>
               <th scope="col">Status</th>
-              <th scope="col">Qty of questions</th>
+              <th scope="col">size</th>
               <th scope="col"></th>
             </tr>
           </thead>
@@ -49,7 +49,7 @@
                    <i class="fa-solid fa-list-ul icon"></i>
                   </router-link>
                   <router-link
-                    class="btn btn-outline-light"
+                    class="btn btn-outline-light mx-1"
                     :to="{ name: 'EditTest', params: { id: test.id } }"
                   >
                     <i class="fa-solid fa-pen-to-square icon"></i>
@@ -128,7 +128,7 @@ export default {
                if(res.value.status === 200) {
                    element.qtyOfQuestions = res.value.data.length;
                } else {
-                   error.value = JSON.stringify(handleResponse(res.value), undefined, 2);
+                   error.value =handleResponse(res.value);
                    return;
                }
            }
@@ -141,35 +141,14 @@ export default {
             currentPage.value,
             pageSize
           );
+
+         
+
         } else {
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          error.value =handleResponse(response.value);
         }
       }
     });
-
-    // onMounted(async () => {
-    //   var response = await getAllCategories();
-
-    //   if (response && response.value) {
-    //     if (response.value.status === 200) {
-    //       categories.value = response.value.data;
-
-    //       currentPage.value = 1;
-    //       paggination.value = paginate(categories.value.length, currentPage.value, pageSize);
-    //     } else {
-    //       error.value = JSON.stringify(
-    //         handleResponse(response.value),
-    //         undefined,
-    //         2
-    //       );
-    //     }
-    //   }
-    // });
-
     const changePage = (pag) => {
       currentPage.value = pag;
     };
@@ -372,8 +351,8 @@ h2 {
 }
 
 .control__indicator:after {
-  font-family: "icomoon";
-  content: "\e5ca";
+  /* font-family: "icomoon"; */
+  content: "\2714";
   position: absolute;
   display: none;
 }

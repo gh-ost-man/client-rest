@@ -4,14 +4,13 @@
       <h2 class="mb-5">Categories</h2>
       <hr class="bg-secondary" />
       <div>
-        <!-- <button class="btn btn-outline-light">Create</button> -->
         <router-link class="btn btn-outline-light" :to="{ name: 'CreateCategory' }"
           >Create</router-link
         >
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="categories">
-        <paggination :pages="paggination.pages" :currentPage="currentPage" @changePage="changePage"></paggination>
+        <paggination :pages="paggination.pages" :currentPage="currentPage" @changePage="changePage" v-if="paggination.pages.length>1"></paggination>
         <table class="table custom-table">
           <thead>
             <tr>
@@ -84,11 +83,12 @@ export default {
           currentPage.value = 1;
           paggination.value = paginate(categories.value.length, currentPage.value, pageSize);
         } else {
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          // error.value = JSON.stringify(
+          //   handleResponse(response.value),
+          //   undefined,
+          //   2
+          // );
+          error.value = handleResponse(response.value);
         }
       }
     });

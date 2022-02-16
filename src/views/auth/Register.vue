@@ -1,7 +1,7 @@
 <template>
   <div class="p-5">
     <div v-if="error">
-      <textarea class="form-control bg-dark text-secondary border-0" style="overflow:hidden" cols="30" rows="15" :value="error"></textarea>
+      <textarea class="form-control bg-dark text-secondary border-0" style="overflow:hidden" cols="30" rows="15" :value="error" readonly></textarea>
     </div>
     <form>
       <h3 class="text-white">Register</h3>
@@ -98,11 +98,12 @@ export default {
           let user_roles = response.value.data.user.roles.split(",");
           let isStaff = false;
           if (user_roles) {
-            user_roles.forEach((element) => {
-              if (roles.includes(element)) {
+           for (let role of user_roles) {
+              if (roles.includes(role)) {
                 isStaff = true;
+                break;
               }
-            });
+            }
           }
 
           if (isStaff) {
@@ -113,46 +114,15 @@ export default {
             router.push({ name: "Login" });
           }
         } else {
-          var data = JSON.parse(handleResponse(response.value));
-
-          // using JSON.stringify pretty print capability:
-          var str = JSON.stringify(data, undefined, 2);
-          error.value = str;
+          toast.error("Some errors");
+          error.value = handleResponse(response.value);
         }
       }
 
-      // await post(url, userObj);
-
-      // if (response.value) {
-      //   if (response.value.status == 200) {
-      //     toast.success("200 OK");
-
-      //     localStorage.accessToken = response.value.data.token;
-      //     localStorage.refreshToken = response.value.data.refreshToken;
-
-      //     router.push({ name: "Auth" });
-
-      //     // if (response.value.data.success) {
-      //     //   localStorage.accessToken = response.value.data.token;
-      //     //   localStorage.refreshToken = response.value.data.refreshToken;
-
-      //     //   router.push({ name: "Auth" });
-      //     // } else {
-      //     //   error.value = response.value.data.errors;
-      //     // }
-      //   } else {
-      //     error.value = responseText();
-      //   }
-      // }
+     
     };
 
     return {
-      // firstName,
-      // lastName,
-      // userName,
-      // email,
-      // password,
-      // additionalInfo,
       newUser,
       error,
       loading,

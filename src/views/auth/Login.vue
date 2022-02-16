@@ -1,7 +1,13 @@
 <template>
   <div class="p-5">
     <div v-if="error">
-      <textarea class="form-control bg-dark text-secondary border-0" style="overflow:hidden" cols="30" rows="15" :value="error"></textarea>
+      <textarea
+        class="form-control bg-dark text-secondary border-0"
+        style="overflow: hidden"
+        cols="30"
+        rows="15"
+        :value="error"
+      ></textarea>
     </div>
     <form>
       <h3 class="text-white">Login</h3>
@@ -28,11 +34,11 @@
       <button
         @click.prevent="submit"
         :disabled="loading"
-        class="btn btn-primary"
+        class="btn btn-outline-info mt-2 mx-1"
       >
         Login
       </button>
-      <router-link :to="{ name: 'Register' }">Register</router-link>
+      <router-link class="btn btn-outline-light mt-2 mx-1" :to="{ name: 'Register' }">Register</router-link>
     </form>
   </div>
 </template>
@@ -67,34 +73,29 @@ export default {
 
       if (response && response.value) {
         if (response.value.status == 200) {
-          toast.success("200 OK");
-
           let user_roles = response.value.data.user.roles.split(",");
           let isStaff = false;
 
           if (user_roles) {
-            user_roles.forEach((element) => {
-              if (roles.includes(element)) {
+            for (let role of user_roles) {
+              if (roles.includes(role)) {
                 isStaff = true;
+                break;
               }
-            });
+            }
           }
 
           if (isStaff) {
             router.push({ name: "ProfileAdmin" });
           } else if (user_roles.includes("Student")) {
+            console.log("HERE STUDENT");
             router.push({ name: "Home" });
           } else {
             router.push({ name: "Login" });
           }
         } else {
-            loading.value = false;
-          error.value =
-            JSON.stringify(
-              JSON.parse(handleResponse(response.value)),
-              undefined,
-              2
-            );
+          loading.value = false;
+          error.value = handleResponse(response.value);
         }
       }
     };
@@ -105,7 +106,4 @@ export default {
 </script>
 
 <style>
-body {
-  background: #191919;
-}
 </style>

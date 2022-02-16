@@ -178,17 +178,12 @@ export default {
             );
           });
           context.value = null;
-          categoryId.value = null;
           answers.value = [];
 
           loading.value = false;
         } else {
           toast.error("Some errors");
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value)
         }
       }
     };

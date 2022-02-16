@@ -166,22 +166,14 @@ export default {
             } else {
               loading.value = false;
               toast.error("Some errors");
-              error.value = JSON.stringify(
-                JSON.parse(handleResponse(res.value)),
-                undefined,
-                2
-              );
+              error.value = handleResponse(res.value);
             }
           }
         } else {
           loading.value = false;
           toast.error("Some errors");
 
-          error.value = JSON.stringify(
-            JSON.parse(handleResponse(response.value)),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
     };

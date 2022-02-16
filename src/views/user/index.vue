@@ -4,27 +4,13 @@
       <h2 class="mb-5">Users</h2>
       <hr class="bg-secondary" />
       <div>
-        <!-- <button class="btn btn-outline-light">Create</button> -->
         <router-link class="btn btn-outline-light" :to="{ name: 'CreateUser' }"
           >Create</router-link
         >
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="users">
-        <paggination :pages="paggination.pages" :currentPage="currentPage" @changePage="changePage"></paggination>
-        <!-- <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <li
-              style="cursor: pointer"
-              class="page-item"
-              :class="{ active: pag === currentPage }"
-              v-for="pag in paggination.pages"
-              :key="pag"
-            >
-              <div class="page-link" @click="changePagi(pag)">{{ pag }}</div>
-            </li>
-          </ul>
-        </nav> -->
+        <paggination :pages="paggination.pages" :currentPage="currentPage" @changePage="changePage" v-if="paggination.pages.length > 1"></paggination>
         <table class="table custom-table">
           <thead>
             <tr>
@@ -106,11 +92,7 @@ export default {
           currentPage.value = 1;
           paggination.value = paginate(users.value.length, currentPage.value, pageSize);
         } else {
-          error.value = JSON.stringify(
-            JSON.parse(handleResponse(response.value)),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
     });

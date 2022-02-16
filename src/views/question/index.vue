@@ -150,7 +150,7 @@ export default {
           );
         } else {
           toast.error("Some errors");
-          error.value = JSON.stringify(handleResponse(res.value), undefined, 2);
+          error.value = handleResponse(res.value);
         }
       }
     });

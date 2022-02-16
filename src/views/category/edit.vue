@@ -56,11 +56,12 @@ export default {
             category.value = response.value.data;
         } else {
           toast.error("Some error");
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          // error.value = JSON.stringify(
+          //   handleResponse(response.value),
+          //   undefined,
+          //   2
+          // );
+          error.value =  handleResponse(response.value);
 
         }
       }

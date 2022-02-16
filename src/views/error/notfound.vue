@@ -32,11 +32,12 @@ export default {
 
           let isStaff = false;
 
-          user_roles.forEach((element) => {
-            if (roles.includes(element)) {
+          for (let role of user_roles) {
+            if (roles.includes(role)) {
               isStaff = true;
+              break;
             }
-          });
+          }
 
           if (isStaff) {
             this.$router.push({ name: "ProfileAdmin" });

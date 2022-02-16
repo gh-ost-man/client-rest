@@ -27,7 +27,12 @@ const examService = () => {
     const addQuestionToExam = async(id, data) =>  {
         return await post(apiUrl + "/" + id + "/questions", data)
     }
-    return { getAllExams, getExamById, getAllExamQuestions, createExam, updateExam , addQuestionToExam }
+
+    const removeQuestionFromExam = async (idExam, idQuestion) => {
+        return await remove(apiUrl + "/" + idExam + "/questions/" + idQuestion);
+    }
+
+    return { getAllExams, getExamById, getAllExamQuestions, createExam, updateExam , addQuestionToExam, removeQuestionFromExam }
 }
 
 

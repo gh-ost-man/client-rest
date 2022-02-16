@@ -273,7 +273,6 @@ export default {
 
       if (response && response.value) {
         if (response.value.status === 204) {
-          console.log("QUESTION UPDATE SUCCESS");
           if (!asnwersForRemove.value.length) {
             asnwersForRemove.value.forEach(async (element) => {
               await removeAnswer(
@@ -282,8 +281,6 @@ export default {
                 element.id
               );
             });
-
-            console.log("ANSWER REMOVED SUCCESS");
 
             asnwersForRemove.value = [];
           }
@@ -298,7 +295,6 @@ export default {
               });
             });
 
-            console.log("ANSWERSADDED SUCCESS");
           }
 
           let updatedAnswers = answers.value.filter(
@@ -317,15 +313,9 @@ export default {
                 }
               );
             });
-
-            console.log("ANSWERRUPDATE SUCCESS");
           }
         } else {
-          error.value = JSON.stringify(
-            handleResponse(response.value),
-            undefined,
-            2
-          );
+          error.value = handleResponse(response.value);
         }
       }
 
