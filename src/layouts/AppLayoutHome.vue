@@ -51,8 +51,12 @@
                 >Disabled</a
               >
             </li>
+            <li>
+              <button @click="logoutHandle">Logout</button>
+            </li>
           </ul>
-          <form class="d-flex">
+
+          <!-- <form class="d-flex">
             <input
               class="form-control me-2"
               type="search"
@@ -62,17 +66,33 @@
             <button class="btn btn-outline-success" type="submit">
               Search
             </button>
-          </form>
+          </form> -->
         </div>
       </div>
     </nav>
-      <router-view></router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
+import authService from "@/_services/authService.js";
+import { computed, ref, watch, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 export default {
   name: "home-layout",
+  setup() {
+    const { logOut } = authService();
+    const router = useRouter();
+    
+    const logoutHandle = () => {
+      console.log("click");
+      logOut();
+
+      router.push({ name: "Login" });
+    };
+
+    return {logoutHandle};
+  },
 };
 </script>
 

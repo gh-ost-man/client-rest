@@ -46,6 +46,10 @@ const authService = () => {
         return response;
     }
 
+    const accessCode = async(data) => {
+        return await post(apiUrl + "/SendMessage", data);
+    }
+
     const logOut = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
@@ -53,7 +57,7 @@ const authService = () => {
 
         currentUser.value = null;
     }
-    return { currentUser, setAuth, setAuthUser, login, register, logOut }
+    return { currentUser, setAuth, setAuthUser, login, register, accessCode, logOut }
 }
 
 export default authService

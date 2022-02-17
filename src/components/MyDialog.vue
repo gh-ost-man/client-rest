@@ -1,0 +1,76 @@
+<template>
+  <div class="dialog" v-if="show" @click.stop="hideDialog">
+    <div @click.stop class="dialog__content">
+      <label class="labels text-info">
+        <i class="fa-solid fa-key"></i>
+        Access code
+      </label
+      >
+      <input
+        class="form-control bg-transparent c-input"
+        v-model.number="accessCode"
+        type="text"
+      />
+      <button class="btn btn-outline-info mt-3" @click="sendHandle">
+        Send
+      </button>
+    </div>
+  </div>
+</template>
+
+<script >
+export default {
+  name: "my-dialog",
+  data() {
+    return {
+      accessCode: null,
+    };
+  },
+  props: ["show"],
+  mounted() {
+    console.log("dialog mounted");
+  },
+  methods: {
+    hideDialog() {
+      this.$emit("update:show", false);
+    },
+    sendHandle() {
+      this.$emit("submit", this.accessCode);
+    },
+  },
+};
+</script>
+
+<style scoped>
+.c-label {
+  color: cyan !important;
+}
+
+.c-input {
+  color: #ffc107 !important;
+  border: 0 !important;
+  border-bottom: 1px solid #ffc107 !important;
+}
+.c-input:focus {
+  border: 1px solid cyan !important;
+  border-color: cyan !important;
+}
+.dialog {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #191919;
+  position: fixed;
+  display: flex;
+}
+
+.dialog__content {
+  margin: auto;
+  border: 1px solid cyan;
+  border-radius: 12px;
+  min-height: 50px;
+  min-width: 300px;
+  padding: 20px;
+}
+</style>

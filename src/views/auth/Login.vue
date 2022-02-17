@@ -40,6 +40,8 @@
       </button>
       <router-link class="btn btn-outline-light mt-2 mx-1" :to="{ name: 'Register' }">Register</router-link>
     </form>
+
+  
   </div>
 </template>
 
@@ -49,6 +51,7 @@ import { useRouter } from "vue-router";
 import authService from "@/_services/authService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import Role from "@/_helpers/_role.js";
+
 export default {
   setup() {
     const loading = ref(null);
