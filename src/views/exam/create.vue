@@ -1,62 +1,54 @@
 <template>
+ <router-link :to="{name:'Exams'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
   <div class="p-3 text-white">
-    <h3>Create test</h3>
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-        readonly
-      ></textarea>
-    </div>
+    <!-- <h3 class="c-title">Create test</h3> -->
+   
     <form @submit.prevent="submitHandle">
       <div class="mb-3">
-        <label class="labels">Title</label
+        <label class="labels c-label">Title</label
         ><input
           type="test"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter title"
           v-model="examObj.title"
         />
       </div>
       <div class="mb-3">
-        <label class="labels">Description</label>
+        <label class="labels c-label">Description</label>
         <textarea
-          class="form-control bg-dark text-white border-0"
+          class="form-control bg-dark c-input border-0"
           placeholder="enter description"
           v-model="examObj.description"
         ></textarea>
       </div>
       <div class="mb-3">
-        <label class="labels">Duration time</label
+        <label class="labels c-label">Duration time</label
         ><input
           type="number"
           step="5"
           min="30"
           max="360"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter duration time"
           v-model="examObj.durationTime"
         />
       </div>
       <div class="mb-3">
-        <label class="labels">Passing Score</label
+        <label class="labels c-label">Passing Score</label
         ><input
           type="number"
           step="1"
           min="40"
           max="100"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter passing score"
           v-model="examObj.passingScore"
         />
       </div>
       <div class="mb-3">
-        <label class="labels">Status</label>
+        <label class="labels c-label">Status</label>
         <select
-          class="form-select bg-transparent text-white"
+          class="form-select bg-transparent c-input"
           aria-label="Default select example"
           v-model="examObj.status"
         >
@@ -70,7 +62,7 @@
           </option>
         </select>
       </div>
-      <button class="btn btn-outline-light" :disabled="loading">
+      <button class="btn btn-outline-info" :disabled="loading">
         <span v-if="!loading">Create</span>
         <span v-else>Creating...</span>
       </button>
@@ -115,7 +107,6 @@ export default {
     });
 
     const submitHandle = async () => {
-      error.value = null;
       loading.value = true;
 
       let response = await createExam(examObj.value);
@@ -136,7 +127,12 @@ export default {
         router.push({name: 'TestQuestions', params: {id: response.value.data.id}});
 
         } else {
-          error.value = handleResponse(response.value);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };

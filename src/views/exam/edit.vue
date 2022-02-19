@@ -1,62 +1,56 @@
 <template>
+  <router-link :to="{ name: 'Exams' }" class="btn btn-outline-info"
+    ><i class="fa-solid fa-circle-arrow-left"></i
+  ></router-link>
   <div class="p-3 text-white">
-    <h3>Update test</h3>
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-        readonly
-      ></textarea>
-    </div>
+    <!-- <h3 class="c-title">Update test</h3> -->
+
     <form @submit.prevent="submitHandle" v-if="examObj">
       <div class="mb-3">
-        <label class="labels">Title</label
+        <label class="labels c-label">Title</label
         ><input
           type="test"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter title"
           v-model="examObj.title"
         />
       </div>
       <div class="mb-3">
-        <label class="labels">Description</label>
+        <label class="labels c-label">Description</label>
         <textarea
-          class="form-control bg-dark text-white border-0"
+          class="form-control bg-dark c-input"
           placeholder="enter description"
           v-model="examObj.description"
         ></textarea>
       </div>
       <div class="mb-3">
-        <label class="labels">Duration time</label
+        <label class="labels c-label">Duration time</label
         ><input
           type="number"
           step="5"
           min="30"
           max="360"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter duration time"
           v-model="examObj.durationTime"
         />
       </div>
       <div class="mb-3">
-        <label class="labels">Passing Score</label
+        <label class="labels c-label">Passing Score</label
         ><input
           type="number"
           step="1"
           min="40"
           max="100"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter passing score"
           v-model="examObj.passingScore"
         />
       </div>
       <div class="mb-3">
-        <label class="labels">Status</label>
+        <label class="labels c-label">Status</label>
         <select
-          class="form-select bg-transparent text-white"
+          class="form-select bg-transparent c-input"
           aria-label="Default select example"
           v-model="examObj.status"
         >
@@ -70,7 +64,7 @@
           </option>
         </select>
       </div>
-      <button class="btn btn-outline-light" :disabled="loading">
+      <button class="btn btn-outline-info" :disabled="loading">
         <span v-if="!loading">Update</span>
         <span v-else>Updating...</span>
       </button>
@@ -82,11 +76,10 @@
 import { ref, getCurrentInstance, onMounted } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRoute } from 'vue-router';
+import { useRoute } from "vue-router";
 
 export default {
   setup(props) {
-    const error = ref(null);
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getExamById, updateExam } = examService();
@@ -106,27 +99,30 @@ export default {
         value: 2,
       },
     ]);
-    const examObj =ref(null);
+    const examObj = ref(null);
 
     console.log();
 
     onMounted(async () => {
-        let response = await getExamById(route.params.id);
+      let response = await getExamById(route.params.id);
 
-        if(response && response.value) {
-            if(response.value.status === 200) {
-                examObj.value = response.value.data;
-            } else {
-                error.value =handleResponse(response.value);
-            }
+      if (response && response.value) {
+        if (response.value.status === 200) {
+          examObj.value = response.value.data;
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
+      }
     });
 
     const submitHandle = async () => {
-      error.value = null;
       loading.value = true;
 
-        console.log(examObj.value);
       let response = await updateExam(examObj.value.id, examObj.value);
 
       loading.value = false;
@@ -135,12 +131,17 @@ export default {
         if (response.value.status === 204) {
           toast.success("The test updated successfully");
         } else {
-          error.value =handleResponse(response.value);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
-    return { error, loading, examObj, statuses, submitHandle };
+    return { loading, examObj, statuses, submitHandle };
   },
 };
 </script>

@@ -1,31 +1,28 @@
 <template>
   <div class="p-5">
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-      ></textarea>
-    </div>
     <form>
-      <h3 class="text-white">Login</h3>
+      <h3 class="text-info">Login</h3>
 
       <div class="form-group">
-        <label class="text-white">Email address</label>
+        <label class="labels c-label">
+          <i class="fa-solid fa-at"></i>
+          Email address
+        </label>
         <input
           type="email"
-          class="form-control"
+          class="form-control c-input"
           v-model="email"
           :disabled="loading"
         />
       </div>
       <div class="form-group">
-        <label class="text-white">Password</label>
+        <label class="text-info">
+          <i class="fa-solid fa-key"></i>
+          Password
+        </label>
         <input
           type="password"
-          class="form-control"
+          class="form-control c-input"
           id="exampleInputPassword1"
           v-model="password"
           :disabled="loading"
@@ -38,10 +35,12 @@
       >
         Login
       </button>
-      <router-link class="btn btn-outline-light mt-2 mx-1" :to="{ name: 'Register' }">Register</router-link>
+      <router-link
+        class="btn btn-outline-light mt-2 mx-1"
+        :to="{ name: 'Register' }"
+        >Register</router-link
+      >
     </form>
-
-  
   </div>
 </template>
 
@@ -55,7 +54,6 @@ import Role from "@/_helpers/_role.js";
 export default {
   setup() {
     const loading = ref(null);
-    const error = ref(null);
     const email = ref("admin@google.com");
     const password = ref("Admin1!");
     const router = useRouter();
@@ -64,7 +62,6 @@ export default {
 
     const submit = async () => {
       loading.value = true;
-      error.value = null;
 
       var response = await login({
         email: email.value,
@@ -76,16 +73,23 @@ export default {
 
       if (response && response.value) {
         if (response.value.status == 200) {
-          let user_roles = response.value.data.user.roles.split(",");
+          let user_roles = null;
           let isStaff = false;
 
-          if (user_roles) {
+          console.log(user_roles);
+
+          if (response.value.data.user.roles) {
+            user_roles = response.value.data.user.roles.split(",");
+
             for (let role of user_roles) {
               if (roles.includes(role)) {
                 isStaff = true;
                 break;
               }
             }
+          } else {
+            router.push({ name: "Forbidden" });
+            return;
           }
 
           if (isStaff) {
@@ -98,12 +102,17 @@ export default {
           }
         } else {
           loading.value = false;
-          error.value = handleResponse(response.value);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
-    return { email, password, loading, error, submit };
+    return { email, password, loading, submit };
   },
 };
 </script>

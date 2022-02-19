@@ -1,50 +1,51 @@
 <template>
   <div class="rounded mt-5 mb-5">
-    <div class="row" >
+      <router-link :to="{name:'Users'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+    <div class="row">
       <div class="col-md-12 border-right mb-3 text-white" v-if="user">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right">
-           <i class="fa-solid fa-circle-user"></i>
+            <h4 class="text-right c-title">
+              <i class="fa-solid fa-circle-user"></i>
               User
             </h4>
           </div>
-          <hr class="bg-secondary" />
+          <hr class="bg-info" />
           <div class="row mt-2">
             <div class="col-md-12">
-              <label class="labels text-secondary">First name</label>
-              <p>{{ user.firstName }}</p>
+              <label class="labels c-label">First name</label>
+              <p class="text-warning mx-2">{{ user.firstName }}</p>
             </div>
             <div class="col-md-12">
-              <label class="labels text-secondary">Last name</label>
-              <p>{{ user.lastName }}</p>
+              <label class="labels c-label">Last name</label>
+              <p class="text-warning mx-2">{{ user.lastName }}</p>
             </div>
           </div>
-          <hr class="bg-secondary" />
+          <hr class="bg-info" />
           <div class="row mt-3">
             <div class="col-md-12">
-              <label class="labels text-secondary">Email</label>
-              <p>{{ user.email }}</p>
+              <label class="labels c-label">Email</label>
+              <p class="text-warning mx-2">{{ user.email }}</p>
             </div>
             <div class="col-md-12">
-              <label class="labels text-secondary">Roles</label>
-              <p>{{ user.roles }}</p>
+              <label class="labels c-label">Roles</label>
+              <p class="text-warning mx-2">{{ user.roles }}</p>
             </div>
-            <hr class="bg-secondary" />
+            <hr class="bg-info" />
             <div class="col-md-12">
-              <label class="labels text-secondary">CreatedAt</label>
-              <p>{{ new Date(user.createdAt).toLocaleString() }}</p>
+              <label class="labels c-label">CreatedAt</label>
+              <p class="text-warning mx-2">{{ new Date(user.createdAt).toLocaleString() }}</p>
             </div>
             <div class="col-md-12">
-              <label class="labels text-secondary">UpdatedAt</label>
-              <p>{{ new Date(user.updatedAt).toLocaleString() }}</p>
+              <label class="labels c-label">UpdatedAt</label>
+              <p class="text-warning mx-2">{{ new Date(user.updatedAt).toLocaleString() }}</p>
             </div>
-            <hr class="bg-secondary" />
+            <hr class="bg-info" />
             <div class="col-md-12">
-              <label class="labels text-secondary">Additional info</label>
-              <p>{{ user.additionalInfo }}</p>
+              <label class="labels c-label">Additional info</label>
+              <p class="text-warning mx-2">{{ user.additionalInfo }}</p>
             </div>
-            <hr class="bg-secondary" />
+            <hr class="bg-info" />
             <div class="col-md-12">
               <button
                 class="btn btn-outline-danger"
@@ -57,7 +58,7 @@
           </div>
         </div>
       </div>
-      <div v-if="error">
+      <!-- <div v-if="error">
         <textarea
           class="form-control bg-dark text-secondary border-0"
           style="overflow: hidden"
@@ -65,147 +66,24 @@
           rows="15"
           :value="error"
         ></textarea>
-      </div>
+      </div> -->
       <div class="col-md-6 border-right text-white" v-if="user">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right">
-             <i class="fa-solid fa-user-gear"></i>
-              Profile Settings
-            </h4>
-          </div>
-          <hr class="bg-secondary" />
-          <div class="row mt-2">
-            <div class="col-md-6">
-              <i class="fa-solid fa-user m-2 fs-5"></i>
-              <label class="labels">First name</label
-              ><input
-                type="text"
-                class="form-control bg-transparent text-white"
-                placeholder="first name"
-                v-model.trim="userUpdateObj.firstName"
-              />
-            </div>
-            <div class="col-md-6">
-              <i class="fa-solid fa-user m-2 fs-5"></i>
-              <label class="labels">Last name</label
-              ><input
-                type="text"
-                class="form-control bg-transparent text-white"
-                v-model.trim="userUpdateObj.lastName"
-                placeholder="enter last name"
-              />
-            </div>
-          </div>
-          <hr class="bg-secondary" />
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <i class="fa-solid fa-at m-2 fs-5"></i>
-              <label class="labels">Email</label
-              ><input
-                type="text"
-                class="form-control bg-transparent text-white"
-                placeholder="enter email"
-                v-model.trim="userUpdateObj.email"
-              />
-            </div>
-            <div class="col-md-12 mt-2">
-              <i class="fa-solid fa-circle-info m-2 fs-5"></i>
-              <label class="labels">Additional info</label
-              ><textarea
-                class="form-control bg-transparent text-white"
-                placeholder="enter additional info"
-                v-model.trim="userUpdateObj.additionalInfo"
-              />
-            </div>
-          </div>
-          <hr class="bg-secondary" />
-          <div class="mt-5">
-            <button
-              class="btn btn-outline-light profile-button"
-              @click="saveProfileHandle"
-              :disabled="loading"
-              type="button"
-            >
-              Save Profile
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 border-right text-white" v-if="user">
-        <div class="p-3 py-5">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right">
-             <i class="fa-solid fa-lock"></i>
-              Change password
-            </h4>
-          </div>
-          <hr class="bg-secondary" />
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <i class="fa-solid fa-lock m-2 fs-5"></i>
-              <label class="labels">Current password</label
-              ><input
-                type="password"
-                class="form-control bg-transparent text-white"
-                placeholder="enter password"
-                v-model.trim="changePasswordObj.currentPassword"
-              />
-            </div>
-          </div>
-          <hr class="bg-secondray" />
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <i class="fa-solid fa-lock m-2 fs-5"></i>
-              <label class="labels">New password</label
-              ><input
-                type="password"
-                class="form-control bg-transparent text-white"
-                placeholder="enter New password"
-                v-model.trim="changePasswordObj.newPassword"
-              />
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <i class="fa-solid fa-lock m-2 fs-5"></i>
-              <label class="labels">Confirm password</label
-              ><input
-                type="password"
-                class="form-control bg-transparent text-white"
-                placeholder="enter Confirm password"
-                v-model.trim="changePasswordObj.confirmPassword"
-              />
-            </div>
-          </div>
-          <hr class="bg-secondray" />
-          <div class="mt-5">
-            <button
-              class="btn btn-outline-light profile-button"
-              @click="changePasswordHandle"
-              :disabled="loading"
-              type="button"
-            >
-              Change password
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 border-right text-white" v-if="user">
-        <div class="p-3 py-5">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right">
+            <h4 class="text-right text-info">
               <i class="fa-solid fa-key"></i>
               Add Role
             </h4>
           </div>
-          <hr class="bg-secondary" />
+          <hr class="bg-info" />
           <div class="row mt-2">
             <div class="col-md-12">
-              <i class="fa-solid fa-key m-2 fs-5"></i>
-              <label class="labels">Role</label>
+             
+              <label class="labels c-label">
+                 <i class="fa-solid fa-key m-2 fs-5"></i>
+                Role</label>
               <select
-                class="form-control bg-transparent text-white"
+                class="form-control bg-transparent c-input"
                 v-model.trim="newRole"
               >
                 <option
@@ -221,7 +99,7 @@
           </div>
           <div class="mt-5">
             <button
-              class="btn btn-outline-light profile-button"
+              class="btn btn-outline-info profile-button"
               @click="addRoleHandle"
               :disabled="loading"
               type="button"
@@ -234,18 +112,20 @@
       <div class="col-md-6 border-right text-white" v-if="user">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right">
+            <h4 class="text-right text-info">
               <i class="fa-solid fa-key"></i>
               Remove Role
             </h4>
           </div>
-          <hr class="bg-secondary" />
+          <hr class="bg-info" />
           <div class="row mt-2">
             <div class="col-md-12">
-              <i class="fa-solid fa-key m-2 fs-5"></i>
-              <label class="labels">Role</label>
+             
+              <label class="labels c-label">
+                 <i class="fa-solid fa-key m-2 fs-5"></i>
+                Role</label>
               <select
-                class="form-control text-white bg-transparent text-white"
+                class="form-control text-white bg-transparent c-input"
                 v-model.trim="roleRemove"
               >
                 <option
@@ -261,7 +141,7 @@
           </div>
           <div class="mt-5">
             <button
-              class="btn btn-outline-light profile-button"
+              class="btn btn-outline-info profile-button"
               @click="removeRoleHandle"
               type="button"
             >
@@ -280,24 +160,39 @@
       </div>
     </div>
   </div>
-  
-<div class="modal fade show" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+
+  <div
+    class="modal fade show"
+    id="exampleModal"
+    tabindex="1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -324,7 +219,7 @@ export default {
     const roleRemove = ref(null); // role f remove
 
     const fetchData = async () => {
-      error.value = null;
+      
       userRoles.value = [];
       roles.value = [];
       newRole.value = null;
@@ -337,20 +232,16 @@ export default {
         if (response.value.status === 200) {
           user.value = response.value.data;
 
-         
-
           Role.forEach((element) => {
             if (!user.value.roles.includes(element)) {
               roles.value.push({ title: element, value: element });
             }
           });
 
-
           let arr = user.value.roles.split(", ");
           arr.forEach((element) => {
             userRoles.value.push({ title: element, value: element });
           });
-
 
           userUpdateObj.value = {
             id: user.value.id,
@@ -367,7 +258,13 @@ export default {
             confirmPassword: null,
           };
         } else {
-          error.value =  handleResponse(response.value);
+         
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
@@ -378,7 +275,7 @@ export default {
 
     const saveProfileHandle = async () => {
       loading.value = true;
-      error.value = null;
+     
 
       // console.log(userUpdateObj.value);
       let response = await update(userUpdateObj.value);
@@ -389,13 +286,19 @@ export default {
           toast.success("Update Successfully");
           await fetchData();
         } else {
-          error.value = handleResponse(response.value);
+         
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     const changePasswordHandle = async () => {
-      error.value = null;
+    
 
       if (
         changePasswordObj.value.currentPassword &&
@@ -423,7 +326,13 @@ export default {
                 confirmPassword: null,
               };
             } else {
-              error.value =handleResponse(response.value);
+           
+              handleResponse(response.value).forEach((element) => {
+                toast.error(element, {
+                  position: "top",
+                  duration: 5000,
+                });
+              });
             }
           }
         }
@@ -433,7 +342,7 @@ export default {
     };
 
     const addRoleHandle = async () => {
-      error.value = null;
+     
       loading.value = true;
 
       let response = await addRole({
@@ -447,14 +356,19 @@ export default {
           toast.success("Role added successfully");
           await fetchData();
         } else {
-          toast.error("Some errors");
-          error.value = handleResponse(response.value);
+         
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     const removeRoleHandle = async () => {
-      error.value = null;
+    
       loading.value = true;
 
       let response = await removeRole({
@@ -468,14 +382,19 @@ export default {
           toast.success("Role removed successfully");
           await fetchData();
         } else {
-          toast.error("Some errors");
-          error.value = handleResponse(response.value);
+      
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     const removeUserHandle = async () => {
-      error.value = null;
+     
       loading.value = true;
       let response = await removeUser(user.value.id);
       loading.value = false;
@@ -485,14 +404,20 @@ export default {
           toast.success(`User ${user.value.email} removed successfully`);
           router.push({ name: "Users" });
         } else {
-          error.value = handleResponse(response.value);
+         
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     return {
       loading,
-      error,
+      // error,
       user,
       newRole,
       roleRemove,

@@ -1,17 +1,9 @@
 <template>
   <div class="p-3 text-white">
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-      ></textarea>
-    </div>
+  
     <form @submit.prevent="submitHandle">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="text-right">
+        <h4 class="text-right" >
           <i class="bx bx-user-circle"></i>
           Create user
         </h4>
@@ -137,7 +129,7 @@ export default {
     });
 
     const submitHandle = async () => {
-      error.value = null;
+  
       loading.value = true;
       var response = await createUser(userObj.value);
 
@@ -165,15 +157,22 @@ export default {
               role.value = null;
             } else {
               loading.value = false;
-              toast.error("Some errors");
-              error.value = handleResponse(res.value);
+              handleResponse(res.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
             }
           }
         } else {
           loading.value = false;
-          toast.error("Some errors");
-
-          error.value = handleResponse(response.value);
+           handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };

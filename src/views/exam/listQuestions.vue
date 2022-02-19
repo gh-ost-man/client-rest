@@ -1,14 +1,15 @@
 <template>
+ <router-link :to="{name:'Exams'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
   <div class="p-3">
     <div class="d-flex">
-      <h3 class="text-white">Test questions</h3>
+      <h3 class="text-white">Exam questions</h3>
       <button
         class="btn btn-outline-light mx-3"
-        @click="removeQuestionFromTestHandle"
+        @click="removeQuestionFromExamHandle"
         v-if="selectedRemoveQuestions.length"
         :disabled="loading"
       >
-        <span v-if="!loading">Remove from test</span>
+        <span v-if="!loading">Remove from exam</span>
         <span v-else>Removing ...</span>
       </button>
     </div>
@@ -105,22 +106,23 @@
         </div>
       <button
         class="btn btn-outline-light mx-3"
-        @click="addQuestionToTestHandle"
+        @click="addQuestionToExamHandle"
         v-if="selectedAddQuestions.length"
         :disabled="loading"
       >
-        <span v-if="!loading"> Add to test</span>
+        <span v-if="!loading"> Add to exam</span>
         <span v-else>Adding ...</span>
       </button>
     </div>
 
     <hr class="text-white" />
-    <div class="table-responsive custom-table-responsive" v-if="questions">
-      <!-- <paggination
-        :pages="paggination.pages"
-        :currentPage="currentPage"
-        @changePage="changePage"
-      ></paggination> -->
+    <div class="table-responsive custom-table-responsive" v-if="questionItems">
+      <paggination
+        v-if="paggiAllQ"
+        :pages="paggiAllQ.pages"
+        :currentPage="currentPageAllQ"
+        @changePage="changePageAllQ"
+      ></paggination>
       <table class="table custom-table">
         <thead>
           <tr>
@@ -208,6 +210,11 @@ export default {
     const selectedRemoveQuestions = ref([]);
     const filterCategory = ref(null);
 
+
+    const paggiAllQ = ref(null);
+    const currentPageAllQ = ref(1);
+
+
     const fetchExamQuestions = async () => {
       let resExamQues = await getAllExamQuestions(route.params.id);
 
@@ -215,7 +222,12 @@ export default {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data;
         } else {
-          error.value = handleResponse(resExamQues.value);
+           handleResponse(resExamQues.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
@@ -239,21 +251,35 @@ export default {
                   questions.value.push({ ...q, category: cat.name });
                 });
               } else {
-                error.value =  handleResponse(res.value);
+                handleResponse(res.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
               }
             }
           });
         } else {
-          error.value =  handleResponse(resCategory.value);
+          handleResponse(resCategory.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
+    });
+
+    const sortedQuestions = computed(() => {
+      return questions.value?questions.value.sort((x1,x2) => x1.id - x2.id):null;
     });
 
     const changeAddHandle = () => {
       selectedAddAll.value = !selectedAddAll.value;
 
       if (selectedAddAll.value) {
-        selectedAddQuestions.value = questions.value;
+        selectedAddQuestions.value = questionItems.value;
       } else {
         selectedAddQuestions.value = [];
       }
@@ -277,36 +303,48 @@ export default {
       return selectedRemoveQuestions.value.find((x) => x.id == value);
     };
 
-    const filterByCategory = computed(() => {
+    const filterByCategoryItems = computed(() => {
       currentPage.value = 1;
+      
       return filterCategory.value
-        ? questions.value.filter(
+        ? sortedQuestions.value.filter(
             (x) => x.questionCategoryId == filterCategory.value
           )
-        : questions.value;
+        : sortedQuestions.value;
+
+        
     });
 
     // питання який немає в тесті
 
     const questionItems = computed(() => {
-      // let arr = [];
+       selectedAddAll.value = false;
+       selectedAddQuestions.value = [];
+        let arr =  filterByCategoryItems.value?filterByCategoryItems.value.filter(element=> !examQuestions.value.filter((x) => x.questionItemId === element.id).length): null;
 
-      // filterByCategory.value.forEach((element) => {
-      //   if (
-      //     !examQuestions.value.filter((x) => x.questionItemId === element.id)
-      //       .length
-      //   ) {
-      //     arr.push(element);
-      //   }
-      // });
-
-      // return arr;
-
-      return  filterByCategory.value.filter(element=> !examQuestions.value.filter((x) => x.questionItemId === element.id).length);
+          paggiAllQ.value = paginate(
+           arr? arr.length: 0,
+            currentPageAllQ.value,
+            pageSize
+          );
+      // вибираєм всі questions який немає в exam questions
+      return arr?arr.slice(
+        paggiAllQ.value.startIndex,
+        paggiAllQ.value.endIndex + 1
+      ):null;
+      //  return exams.value.slice(
+      //   paggination.value.startIndex,
+      //   paggination.value.endIndex + 1
+      // );
             
     });
 
-    const addQuestionToTestHandle = async () => {
+      const changePageAllQ = (pag) => {
+      currentPageAllQ.value = pag;
+    };
+
+
+    const addQuestionToExamHandle = async () => {
       loading.value = true;
 
       await selectedAddQuestions.value.reduce(async (a, element) => {
@@ -317,7 +355,12 @@ export default {
 
         if (res && res.value) {
           if (res.value.status !== 201) {
-            error.value = handleResponse(res.value);
+            handleResponse(res.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
           }
         }
       }, Promise.resolve());
@@ -330,14 +373,19 @@ export default {
       selectedAddAll.value = false;
     };
 
-    const removeQuestionFromTestHandle = async () => {
+    const removeQuestionFromExamHandle = async () => {
       loading.value = true;
 
       await selectedRemoveQuestions.value.reduce(async (a, element) => {
         let res = await removeQuestionFromExam(route.params.id, element.id);
         if (res && res.value) {
           if (res.value.status !== 204) {
-            error.value =  handleResponse(res.value);
+             handleResponse(res.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
           }
         }
       }, Promise.resolve());
@@ -350,7 +398,7 @@ export default {
     };
 
     const resetFilter = () => {
-       filterCategory.value = null;
+      filterCategory.value = null;
       currentPage.value = 1;
     }
 
@@ -362,6 +410,8 @@ export default {
       examQuestions,
       currentPage,
       pageSize,
+      paggiAllQ,
+      currentPageAllQ,
       selectedAddAll,
       selectedRemoveAll,
       selectedRemoveQuestions,
@@ -370,230 +420,18 @@ export default {
       selectedAddQuestions,
       changeAddHandle,
       checkedAddHandle,
-      addQuestionToTestHandle,
+      addQuestionToExamHandle,
       changeRemoveHandle,
       checkedRemoveHandle,
-      removeQuestionFromTestHandle,
+      removeQuestionFromExamHandle,
       resetFilter,
+      changePageAllQ,
     };
   },
 };
 </script>
 
 <style scopped>
-a:hover .icon {
-  color: black !important;
-}
+@import "../../assets/table.css";
 
-.truncate-text {
-  overflow: hidden !important;
-  -webkit-line-clamp: 1 !important;
-}
-body {
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  background-color: #19191d;
-  font-weight: 300;
-}
-
-p {
-  color: #b3b3b3;
-  font-weight: 300;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6 {
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-a {
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-}
-a,
-a:hover {
-  text-decoration: none !important;
-}
-
-.content {
-  padding: 7rem 0;
-}
-
-h2 {
-  font-size: 20px;
-  color: #fff;
-}
-
-.custom-table {
-  min-width: 900px;
-}
-.custom-table thead tr,
-.custom-table thead th {
-  border-top: none;
-  border-bottom: none !important;
-  color: #fff;
-}
-.custom-table tbody th,
-.custom-table tbody td {
-  color: #777;
-  font-weight: 400;
-  padding-bottom: 20px;
-  padding-top: 20px;
-  font-weight: 300;
-}
-.custom-table tbody th small,
-.custom-table tbody td small {
-  color: #b3b3b3;
-  font-weight: 300;
-}
-.custom-table tbody tr:not(.spacer) {
-  border-radius: 7px;
-  overflow: hidden;
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-}
-.custom-table tbody tr:not(.spacer):hover {
-  -webkit-box-shadow: 0 2px 10px -5px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 10px -5px rgba(0, 0, 0, 0.1);
-}
-.custom-table tbody tr th,
-.custom-table tbody tr td {
-  background: #25252b;
-  border: none;
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-}
-.custom-table tbody tr th a,
-.custom-table tbody tr td a {
-  color: #b3b3b3;
-}
-.custom-table tbody tr th:first-child,
-.custom-table tbody tr td:first-child {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-.custom-table tbody tr th:last-child,
-.custom-table tbody tr td:last-child {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
-.custom-table tbody tr.spacer td {
-  padding: 0 !important;
-  height: 3px;
-  border-radius: 0 !important;
-  background: transparent !important;
-}
-.custom-table tbody tr.active th,
-.custom-table tbody tr.active td,
-.custom-table tbody tr:hover th,
-.custom-table tbody tr:hover td {
-  color: #fff;
-  background: #2e2e36;
-}
-.custom-table tbody tr.checked-row th,
-.custom-table tbody tr.checked-row td,
-.custom-table tbody tr.checked-row th,
-.custom-table tbody tr.checked-row td {
-  color: #fff;
-  background: #2e2e36;
-}
-.custom-table tbody tr.active th a,
-.custom-table tbody tr.active td a,
-.custom-table tbody tr:hover th a,
-.custom-table tbody tr:hover td a {
-  color: #fff;
-}
-
-/* Custom Checkbox */
-.control {
-  display: block;
-  position: relative;
-  margin-bottom: 25px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.control input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-
-.control__indicator {
-  position: absolute;
-  top: 2px;
-  left: 0;
-  height: 20px;
-  width: 20px;
-  border-radius: 4px;
-  border: 2px solid #3f3f47;
-  background: transparent;
-}
-
-.control--radio .control__indicator {
-  border-radius: 50%;
-}
-
-.control:hover input ~ .control__indicator,
-.control input:focus ~ .control__indicator {
-  border: 2px solid #007bff;
-}
-
-.control input:checked ~ .control__indicator {
-  border: 2px solid #007bff;
-  background: #007bff;
-}
-
-.control input:disabled ~ .control__indicator {
-  background: #e6e6e6;
-  opacity: 0.6;
-  pointer-events: none;
-  border: 2px solid #ccc;
-}
-
-.control__indicator:after {
-  /* font-family: "icomoon"; */
-  content: "\2714";
-  position: absolute;
-  display: none;
-}
-
-.control input:checked ~ .control__indicator:after {
-  display: block;
-  color: #fff;
-}
-
-.control--checkbox .control__indicator:after {
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -52%);
-  -ms-transform: translate(-50%, -52%);
-  transform: translate(-50%, -52%);
-}
-
-.control--checkbox input:disabled ~ .control__indicator:after {
-  border-color: #7b7b7b;
-}
-
-.control--checkbox input:disabled:checked ~ .control__indicator {
-  background-color: #007bff;
-  opacity: 0.2;
-  border: 2px solid #007bff;
-}
 </style>

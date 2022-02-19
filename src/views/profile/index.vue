@@ -4,7 +4,7 @@
       <div class="col-md-12 border-right mb-3 text-white">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right c-logo1">
+            <h4 class="text-right c-title">
               <i class="fa-solid fa-circle-user"></i>
               Profile
             </h4>
@@ -52,7 +52,7 @@
           </div>
         </div>
       </div>
-      <div v-if="error">
+      <!-- <div v-if="error">
         <textarea
           class="form-control bg-dark text-info border-0"
           style="overflow: hidden"
@@ -61,7 +61,7 @@
           readonly
           :value="error"
         ></textarea>
-      </div>
+      </div> -->
       <div class="col-md-6 border-right text-white">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -204,6 +204,7 @@ import handleResponse from "@/_helpers/handleResponse.js";
 import Role from "@/_helpers/_role.js";
 import authService from "@/_services/authService.js";
 import userService from "@/_services/userService.js";
+import axios from 'axios';
 export default {
   setup() {
     const { currentUser, setAuth, setAuthUser } = authService();
@@ -211,6 +212,8 @@ export default {
     const loading = ref(false);
     const error = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
+
+
 
     onMounted(async () => {
       await getUserData();
@@ -242,7 +245,7 @@ export default {
 
     const saveProfileHandle = async () => {
       loading.value = true;
-      error.value = null;
+     
 
       // console.log(userUpdateObj.value);
       let response = await update(userUpdateObj.value);
@@ -253,13 +256,19 @@ export default {
           toast.success("Update Successfully");
           await getUserData();
         } else {
-          error.value = handleResponse(response.value);
+         
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     const changePasswordHandle = async () => {
-      error.value = null;
+   
 
       if (
         changePasswordObj.value.currentPassword &&
@@ -287,13 +296,13 @@ export default {
                 confirmPassword: null,
               };
             } else {
-              // JSON.parse(handleResponse(response.value))
-              // error.value = handleResponse(response.value);
-              error.value = JSON.stringify(
-                JSON.parse(handleResponse(response.value)),
-                undefined,
-                2
-              );
+             
+              handleResponse(response.value).forEach((element) => {
+                toast.error(element, {
+                  position: "top",
+                  duration: 5000,
+                });
+              });
             }
           }
         }
@@ -304,7 +313,7 @@ export default {
 
     return {
       loading,
-      error,
+      // error,
       currentUser,
       userUpdateObj,
       changePasswordObj,
@@ -320,16 +329,6 @@ export default {
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 500;
-}
-
-.c-logo1 {
-  font-size: 30px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  -webkit-box-reflect: below -15px linear-gradient(transparent, #0004);
-  color: #fff;
-  text-shadow: 0 0 10px #03bcf4, 0 0 20px #03bcf4, 0 0 40px #03bcf4,
-    0 0 80px #03bcf4, 0 0 160px #03bcf4, 0 0 400px #03bcf4;
 }
 
 /* .c-logo span {

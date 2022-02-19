@@ -1,64 +1,78 @@
 <template>
   <div class="p-5">
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-        readonly
-      ></textarea>
-    </div>
-    <form @submit.prevent="getAccessCode">
-      <h3 class="text-white">Register</h3>
-      <div class="form-group">
-        <label class="text-white">First name</label>
+    <form @submit.prevent="sendMessage">
+      <h3 class="text-info">Register</h3>
+      <div class="form-group mt-1">
+        <label class="c-label">
+          <i class="fa-solid fa-user-graduate"></i>
+          First name
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="form-control c-input"
           v-model="newUser.firstName"
           :disabled="loading"
         />
       </div>
-      <div class="form-group">
-        <label class="text-white">Last name</label>
+      <div class="form-group mt-1">
+        <label class="c-label">
+          <i class="fa-solid fa-user-graduate"></i>
+          Last name
+        </label>
         <input
           type="text"
-          class="form-control"
+          class="form-control c-input"
           v-model="newUser.lastName"
           :disabled="loading"
         />
       </div>
-      <div class="form-group">
-        <label class="text-white">Email address</label>
+      <div class="form-group mt-1">
+        <label class="c-label">
+          <i class="fa-solid fa-at"></i>
+          Email address</label
+        >
         <input
           type="email"
-          class="form-control"
+          class="form-control c-input"
           v-model="newUser.email"
           :disabled="loading"
         />
       </div>
-      <div class="form-group">
-        <label class="text-white">Password</label>
+      <div class="form-group mt-1">
+        <label class="c-label">
+          <i class="fa-solid fa-lock"></i>
+          Password</label
+        >
         <input
           type="password"
-          class="form-control"
+          class="form-control c-input"
           id="exampleInputPassword1"
           v-model="newUser.password"
           :disabled="loading"
         />
       </div>
-      <div class="form-group">
-        <label class="text-white">Additional Info</label>
+      <div class="form-group mt-1">
+        <label class="c-label">
+          <i class="fa-solid fa-circle-info"></i>
+          Additional Info</label
+        >
         <textarea
           type="text"
-          class="form-control"
+          class="form-control c-input"
           v-model="newUser.additionalInfo"
           :disabled="loading"
         ></textarea>
       </div>
-      <button class="btn btn-primary">Register</button>
+      <button class="btn btn-outline-info mt-3" :disabled="loading">
+        <span v-if="!loading">Register</span>
+        <span v-else>Registering ...</span>
+      </button>
+      <router-link
+        class="btn btn-outline-light mt-3 mx-1"
+        :disabled="loading"
+        :to="{ name: 'Login' }"
+        >Login</router-link
+      >
     </form>
     <my-dialog v-model:show="dialogVisible" @submit="submitHandle">
       <h1>Hello</h1>
@@ -77,39 +91,60 @@ export default {
   components: { MyDialog },
 
   setup() {
-    const error = ref(null);
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const router = useRouter();
-    let resAccessCode = null;
     const newUser = ref({
       firstName: null,
       lastName: null,
       email: null,
       password: null,
       additionalInfo: null,
-      code:null,
+      code: -1,
     });
     const dialogVisible = ref(false);
     const { register, accessCode } = authService();
 
-    const getAccessCode = async () => {
-     
+    const sendMessage = async () => {
 
-      resAccessCode = await accessCode({ email: newUser.value.email });
+      if(!newUser.value.firstName ||newUser.value.firstName==='') {
+        toast.error("First name is required");
+        return
+      }
+       if(!newUser.value.lastName ||newUser.value.lastName==='') {
+        toast.error("Last name is required");
+        return
+      }
+       if(!newUser.value.email ||newUser.value.email==='') {
+        toast.error("Email is required");
+        return
+      }
+       if(!newUser.value.password ||newUser.value.password==='') {
+        toast.error("Password is required");
+        return
+      }
+
+
+      loading.value = true;
+      let resAccessCode = await accessCode(newUser.value);
+      loading.value = false;
       if (resAccessCode && resAccessCode.value) {
         if (resAccessCode.value.status === 204) {
           console.log(resAccessCode.value.data);
-           dialogVisible.value = true;
+          dialogVisible.value = true;
         } else {
-          error.value = handleResponse(resAccessCode.value);
+          handleResponse(resAccessCode.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     const submitHandle = async (accessCode) => {
       newUser.value.code = accessCode;
-      error.value = null;
       loading.value = true;
       var response = await register(newUser.value);
       loading.value = false;
@@ -122,7 +157,7 @@ export default {
           let user_roles = response.value.data.user.roles.split(",");
           let isStaff = false;
           if (user_roles) {
-           for (let role of user_roles) {
+            for (let role of user_roles) {
               if (roles.includes(role)) {
                 isStaff = true;
                 break;
@@ -138,19 +173,22 @@ export default {
             router.push({ name: "Login" });
           }
         } else {
-          toast.error("Some errors");
-          error.value = handleResponse(response.value);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     return {
       newUser,
-      error,
       loading,
       dialogVisible,
       submitHandle,
-      getAccessCode,
+      sendMessage,
     };
   },
 };

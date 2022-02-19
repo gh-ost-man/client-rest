@@ -13,6 +13,11 @@ const requireAuth = (to, from, next) => {
       let userRoles = user.roles ? user.roles.split(',') : null;
       let flag = false;
 
+      if(!userRoles || userRoles === '') {
+        next({ name: 'Forbidden' });
+        return;
+      }
+
       if (to.path === "/") {
         if (!userRoles.includes("Student")) {
           next({ name: 'ProfileAdmin' });
@@ -20,7 +25,7 @@ const requireAuth = (to, from, next) => {
           next();
         }
       } else {
-        if (userRoles) {
+        if (userRoles && userRoles !== '') {
           for (let role of userRoles) {
             if (authorize.includes(role)) {
               flag = true;
@@ -37,6 +42,7 @@ const requireAuth = (to, from, next) => {
         } else {
           console.log("Forbidden 2");
           next({ name: 'Forbidden' });
+          return;
         }
       }
     } else {
@@ -223,38 +229,38 @@ const routes = [
     props: true
   },
 
-  /* Tests */
+  /* Exams */
   {
-    path: '/d/tests',
-    name: 'Tests',
+    path: '/d/exams',
+    name: 'Exams',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/test/'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/exam/'),
     beforeEnter: requireAuth,
     meta: {
       layout: 'admin', authorize: ['Teacher'],
     },
   },
   {
-    path: '/d/tests/create',
-    name: 'CreateTest',
+    path: '/d/exams/create',
+    name: 'CreateExam',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/test/create.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/exam/create.vue'),
     beforeEnter: requireAuth,
     meta: {
       layout: 'admin', authorize: ["Teacher"],
     },
   },
   {
-    path: '/d/tests/edit/:id',
-    name: 'EditTest',
+    path: '/d/exams/edit/:id',
+    name: 'EditExam',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/test/edit.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/exam/edit.vue'),
     beforeEnter: requireAuth,
     meta: {
       layout: 'admin', authorize: ["Teacher"],
@@ -263,12 +269,12 @@ const routes = [
   },
 
   {
-    path: '/d/tests/:id/questions',
-    name: 'TestQuestions',
+    path: '/d/exams/:id/questions',
+    name: 'ExamQuestions',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/test/listQuestions.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/exam/listQuestions.vue'),
     beforeEnter: requireAuth,
     meta: {
       layout: 'admin', authorize: ["Teacher"],

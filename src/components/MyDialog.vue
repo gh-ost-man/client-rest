@@ -42,25 +42,13 @@ export default {
 </script>
 
 <style scoped>
-.c-label {
-  color: cyan !important;
-}
 
-.c-input {
-  color: #ffc107 !important;
-  border: 0 !important;
-  border-bottom: 1px solid #ffc107 !important;
-}
-.c-input:focus {
-  border: 1px solid cyan !important;
-  border-color: cyan !important;
-}
 .dialog {
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: #191919;
+  background: rgba(0, 0, 0, 0.8);
   position: fixed;
   display: flex;
 }

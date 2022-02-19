@@ -46,9 +46,9 @@
            <i class="fa-solid fa-graduation-cap"></i>
             <span class="link_name">Tests</span>
           </a> -->
-          <router-link :to="{name: 'Tests'}" :class="{'menu-active': $route.fullPath.includes('tests')}">
+          <router-link :to="{name: 'Exams'}" :class="{'menu-active': $route.fullPath.includes('exams')}">
              <i class="fa-solid fa-graduation-cap"></i>
-            <span class="link_name">Tests</span>
+            <span class="link_name">Exams</span>
           </router-link>
 
           <!-- <i
@@ -58,7 +58,7 @@
           <i class="fa-solid fa-angle-down arrow"  @click="showSubMenuService = !showSubMenuService"></i>
         </div>
         <ul class="sub-menu">
-          <li><router-link :to="{name: 'Tests'}">Tests</router-link></li>
+          <li><router-link :to="{name: 'Exams'}">Exams</router-link></li>
           <li>
             <!-- <a href="#">Categories</a> -->
             <router-link :to="{ name: 'Categories' }">
@@ -105,7 +105,7 @@
     </ul>
   </div>
   <section class="home-section body-background">
-    <div class="home-content bg-transparent sticky-top text-white">
+    <div class="home-content c-background sticky-top text-white" >
       <!-- <i
         class="bx bx-menu text-white"
         @click="isClosedSideBar = !isClosedSideBar"
@@ -157,6 +157,10 @@ export default {
 </script>
 
 <style scopped>
+
+.c-background {
+  background: rgba(0, 0, 0, 0.9);
+}
 
 .c-logo {
   -webkit-box-reflect: below -30px linear-gradient(transparent, #0004);

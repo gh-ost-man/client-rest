@@ -1,27 +1,18 @@
 <template>
+     <router-link :to="{name:'Categories'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
   <div class="p-3 text-white">
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-        readonly
-      ></textarea>
-    </div>
     <form @submit.prevent="submitHandle">
       <div>
-        <label class="labels">Name of category</label
+        <label class="labels c-label">Name of category</label
         ><input
           type="text"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter name"
           v-model="name"
         />
       </div>
       <div class="mt-2">
-        <button class="btn btn-outline-light" :disabled="loading" type="submit">
+        <button class="btn btn-outline-info" :disabled="loading" type="submit">
           <span v-if="!loading">Create</span>
           <span v-else>Creating...</span>
         </button>
@@ -37,13 +28,11 @@ import handleResponse from "@/_helpers/handleResponse.js";
 export default {
   setup() {
     const name = ref(null);
-    const error = ref(null);
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { createCategory } = categoryService();
 
     const submitHandle = async () => {
-      error.value = null;
 
       loading.value = true;
       let response = await createCategory({ name: name.value });
@@ -54,18 +43,17 @@ export default {
           toast.success("The category was added successfully");
           name.value = null;
         } else {
-          toast.error("Some errors");
-          // error.value = JSON.stringify(
-          //   handleResponse(response.value),
-          //   undefined,
-          //   2
-          // );
-          error.value =  handleResponse(response.value);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
-    return { name, error, loading, submitHandle };
+    return { name, loading, submitHandle };
   },
 };
 </script>

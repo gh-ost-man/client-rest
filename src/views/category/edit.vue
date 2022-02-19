@@ -1,27 +1,19 @@
 <template>
+ <router-link :to="{name:'Categories'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
   <div class="p-3 text-white">
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-        readonly
-      ></textarea>
-    </div>
+    
     <form @submit.prevent="submitHandle" v-if="category">
       <div>
-        <label class="labels">Name of category</label
+        <label class="labels c-label">Name of category</label
         ><input
           type="text"
-          class="form-control bg-transparent text-white"
+          class="form-control bg-transparent c-input"
           placeholder="enter name"
           v-model="category.name"
         />
       </div>
       <div class="mt-2">
-        <button class="btn btn-outline-light" :disabled="loading" type="submit">
+        <button class="btn btn-outline-info" :disabled="loading" type="submit">
           <span v-if="!loading">Create</span>
           <span v-else>Creating...</span>
         </button>
@@ -42,33 +34,29 @@ import { useRoute } from "vue-router";
 export default {
   setup() {
     const category = ref(null);
-    const error = ref(null);
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { updateCategory, getCategory, deleteCategory } = categoryService();
     const route = useRoute();
 
     onMounted(async () => {
-      error.value = null;
       let response = await getCategory(route.params.id);
       if (response && response.value) {
         if (response.value.status === 200) {
             category.value = response.value.data;
         } else {
-          toast.error("Some error");
-          // error.value = JSON.stringify(
-          //   handleResponse(response.value),
-          //   undefined,
-          //   2
-          // );
-          error.value =  handleResponse(response.value);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
 
         }
       }
     });
 
     const submitHandle = async () => {
-      error.value = null;
 
       loading.value = true;
       let response = await updateCategory(category.value.id, { name: category.value.name });
@@ -78,14 +66,17 @@ export default {
         if (response.value.status === 204) {
           toast.success("The category was updated successfully");
         } else {
-          toast.error("Some errors");
-          error.value = JSON.stringify(handleResponse(response.value));
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
     };
 
     const deleteCategoryHandle = async() => {
-      error.value = null;
 
       loading.value = true;
 
@@ -95,16 +86,20 @@ export default {
 
       if(response && response.value) {
         if(response.value.status === 204) {
-          toast.success("The category deleted successfully");
+          toast.success("The category removed successfully");
         } else {
-          toast.error("Some error");
-          error.value = JSON.stringify(handleResponse(response.value), undefined, 2);
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
 
       }
     }
 
-    return { category, error, loading, submitHandle, deleteCategoryHandle };
+    return { category, loading, submitHandle, deleteCategoryHandle };
   },
 };
 </script>

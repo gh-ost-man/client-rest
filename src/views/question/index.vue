@@ -1,17 +1,16 @@
 <template>
   <div class="content">
     <div class="container">
-      <div class="d-flex justify-content-between">
-        <div><h2 class="mb-5">Questions</h2></div>
-        <div>
-          <router-link
-            class="btn btn-outline-light"
-            :to="{ name: 'CreateQuestion' }"
-            >Create</router-link
-          >
-        </div>
+      <h2 class="mb-5 c-title">Questions</h2>
+      <hr class="bg-info">
+      <div>
+        <router-link
+          class="btn btn-outline-light"
+          :to="{ name: 'CreateQuestion' }"
+          >Create</router-link
+        >
       </div>
-      <hr class="bg-secondary" />
+      <hr class="bg-info" />
       <div class="d-flex" v-if="questions">
         <div class="d-flex text-center mx-4">
           <label class="labels text-white w-auto fw-bolder mx-2">Filter</label>
@@ -39,12 +38,13 @@
           </button>
         </div>
       </div>
-      <hr class="bg-secondary" />
+      <hr class="bg-info" />
       <div class="table-responsive custom-table-responsive" v-if="questions">
         <paggination
           :pages="paggination.pages"
           :currentPage="currentPage"
           @changePage="changePage"
+          v-if="paggination.pages.length>1"
         ></paggination>
         <table class="table custom-table">
           <thead>
@@ -76,7 +76,7 @@
                       },
                     }"
                   >
-                    <i class="fa-solid fa-pen-to-square icon"></i>
+                    <i class="fa-solid fa-pen-to-square "></i>
                   </router-link>
                 </td>
               </tr>
@@ -149,10 +149,18 @@ export default {
             pageSize
           );
         } else {
-          toast.error("Some errors");
-          error.value = handleResponse(res.value);
+          handleResponse(res.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
         }
       }
+    });
+
+  const sortedQuestions = computed(() => {
+      return questions.value?questions.value.sort((x1,x2) => x1.id - x2.id):null;
     });
 
     const resetFilter = () => {
@@ -167,10 +175,10 @@ export default {
     const filterByCategory = computed(() => {
       currentPage.value = 1;
       return filterCategory.value
-        ? questions.value.filter(
+        ? sortedQuestions.value.filter(
             (x) => x.questionCategoryId == filterCategory.value
           )
-        : questions.value;
+        : sortedQuestions.value;
     });
 
     const questionsItems = computed(() => {
@@ -202,212 +210,5 @@ export default {
 </script>
 
 <style scopped>
-a:hover .icon {
-  color: black !important;
-}
-
-.truncate-text {
-  overflow: hidden !important;
-  -webkit-line-clamp: 1 !important;
-}
-body {
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  background-color: #19191d;
-  font-weight: 300;
-}
-
-p {
-  color: #b3b3b3;
-  font-weight: 300;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6 {
-  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-a {
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-}
-a,
-a:hover {
-  text-decoration: none !important;
-}
-
-.content {
-  padding: 7rem 0;
-}
-
-h2 {
-  font-size: 20px;
-  color: #fff;
-}
-
-.custom-table {
-  min-width: 900px;
-}
-.custom-table thead tr,
-.custom-table thead th {
-  border-top: none;
-  border-bottom: none !important;
-  color: #fff;
-}
-.custom-table tbody th,
-.custom-table tbody td {
-  color: #777;
-  font-weight: 400;
-  padding-bottom: 20px;
-  padding-top: 20px;
-  font-weight: 300;
-}
-.custom-table tbody th small,
-.custom-table tbody td small {
-  color: #b3b3b3;
-  font-weight: 300;
-}
-.custom-table tbody tr:not(.spacer) {
-  border-radius: 7px;
-  overflow: hidden;
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-}
-.custom-table tbody tr:not(.spacer):hover {
-  -webkit-box-shadow: 0 2px 10px -5px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 10px -5px rgba(0, 0, 0, 0.1);
-}
-.custom-table tbody tr th,
-.custom-table tbody tr td {
-  background: #25252b;
-  border: none;
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-}
-.custom-table tbody tr th a,
-.custom-table tbody tr td a {
-  color: #b3b3b3;
-}
-.custom-table tbody tr th:first-child,
-.custom-table tbody tr td:first-child {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-.custom-table tbody tr th:last-child,
-.custom-table tbody tr td:last-child {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
-.custom-table tbody tr.spacer td {
-  padding: 0 !important;
-  height: 3px;
-  border-radius: 0 !important;
-  background: transparent !important;
-}
-.custom-table tbody tr.active th,
-.custom-table tbody tr.active td,
-.custom-table tbody tr:hover th,
-.custom-table tbody tr:hover td {
-  color: #fff;
-  background: #2e2e36;
-}
-.custom-table tbody tr.active th a,
-.custom-table tbody tr.active td a,
-.custom-table tbody tr:hover th a,
-.custom-table tbody tr:hover td a {
-  color: #fff;
-}
-
-/* Custom Checkbox */
-.control {
-  display: block;
-  position: relative;
-  margin-bottom: 25px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.control input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-
-.control__indicator {
-  position: absolute;
-  top: 2px;
-  left: 0;
-  height: 20px;
-  width: 20px;
-  border-radius: 4px;
-  border: 2px solid #3f3f47;
-  background: transparent;
-}
-
-.control--radio .control__indicator {
-  border-radius: 50%;
-}
-
-.control:hover input ~ .control__indicator,
-.control input:focus ~ .control__indicator {
-  border: 2px solid #007bff;
-}
-
-.control input:checked ~ .control__indicator {
-  border: 2px solid #007bff;
-  background: #007bff;
-}
-
-.control input:disabled ~ .control__indicator {
-  background: #e6e6e6;
-  opacity: 0.6;
-  pointer-events: none;
-  border: 2px solid #ccc;
-}
-
-.control__indicator:after {
-  font-family: "icomoon";
-  content: "\e5ca";
-  position: absolute;
-  display: none;
-}
-
-.control input:checked ~ .control__indicator:after {
-  display: block;
-  color: #fff;
-}
-
-.control--checkbox .control__indicator:after {
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -52%);
-  -ms-transform: translate(-50%, -52%);
-  transform: translate(-50%, -52%);
-}
-
-.control--checkbox input:disabled ~ .control__indicator:after {
-  border-color: #7b7b7b;
-}
-
-.control--checkbox input:disabled:checked ~ .control__indicator {
-  background-color: #007bff;
-  opacity: 0.2;
-  border: 2px solid #007bff;
-}
+@import "../../assets/table.css";
 </style>
