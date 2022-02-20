@@ -25,7 +25,7 @@
         </ul>
       </li>
       <li>
-        <router-link :to="{ name: 'Users' }" :class="{'menu-active': $route.fullPath.includes('users')}">
+        <router-link :to="{ name: 'UsersList' }" :class="{'menu-active': $route.fullPath.includes('users')}">
           <i class="fas fa-users"></i>
           <span class="link_name">Users</span>
         </router-link>
@@ -36,7 +36,7 @@
         <ul class="sub-menu blank">
           <li>
             <!-- <a class="link_name" href="/users">Users</a> -->
-            <router-link :to="{ name: 'Users' }">Users</router-link>
+            <router-link :to="{ name: 'UsersList' }">Users</router-link>
           </li>
         </ul>
       </li>
@@ -46,7 +46,7 @@
            <i class="fa-solid fa-graduation-cap"></i>
             <span class="link_name">Tests</span>
           </a> -->
-          <router-link :to="{name: 'Exams'}" :class="{'menu-active': $route.fullPath.includes('exams')}">
+          <router-link :to="{name: 'ExamsList'}" :class="{'menu-active': $route.fullPath.includes('exams')}">
              <i class="fa-solid fa-graduation-cap"></i>
             <span class="link_name">Exams</span>
           </router-link>
@@ -58,15 +58,15 @@
           <i class="fa-solid fa-angle-down arrow"  @click="showSubMenuService = !showSubMenuService"></i>
         </div>
         <ul class="sub-menu">
-          <li><router-link :to="{name: 'Exams'}">Exams</router-link></li>
+          <li><router-link :to="{name: 'ExamsList'}">Exams</router-link></li>
           <li>
             <!-- <a href="#">Categories</a> -->
-            <router-link :to="{ name: 'Categories' }">
+            <router-link :to="{ name: 'CategoriesList' }">
               Categories
             </router-link>
           </li>
           <li>
-             <router-link :to="{ name: 'Questions' }">
+             <router-link :to="{ name: 'QuestionsList' }">
               Questions
             </router-link>
           </li>
@@ -177,7 +177,7 @@ export default {
   animation:  animate 5s linear infinite;
 }
 
-@keyframes animate {
+/* @keyframes animate {
     0%, 18%, 50.1%, 60%, 65.1%, 80%, 90.1%, 92%{
         color: #0e3742 !important;
         text-shadow: none;
@@ -192,7 +192,7 @@ export default {
         0 0 160px #03bcf4,
         0 0 400px #03bcf4;
     }
-}
+} */
 
 .menu-active {
   /* background:  darkcyan;; */
@@ -286,17 +286,7 @@ export default {
   list-style: none;
   transition: all 0.4s ease;
 }
-.sidebar .nav-links li:hover {
-  /* background: #1d1b31; */
-  /* background: #2b2b2b; */
-  /* color:#fff;
-        text-shadow:  0 0 10px #03bcf4,
-        0 0 20px #03bcf4,
-        0 0 40px #03bcf4,
-        0 0 80px #03bcf4,
-        0 0 160px #03bcf4,
-        0 0 400px #03bcf4; */
-}
+
 .sidebar .nav-links li .iocn-link {
   display: flex;
   align-items: center;

@@ -1,6 +1,6 @@
 <template>
   <div class="rounded mt-5 mb-5">
-      <router-link :to="{name:'Users'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+      <router-link :to="{name:'UsersList'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
     <div class="row">
       <div class="col-md-12 border-right mb-3 text-white" v-if="user">
         <div class="p-3 py-5">
@@ -402,7 +402,7 @@ export default {
       if (response && response.value) {
         if (response.value.status === 204) {
           toast.success(`User ${user.value.email} removed successfully`);
-          router.push({ name: "Users" });
+          router.push({ name: "UsersList" });
         } else {
          
           handleResponse(response.value).forEach((element) => {

@@ -1,4 +1,5 @@
 <template>
+<router-link :to="{name:'QuestionsList'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
   <div class="p-5">
     <hr class="text-secondary" />
 
@@ -93,12 +94,12 @@
               <div>
                 <i
                   @click="removeAnswerHandle(index)"
-                  class="fa-solid fa-trash-can icon"
+                  class="fa-solid fa-trash-can icon-op"
                 ></i>
               </div>
               <div>
                 <i
-                  class="fa-solid fa-pen-to-square icon"
+                  class="fa-solid fa-pen-to-square icon-op"
                   @click="editAnswerHandle(index)"
                 ></i>
               </div>
@@ -412,9 +413,6 @@ export default {
       loading.value = false;
     };
 
-    onBeforeUnmount(() => {
-      return;
-    });
 
     return {
       loading,
@@ -441,7 +439,7 @@ export default {
   border: 2px solid white;
   border-radius: 50%;
 }
-.icon {
+.icon-op {
   cursor: pointer;
   margin-right: 10px;
   color: #fff;

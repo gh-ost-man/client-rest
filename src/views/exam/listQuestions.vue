@@ -1,5 +1,7 @@
 <template>
- <router-link :to="{name:'Exams'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info"
+    ><i class="fa-solid fa-circle-arrow-left"></i
+  ></router-link>
   <div class="p-3">
     <div class="d-flex">
       <h3 class="text-white">Exam questions</h3>
@@ -14,23 +16,18 @@
       </button>
     </div>
     <hr class="text-white" />
-    <div v-if="error">
-      <textarea
-        class="form-control bg-dark text-secondary border-0"
-        style="overflow: hidden"
-        cols="30"
-        rows="15"
-        :value="error"
-        readonly
-      ></textarea>
-    </div>
 
-    <div class="table-responsive custom-table-responsive" v-if="examQuestions">
-      <!-- <paggination
-        :pages="paggination.pages"
-        :currentPage="currentPage"
-        @changePage="changePage"
-      ></paggination> -->
+    <div
+      class="table-responsive custom-table-responsive"
+      v-if="examQuestionsItems"
+    >
+      <paggination
+        v-if="examQuestionsItems"
+        :pages="paggiExamQ.pages"
+        :currentPage="currentPageExamQ"
+        :totalPages="paggiExamQ.totalPages"
+        @changePage="changePageExamQ"
+      ></paggination>
       <table class="table custom-table">
         <thead>
           <tr>
@@ -50,7 +47,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="eq in examQuestions" :key="eq.id">
+          <template v-for="eq in examQuestionsItems" :key="eq.id">
             <tr
               scope="row"
               :class="{ 'checked-row': checkedRemoveHandle(eq.id) }"
@@ -78,34 +75,57 @@
         </tbody>
       </table>
     </div>
-    <div class="d-flex mt-3">
-      <h3 class="text-white">All questions</h3>
-      <div class="d-flex text-center mx-4">
-        <label class="labels text-white w-auto fw-bolder mx-2">Filter</label>
-        <select
-          class="form-select bg-transparent text-white"
-          aria-label="Default select example"
-          v-model="filterCategory"
-        >
-          <option disabled selected class="text-white">Select category</option>
-          <option
-            class="text-dark"
-            v-for="cat in categories"
-            :key="cat.id"
-            :value="cat.id"
-            :v-model="filterCategory"
+    <hr class="text-secondary" />
+
+    <div class="mt-3">
+      <div class="row">
+        <div class="col-md-6">
+          <h3 class="text-white">All questions</h3>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex text-center">
+            <!-- <label class="labels text-white w-auto fw-bolder mx-2">Filter</label> -->
+            <select
+              class="form-select  c-select"
+              aria-label="Default select example"
+              v-model="filterCategory"
+            >
+              <option value="" selected class="text-white">All</option>
+              <option
+                class="text-white"
+                v-for="cat in categories"
+                :key="cat.id"
+                :value="cat.id"
+                :v-model="filterCategory"
+              >
+                {{ cat.name }}
+              </option>
+            </select>
+            <!-- <div>
+          <button
+            class="btn btn-outline-light"
+            v-if="filterCategory"
+            @click="resetFilter"
           >
-            {{ cat.name }}
-          </option>
-        </select>
-      </div>
-      <div>
-          <button class="btn btn-outline-light" @click="resetFilter">
             Reset
           </button>
+        </div> -->
+          </div>
         </div>
+      </div>
+    </div>
+
+    <hr class="text-white" />
+    <div class="table-responsive custom-table-responsive" v-if="questionItems">
+      <paggination
+        v-if="questionItems"
+        :pages="paggiAllQ.pages"
+        :currentPage="currentPageAllQ"
+        :totalPages="paggiAllQ.totalPages"
+        @changePage="changePageAllQ"
+      ></paggination>
       <button
-        class="btn btn-outline-light mx-3"
+        class="btn btn-outline-light"
         @click="addQuestionToExamHandle"
         v-if="selectedAddQuestions.length"
         :disabled="loading"
@@ -113,16 +133,6 @@
         <span v-if="!loading"> Add to exam</span>
         <span v-else>Adding ...</span>
       </button>
-    </div>
-
-    <hr class="text-white" />
-    <div class="table-responsive custom-table-responsive" v-if="questionItems">
-      <paggination
-        v-if="paggiAllQ"
-        :pages="paggiAllQ.pages"
-        :currentPage="currentPageAllQ"
-        @changePage="changePageAllQ"
-      ></paggination>
       <table class="table custom-table">
         <thead>
           <tr>
@@ -191,11 +201,10 @@ import Paggination from "@/components/Paggination";
 export default {
   components: { Paggination },
   setup() {
-    const error = ref(null);
     const loading = ref(null);
-    const questions = ref(null);
-    const categories = ref(null);
-    const examQuestions = ref(null);
+    const questions = ref([]);
+    const categories = ref([]);
+    const examQuestions = ref([]);
     const route = useRoute();
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getQuestions } = questionService();
@@ -208,12 +217,13 @@ export default {
     const selectedRemoveAll = ref(false);
     const selectedAddQuestions = ref([]);
     const selectedRemoveQuestions = ref([]);
-    const filterCategory = ref(null);
-
+    const filterCategory = ref("");
 
     const paggiAllQ = ref(null);
     const currentPageAllQ = ref(1);
 
+    const paggiExamQ = ref(null);
+    const currentPageExamQ = ref(1);
 
     const fetchExamQuestions = async () => {
       let resExamQues = await getAllExamQuestions(route.params.id);
@@ -221,8 +231,14 @@ export default {
       if (resExamQues && resExamQues.value) {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data;
+
+          paggiExamQ.value = paginate(
+            examQuestions.value.length,
+            currentPageExamQ.value,
+            pageSize
+          );
         } else {
-           handleResponse(resExamQues.value).forEach((element) => {
+          handleResponse(resExamQues.value).forEach((element) => {
             toast.error(element, {
               position: "top",
               duration: 5000,
@@ -252,11 +268,11 @@ export default {
                 });
               } else {
                 handleResponse(res.value).forEach((element) => {
-            toast.error(element, {
-              position: "top",
-              duration: 5000,
-            });
-          });
+                  toast.error(element, {
+                    position: "top",
+                    duration: 5000,
+                  });
+                });
               }
             }
           });
@@ -272,7 +288,9 @@ export default {
     });
 
     const sortedQuestions = computed(() => {
-      return questions.value?questions.value.sort((x1,x2) => x1.id - x2.id):null;
+      return questions.value
+        ? questions.value.sort((x1, x2) => x1.id - x2.id)
+        : [];
     });
 
     const changeAddHandle = () => {
@@ -293,7 +311,7 @@ export default {
       selectedRemoveAll.value = !selectedRemoveAll.value;
 
       if (selectedRemoveAll.value) {
-        selectedRemoveQuestions.value = examQuestions.value;
+        selectedRemoveQuestions.value = examQuestionsItems.value;
       } else {
         selectedRemoveQuestions.value = [];
       }
@@ -304,45 +322,62 @@ export default {
     };
 
     const filterByCategoryItems = computed(() => {
-      currentPage.value = 1;
-      
+      currentPageAllQ.value = 1;
+
       return filterCategory.value
         ? sortedQuestions.value.filter(
             (x) => x.questionCategoryId == filterCategory.value
           )
         : sortedQuestions.value;
-
-        
     });
 
     // питання який немає в тесті
 
     const questionItems = computed(() => {
-       selectedAddAll.value = false;
-       selectedAddQuestions.value = [];
-        let arr =  filterByCategoryItems.value?filterByCategoryItems.value.filter(element=> !examQuestions.value.filter((x) => x.questionItemId === element.id).length): null;
+      selectedAddAll.value = false;
+      selectedAddQuestions.value = [];
 
-          paggiAllQ.value = paginate(
-           arr? arr.length: 0,
-            currentPageAllQ.value,
-            pageSize
-          );
-      // вибираєм всі questions який немає в exam questions
-      return arr?arr.slice(
+      let arr = filterByCategoryItems.value
+        ? filterByCategoryItems.value.filter(
+            (element) =>
+              !examQuestions.value.filter(
+                (x) => x.questionItemId === element.id
+              ).length
+          )
+        : [];
+
+      paggiAllQ.value = paginate(arr.length, currentPageAllQ.value, pageSize);
+
+      // console.log("CONDD: >>>> ", currentPageAllQ.value > paggiAllQ.value.endPage? paggiAllQ.value.endPage:currentPageAllQ.value);
+      // console.log("CURPAGE_>>>", currentPageAllQ.value);
+      // console.log("PAGGI: ",  paggiAllQ.value)
+
+      return arr.slice(
         paggiAllQ.value.startIndex,
         paggiAllQ.value.endIndex + 1
-      ):null;
-      //  return exams.value.slice(
-      //   paggination.value.startIndex,
-      //   paggination.value.endIndex + 1
-      // );
-            
+      );
     });
 
-      const changePageAllQ = (pag) => {
+    const examQuestionsItems = computed(() => {
+      paggiExamQ.value = paginate(
+        examQuestions.value.length,
+        currentPageExamQ.value,
+        pageSize
+      );
+
+      return examQuestions.value.slice(
+        paggiExamQ.value.startIndex,
+        paggiExamQ.value.endIndex + 1
+      );
+    });
+
+    const changePageAllQ = (pag) => {
       currentPageAllQ.value = pag;
     };
 
+    const changePageExamQ = (pag) => {
+      currentPageExamQ.value = pag;
+    };
 
     const addQuestionToExamHandle = async () => {
       loading.value = true;
@@ -355,17 +390,28 @@ export default {
 
         if (res && res.value) {
           if (res.value.status !== 201) {
+            currentPageAllQ.value = 1;
             handleResponse(res.value).forEach((element) => {
-            toast.error(element, {
-              position: "top",
-              duration: 5000,
+              toast.error(element, {
+                position: "top",
+                duration: 5000,
+              });
             });
-          });
           }
         }
       }, Promise.resolve());
 
       loading.value = false;
+
+      if (
+        questionItems.value.length - selectedAddQuestions.value.length ===
+        0
+      ) {
+        if (currentPageAllQ.value === paggiAllQ.value.endPage) {
+          currentPageAllQ.value =
+            currentPageAllQ.value - 1 < 1 ? 1 : currentPageAllQ.value - 1;
+        }
+      }
 
       await fetchExamQuestions();
 
@@ -380,30 +426,40 @@ export default {
         let res = await removeQuestionFromExam(route.params.id, element.id);
         if (res && res.value) {
           if (res.value.status !== 204) {
-             handleResponse(res.value).forEach((element) => {
-            toast.error(element, {
-              position: "top",
-              duration: 5000,
+            handleResponse(res.value).forEach((element) => {
+              toast.error(element, {
+                position: "top",
+                duration: 5000,
+              });
             });
-          });
           }
         }
       }, Promise.resolve());
 
       loading.value = false;
 
+      if (
+        examQuestionsItems.value.length -
+          selectedRemoveQuestions.value.length ===
+        0
+      ) {
+        if (currentPageExamQ.value === paggiExamQ.value.endPage) {
+          currentPageExamQ.value =
+            currentPageExamQ.value - 1 < 1 ? 1 : currentPageExamQ.value - 1;
+        }
+      }
+
       await fetchExamQuestions();
       selectedRemoveQuestions.value = [];
       selectedRemoveAll.value = false;
     };
 
-    const resetFilter = () => {
-      filterCategory.value = null;
-      currentPage.value = 1;
-    }
+    // const resetFilter = () => {
+    //   filterCategory.value = null;
+    //   currentPage.value = 1;
+    // };
 
     return {
-      error,
       loading,
       questions,
       categories,
@@ -412,6 +468,9 @@ export default {
       pageSize,
       paggiAllQ,
       currentPageAllQ,
+      examQuestionsItems,
+      paggiExamQ,
+      currentPageExamQ,
       selectedAddAll,
       selectedRemoveAll,
       selectedRemoveQuestions,
@@ -424,14 +483,14 @@ export default {
       changeRemoveHandle,
       checkedRemoveHandle,
       removeQuestionFromExamHandle,
-      resetFilter,
+      // resetFilter,
       changePageAllQ,
+      changePageExamQ,
     };
   },
 };
 </script>
 
-<style scopped>
-@import "../../assets/table.css";
-
+<style scoped>
+@import "../../assets/css/table.css";
 </style>

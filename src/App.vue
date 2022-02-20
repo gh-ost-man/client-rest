@@ -53,4 +53,10 @@ body {
   text-shadow: 0 0 10px #03bcf4, 0 0 20px #03bcf4, 0 0 40px #03bcf4,
     0 0 80px #03bcf4, 0 0 160px #03bcf4, 0 0 400px #03bcf4;
 }
+
+
+.c-select {
+  background-color: #19191d;
+  color: white;
+}
 </style>

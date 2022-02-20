@@ -4,10 +4,10 @@ import { ref } from "vue"
 const authService = () => {
     const apiUrl = 'https://localhost:7001/api/Auth';
     const { post } = useApi();
-    const currentUser =ref(localStorage.user? JSON.parse(localStorage.user): null); 
+    const currentUser = ref(localStorage.user ? JSON.parse(localStorage.user) : null);
 
     const login = async (data) => {
-      
+
 
         var response = await post(apiUrl + "/Login", data);
 
@@ -46,7 +46,7 @@ const authService = () => {
         return response;
     }
 
-    const accessCode = async(data) => {
+    const accessCode = async (data) => {
         return await post(apiUrl + "/SendMessage", data);
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="{ name: 'Exams' }" class="btn btn-outline-info"
+  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info"
     ><i class="fa-solid fa-circle-arrow-left"></i
   ></router-link>
   <div class="p-3 text-white">
@@ -68,6 +68,10 @@
         <span v-if="!loading">Update</span>
         <span v-else>Updating...</span>
       </button>
+      <button class="btn btn-outline-danger mx-3" :disabled="true">
+        <span>Delete</span>
+      </button>
+      
     </form>
   </div>
 </template>
@@ -79,12 +83,13 @@ import handleResponse from "@/_helpers/handleResponse.js";
 import { useRoute } from "vue-router";
 
 export default {
+  props:['id'],
   setup(props) {
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getExamById, updateExam } = examService();
     const route = useRoute();
-
+  const examObj = ref(null);
     const statuses = ref([
       {
         title: "NotAvailable",
@@ -99,12 +104,10 @@ export default {
         value: 2,
       },
     ]);
-    const examObj = ref(null);
-
-    console.log();
+    
 
     onMounted(async () => {
-      let response = await getExamById(route.params.id);
+      let response = await getExamById(props.id);
 
       if (response && response.value) {
         if (response.value.status === 200) {

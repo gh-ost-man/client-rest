@@ -13,7 +13,7 @@ const requireAuth = (to, from, next) => {
       let userRoles = user.roles ? user.roles.split(',') : null;
       let flag = false;
 
-      if(!userRoles || userRoles === '') {
+      if (!userRoles || userRoles === '') {
         next({ name: 'Forbidden' });
         return;
       }
@@ -32,7 +32,7 @@ const requireAuth = (to, from, next) => {
               break;
             }
           }
-          
+
           if (flag) {
             next();
           } else {
@@ -126,31 +126,46 @@ const routes = [
     meta: {
       layout: 'admin', authorize: ["Admin", "Manager"],
     },
+    children: [
+      {
+        path: '/d/users',
+        name: 'UsersList',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/user/list.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Admin", "Manager"],
+        },
+      },
+      {
+        path: '/d/users/create',
+        name: 'CreateUser',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/user/create.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Admin"],
+        },
+      },
+      {
+        path: '/d/users/edit/:id',
+        name: 'EditUser',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/user/edit.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Admin"],
+        },
+      },
+    ]
   },
-  {
-    path: '/d/users/create',
-    name: 'CreateUser',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/user/create.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Admin"],
-    },
-  },
-  {
-    path: '/d/users/edit/:id',
-    name: 'EditUser',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/user/edit.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Admin"],
-    },
-  },
+
 
   /* Categories */
   {
@@ -164,31 +179,46 @@ const routes = [
     meta: {
       layout: 'admin', authorize: ['Teacher'],
     },
+    children: [
+      {
+        path: '/d/categories',
+        name: 'CategoriesList',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/category/list.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ['Teacher'],
+        },
+      },
+      {
+        path: '/d/categories/create',
+        name: 'CreateCategory',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/category/create.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Teacher"],
+        },
+      },
+      {
+        path: '/d/categories/edit/:id',
+        name: 'EditCategory',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/category/edit.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Teacher"],
+        },
+      },
+    ]
   },
-  {
-    path: '/d/categories/create',
-    name: 'CreateCategory',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/category/create.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Teacher"],
-    },
-  },
-  {
-    path: '/d/categories/edit/:id',
-    name: 'EditCategory',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/category/edit.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Teacher"],
-    },
-  },
+
 
   /* Questions */
   {
@@ -202,8 +232,20 @@ const routes = [
     meta: {
       layout: 'admin', authorize: ['Teacher'],
     },
-  },
-  {
+    children: [
+      {
+        path: '/d/questions',
+        name: 'QuestionsList',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/question/list.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ['Teacher'],
+        },
+      },
+        {
     path: '/d/questions/create',
     name: 'CreateQuestion',
     // route level code-splitting
@@ -228,6 +270,9 @@ const routes = [
     },
     props: true
   },
+    ]
+  },
+
 
   /* Exams */
   {
@@ -241,47 +286,59 @@ const routes = [
     meta: {
       layout: 'admin', authorize: ['Teacher'],
     },
+    children: [
+      {
+        path: '/d/exams',
+        name: 'ExamsList',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/exam/list.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ['Teacher'],
+        },
+      },
+      {
+        path: '/d/exams/create',
+        name: 'CreateExam',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/exam/create.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Teacher"],
+        },
+      },
+      {
+        path: '/d/exams/edit/:id',
+        name: 'EditExam',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/exam/edit.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Teacher"],
+        },
+        props: true
+      },
+    
+      {
+        path: '/d/exams/:id/questions',
+        name: 'ExamQuestions',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/exam/listQuestions.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Teacher"],
+        },
+      },
+    ]
   },
-  {
-    path: '/d/exams/create',
-    name: 'CreateExam',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/exam/create.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Teacher"],
-    },
-  },
-  {
-    path: '/d/exams/edit/:id',
-    name: 'EditExam',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/exam/edit.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Teacher"],
-    },
-    props: true
-  },
-
-  {
-    path: '/d/exams/:id/questions',
-    name: 'ExamQuestions',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/exam/listQuestions.vue'),
-    beforeEnter: requireAuth,
-    meta: {
-      layout: 'admin', authorize: ["Teacher"],
-    },
-  },
-
-
 ]
 
 const router = createRouter({
