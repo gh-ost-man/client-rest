@@ -10,8 +10,9 @@
         <input
           type="text"
           class="form-control c-input"
-          v-model="newUser.firstName"
+          v-model.trim="newUser.firstName"
           :disabled="loading"
+
         />
       </div>
       <div class="form-group mt-1">
@@ -22,7 +23,7 @@
         <input
           type="text"
           class="form-control c-input"
-          v-model="newUser.lastName"
+          v-model.trim="newUser.lastName"
           :disabled="loading"
         />
       </div>
@@ -34,7 +35,7 @@
         <input
           type="email"
           class="form-control c-input"
-          v-model="newUser.email"
+          v-model.trim="newUser.email"
           :disabled="loading"
         />
       </div>
@@ -59,7 +60,7 @@
         <textarea
           type="text"
           class="form-control c-input"
-          v-model="newUser.additionalInfo"
+          v-model.trim="newUser.additionalInfo"
           :disabled="loading"
         ></textarea>
       </div>
@@ -74,9 +75,8 @@
         >Login</router-link
       >
     </form>
-    <my-dialog v-model:show="dialogVisible" @submit="submitHandle">
-      <h1>Hello</h1>
-    </my-dialog>
+    <code-dialog v-model:show="dialogVisible" @submit="submitHandle"></code-dialog>
+    
   </div>
 </template>
 
@@ -86,9 +86,9 @@ import { useRouter } from "vue-router";
 import authService from "@/_services/authService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import Role from "@/_helpers/_role.js";
-import MyDialog from "@/components/MyDialog.vue";
+import CodeDialog from "@/components/AccessCodeDialog.vue";
 export default {
-  components: { MyDialog },
+  components: { CodeDialog },
 
   setup() {
     const loading = ref(false);

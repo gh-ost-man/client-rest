@@ -14,7 +14,7 @@
   </nav> -->
   <div class="pagination w-auto d-flex justify-content-center">
     <ul>
-      <li class="btn prev" @click="prevHanlde;">Prev</li>
+      <li class="btn prev" @click="prevHanlde">Prev</li>
       <li class="numb" @click="firstHandle" v-if="currentPage >= 10">1</li>
       <li class="dots" v-if="currentPage >= 10">...</li>
       <li
@@ -52,6 +52,7 @@ export default {
       this.$emit("changePage", page);
     },
     prevHanlde() {
+      console.log("CLOICK");
       this.$emit(
         "changePage",
         this.currentPage - 1 > 0 ? this.currentPage - 1 : 1

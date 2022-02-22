@@ -1,5 +1,7 @@
 <template>
-<router-link :to="{name:'QuestionsList'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+  <router-link :to="{ name: 'QuestionsList' }" class="btn btn-outline-info"
+    ><i class="fa-solid fa-circle-arrow-left"></i
+  ></router-link>
   <div class="p-5">
     <hr class="text-secondary" />
 
@@ -24,8 +26,27 @@
                 class="form-control bg-dark c-input"
                 style="overflow: hidden"
                 placeholder="enter context"
-                v-model="question.context"
+                v-model.trim="question.context"
               ></textarea>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="mb-3">
+              <label class="labels c-label">Type of Answer</label>
+              <select
+                class="form-select bg-transparent text-white c-input"
+                aria-label="Default select example"
+                v-model="typeAnswer"
+              >
+                <option
+                  class="text-dark"
+                  v-for="at in answerTypes"
+                  :key="at.value"
+                  :value="at.value"
+                >
+                  {{ at.title }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -43,7 +64,7 @@
           class="form-control bg-dark c-input"
           style="overflow: hidden"
           placeholder="enter answer"
-          v-model="answer"
+          v-model.trim="answer"
         ></textarea>
       </div>
 
@@ -88,6 +109,14 @@
           <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
           <span class="mx-3">Don't have a correct answer!!</span>
         </div>
+        <div v-if="isOneAnswer" class="text-danger m-3">
+          <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
+          <span class="mx-3">Must be only one correct answer</span>
+        </div>
+        <div v-if="isMultyAnswers" class="text-danger m-3">
+          <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
+          <span class="mx-2">Must be more than one correct answer</span>
+        </div>
         <ul style="list-style-type: none">
           <li v-for="(ans, index) in answers" :key="ans">
             <div class="d-flex">
@@ -131,12 +160,7 @@
 </template>
 
 <script>
-import {
-  ref,
-  getCurrentInstance,
-  onMounted,
-  onBeforeUnmount,
-} from "vue";
+import { ref, getCurrentInstance, onMounted } from "vue";
 import questionService from "@/_services/questionService.js";
 import categoryService from "@/_services/categoryService.js";
 import answerService from "@/_services/answerService.js";
@@ -155,6 +179,14 @@ export default {
     const isCorrectAnswer = ref(false);
     var code = 65;
     const toast = getCurrentInstance().appContext.app.$toast;
+    const typeAnswer = ref(null);
+    const isMultyAnswers = ref(false);
+    const isOneAnswer = ref(false);
+    const answerTypes = ref([
+      { title: "Text", value: 0 },
+      { title: "Single", value: 1 },
+      { title: "Multiple", value: 2 },
+    ]);
 
     const { getCategory } = categoryService();
     const { getQuestionById, updateQuestion } = questionService();
@@ -183,8 +215,10 @@ export default {
         if (responseQ && responseQ.value) {
           if (responseQ.value.status === 200) {
             question.value = responseQ.value.data;
+            typeAnswer.value = question.value.answerType;
+
+            
           } else {
-          
             handleResponse(responseQ.value).forEach((element) => {
               toast.error(element, {
                 position: "top",
@@ -203,8 +237,8 @@ export default {
             answers.value = responseA.value.data.sort((x1, x2) =>
               x1.charKey?.localeCompare(x2.charKey)
             );
+            checkAnswers();
           } else {
-            
             handleResponse(response.value).forEach((element) => {
               toast.error(element, {
                 position: "top",
@@ -278,6 +312,15 @@ export default {
         return;
       }
 
+      // if (question.value.answerType === 0 || question.value.answerType === 1) {
+      //   if (isCorrectAnswer.value) {
+      //     if (answers.value.filter((x) => x.isCorrectAnswer).length >= 1) {
+      //       toast.error("The question can have only one correct answer!");
+      //       return;
+      //     }
+      //   }
+      // }
+
       let response = await createAnswer(props.categoryId, props.id, {
         context: answer.value,
         charKey: String.fromCharCode(code + answers.value.length),
@@ -300,6 +343,8 @@ export default {
           });
         }
       }
+
+      checkAnswers();
 
       // if (coeficient.value == null) {
       //   toast.error("Coeficient field is required");
@@ -336,6 +381,15 @@ export default {
         return;
       }
 
+      // if (question.value.answerType === 0 || question.value.answerType === 1) {
+      //   if (isCorrectAnswer.value) {
+      //     if (answers.value.filter((x) => x.isCorrectAnswer).length >= 1) {
+      //       toast.error("The question can have only one correct answer!!");
+      //       return;
+      //     }
+      //   }
+      // }
+
       let response = await updateAnswer(
         props.categoryId,
         props.id,
@@ -356,6 +410,7 @@ export default {
           answers.value[indexUpdate.value].charKey =
             answers.value[indexUpdate.value].charKey;
 
+          checkAnswers();
           indexUpdate.value = null;
           updateAnswerStatus.value = false;
           answer.value = null;
@@ -372,7 +427,6 @@ export default {
     };
 
     const submitHandle = async () => {
-
       if (!question.value.context) {
         toast.error("Context is required");
         return;
@@ -387,19 +441,30 @@ export default {
         );
         return;
       }
-    
+
+      if(typeAnswer.value === null) {
+        toast.error("Type of answer is required");
+        return;
+      }
+
       loading.value = true;
 
+      console.log(typeAnswer.value);
       let response = await updateQuestion(
         category.value.id,
         question.value.id,
-        { context: question.value.context }
+        { context: question.value.context, answerType: typeAnswer.value }
       );
 
       loading.value = false;
       if (response && response.value) {
         if (response.value.status === 204) {
           toast.success("The question updated successfully");
+          question.value.answerType = typeAnswer.value;
+
+          console.log(question.value);
+
+          checkAnswers();
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -413,14 +478,40 @@ export default {
       loading.value = false;
     };
 
+    const checkAnswers = () => {
+      if (question.value) {
+        if (
+          question.value.answerType === 0 ||
+          question.value.answerType === 1
+        ) {
+          if (answers.value.filter((x) => x.isCorrectAnswer).length > 1) {
+            isOneAnswer.value = true;
+          } else {
+             isOneAnswer.value = false;
+          }
+        }
+       
+        if (question.value.answerType === 2) {
+          if (answers.value.filter((x) => x.isCorrectAnswer).length <= 1) {
+            isMultyAnswers.value = true;
+          } else {
+            isMultyAnswers.value = false;
+          }
+        }
+      }
+    };
 
     return {
       loading,
       category,
+      isMultyAnswers,
+      isOneAnswer,
       question,
       answer,
       isCorrectAnswer,
       answers,
+      typeAnswer,
+      answerTypes,
       updateAnswerStatus,
       removeAnswerHandle,
       addAnswerHandle,

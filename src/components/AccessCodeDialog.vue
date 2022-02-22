@@ -20,16 +20,13 @@
 
 <script >
 export default {
-  name: "my-dialog",
+  name: "code-dialog",
   data() {
     return {
       accessCode: null,
     };
   },
   props: ["show"],
-  mounted() {
-    console.log("dialog mounted");
-  },
   methods: {
     hideDialog() {
       this.$emit("update:show", false);

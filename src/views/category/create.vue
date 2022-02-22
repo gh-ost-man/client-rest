@@ -8,7 +8,7 @@
           type="text"
           class="form-control bg-transparent c-input"
           placeholder="enter name"
-          v-model="name"
+          v-model.trim="name"
         />
       </div>
       <div class="mt-2">
@@ -25,10 +25,12 @@
 import { ref, getCurrentInstance } from "vue";
 import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
+import { useRouter } from 'vue-router';
 export default {
   setup() {
     const name = ref(null);
     const loading = ref(false);
+    const router = useRouter();
     const toast = getCurrentInstance().appContext.app.$toast;
     const { createCategory } = categoryService();
 
@@ -42,6 +44,8 @@ export default {
         if (response.value.status === 201) {
           toast.success("The category was added successfully");
           name.value = null;
+
+          router.push({name: "CategoriesList"});
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

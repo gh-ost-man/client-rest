@@ -4,13 +4,13 @@
       <h2 class="mb-5 c-title">Categories</h2>
       <hr class="bg-secondary" />
       <div>
-        <router-link class="btn btn-outline-light" :to="{ name: 'CreateCategory' }"
+        <router-link class="btn btn-outline-info" :to="{ name: 'CreateCategory' }"
           >Create</router-link
         >
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="categories">
-        <paggination :pages="paggination.pages" :currentPage="currentPage" @changePage="changePage"></paggination>
+        <paggination :pages="paggination.pages" :currentPage="currentPage" :totalPages="paggination.totalPages" @changePage="changePage"></paggination>
         <table class="table custom-table">
           <thead>
             <tr>

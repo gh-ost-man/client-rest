@@ -20,7 +20,7 @@
                   class="form-control c-input"
                   placeholder="filter by title"
                   type="text"
-                  v-model="filterTitle"
+                  v-model.trim="filterTitle"
                 />
               </div>
             </div>
@@ -49,6 +49,7 @@
         <paggination
           :pages="paggination.pages"
           :currentPage="currentPage"
+          :totalPages="paggination.totalPages"
           @changePage="changePage"
         ></paggination>
         <table class="table custom-table">
@@ -146,7 +147,6 @@ export default {
     onMounted(async () => {
       getFilterFromStorage();
       let response = await getAllExams();
-
       if (response && response.value) {
         if (response.value.status === 200) {
           exams.value = response.value.data;
@@ -161,6 +161,8 @@ export default {
             if (res && res.value) {
               if (res.value.status === 200) {
                 element.qtyOfQuestions = res.value.data.length;
+
+                 
               } else {
                 handleResponse(res.value).forEach((element) => {
                   toast.error(element, {
@@ -172,7 +174,7 @@ export default {
             }
           });
 
-          currentPage.value = 1;
+         
           paggination.value = paginate(
             exams.value.length,
             currentPage.value,
@@ -200,6 +202,7 @@ export default {
     });
 
     const filterByTitleExams = computed(() => {
+      currentPage.value = 1;
       return filterTitle.value
         ? sortedExams.value.filter((x) =>
             x.title.toLowerCase().includes(filterTitle.value.toLowerCase())
@@ -208,7 +211,7 @@ export default {
     });
 
     const filterByStatusExams = computed(() => {
-
+      currentPage.value = 1;
       return filterStatus.value
         ? filterByTitleExams.value.filter(
             (x) => x.status.toLowerCase() === filterStatus.value.toLowerCase()
@@ -235,6 +238,7 @@ export default {
 
       filterObj.title = filterTitle.value;
       filterObj.status = filterStatus.value;
+      filterObj.currentPage = currentPage.value;
 
       sessionStorage.filterExams = JSON.stringify(filterObj);
     };
@@ -247,6 +251,8 @@ export default {
         let filterObj = JSON.parse(filter);
         filterTitle.value = filterObj.title ? filterObj.title : "";
         filterStatus.value = filterObj.status ? filterObj.status : "";
+        currentPage.value = filterObj.currentPage || "";
+
       }
     };
 

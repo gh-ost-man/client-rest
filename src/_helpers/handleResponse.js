@@ -1,6 +1,5 @@
 const handleResponse = (response) => {
 
-
     if (response) {
 
         if (response.status === 0) {
@@ -12,34 +11,41 @@ const handleResponse = (response) => {
         }
 
         if (response.status == 400) {
-            
+
             if (response.data.error || response.data.errors) {
-               if(response.data.error) {
-                
-                return [response.data.error];
-               }
+                if (response.data.error) {
 
-               if(response.data.errors) {
-                var obj =  response.data.errors;
-                var values = Object.keys(obj).map(function (key) {
-                    if (obj[key].length) {
-                        return obj[key].join(', ');
-                    } else {
-                        return obj[key];
-                    }
-                });
+                    return [response.data.error];
+                }
+
+                if (response.data.errors) {
+                    var obj = response.data.errors;
+                    var values = Object.keys(obj).map(function (key) {
+                        if (!Number.isInteger(Number.parseInt(key))) {
+                            return obj[key].join(", ");
+                        }
+                        else {
+                            return obj[key];
+                        }
+                    });
 
 
-                return values;
-               }
+                    return values;
+                }
 
             } else {
                 console.clear();
                 console.log("BADDDDDDD: ********** : ", response.data);
             }
         }
+
+        if (response.status === 405) {
+
+            return ["Method Not Allowed"];
+        }
+
         if (response.status == 500) {
-            return ["505 Server Error"];
+            return response.data.error ? [response.data.error] : ["500 Server Error"];
         }
         if (response.status == 401) {
             console.log("401 Unauthorized");

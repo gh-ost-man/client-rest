@@ -9,16 +9,16 @@
           type="text"
           class="form-control bg-transparent c-input"
           placeholder="enter name"
-          v-model="category.name"
+          v-model.trim="category.name"
         />
       </div>
       <div class="mt-2">
         <button class="btn btn-outline-info" :disabled="loading" type="submit">
-          <span v-if="!loading">Create</span>
-          <span v-else>Creating...</span>
+          <span v-if="!loading">Edit</span>
+          <span v-else>Editing...</span>
         </button>
-         <button class="btn btn-outline-danger mx-2" @click="deleteCategoryHandle" :disabled="loading">
-          <span v-if="!loading">Delete</span>
+         <button class="btn btn-outline-danger mx-2" @click="deleteCategoryHandle" :disabled="loadingDelete">
+          <span v-if="!loadingDelete">Delete</span>
           <span v-else>Deleting...</span>
         </button>
       </div>
@@ -35,6 +35,7 @@ export default {
   setup() {
     const category = ref(null);
     const loading = ref(false);
+    const loadingDelete = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { updateCategory, getCategory, deleteCategory } = categoryService();
     const route = useRoute();
@@ -78,11 +79,11 @@ export default {
 
     const deleteCategoryHandle = async() => {
 
-      loading.value = true;
+      loadingDelete.value = true;
 
       let response = await deleteCategory(category.value.id);
 
-      loading.value =false;
+      loadingDelete.value =false;
 
       if(response && response.value) {
         if(response.value.status === 204) {
@@ -99,7 +100,7 @@ export default {
       }
     }
 
-    return { category, loading, submitHandle, deleteCategoryHandle };
+    return { category, loading, loadingDelete,submitHandle, deleteCategoryHandle };
   },
 };
 </script>

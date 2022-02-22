@@ -1,5 +1,7 @@
 <template>
-    <router-link :to="{name:'QuestionsList'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+  <router-link :to="{ name: 'QuestionsList' }" class="btn btn-outline-info"
+    ><i class="fa-solid fa-circle-arrow-left"></i
+  ></router-link>
   <div class="p-5 text-white">
     <h3 class="text-white c-title">Question</h3>
     <hr class="text-info" />
@@ -31,7 +33,7 @@
               class="form-control bg-dark c-input"
               style="overflow: hidden"
               placeholder="enter context"
-              v-model="context"
+              v-model.trim="context"
             ></textarea>
             <!-- <input
               type="text"
@@ -39,6 +41,25 @@
               placeholder="enter context"
               v-model="context"
             /> -->
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="mb-3">
+            <label class="labels c-label">Type of Answer</label>
+            <select
+              class="form-select bg-transparent text-white c-input"
+              aria-label="Default select example"
+              v-model="typeAnswer"
+            >
+              <option
+                class="text-dark"
+                v-for="at in answerTypes"
+                :key="at.value"
+                :value="at.value"
+              >
+                {{ at.title }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -56,7 +77,7 @@ import questionService from "@/_services/questionService.js";
 import categoryService from "@/_services/categoryService.js";
 import answerService from "@/_services/answerService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 export default {
   setup() {
     // const error = ref(null);
@@ -66,6 +87,12 @@ export default {
     const context = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
     const router = useRouter();
+    const typeAnswer = ref(null);
+    const answerTypes = ref([
+      { title: "Text", value: 0 },
+      { title: "Single", value: 1 },
+      { title: "Multiple", value: 2 },
+    ]);
 
     const { getAllCategories } = categoryService();
     const { createQuesiton } = questionService();
@@ -96,11 +123,20 @@ export default {
         );
         return;
       }
-      loading.value = true;
+
+      if (typeAnswer.value===null) {
+        toast.error("Type of answer is required");
+        return;
+      }
+      loading.value = true; 
+
 
       let response = await createQuesiton(categoryId.value, {
         context: context.value,
+        answerType: typeAnswer.value
+
       });
+
 
       loading.value = false;
 
@@ -109,7 +145,13 @@ export default {
           toast.success("The question created successfully");
           context.value = null;
 
-          router.push({name: 'EditQuestion', params: { id: response.value.data.id,  categoryId: categoryId.value}});
+          router.push({
+            name: "EditQuestion",
+            params: {
+              id: response.value.data.id,
+              categoryId: categoryId.value,
+            },
+          });
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -126,6 +168,8 @@ export default {
       categoryId,
       context,
       loading,
+      typeAnswer,
+      answerTypes,
       submitHandle,
     };
   },
@@ -133,5 +177,4 @@ export default {
 </script>
 
 <style>
-
 </style>

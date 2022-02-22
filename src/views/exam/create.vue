@@ -10,7 +10,7 @@
           type="test"
           class="form-control bg-transparent c-input"
           placeholder="enter title"
-          v-model="examObj.title"
+          v-model.trim="examObj.title"
         />
       </div>
       <div class="mb-3">
@@ -18,7 +18,7 @@
         <textarea
           class="form-control bg-dark c-input border-0"
           placeholder="enter description"
-          v-model="examObj.description"
+          v-model.trim="examObj.description"
         ></textarea>
       </div>
       <div class="mb-3">
@@ -37,7 +37,7 @@
         <label class="labels c-label">Passing Score</label
         ><input
           type="number"
-          step="1"
+          step="0.5"
           min="40"
           max="100"
           class="form-control bg-transparent c-input"

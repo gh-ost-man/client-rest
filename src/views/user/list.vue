@@ -43,6 +43,7 @@
         <paggination
           :pages="paggination.pages"
           :currentPage="currentPage"
+          :totalPages="paggination.totalPages"
           @changePage="changePage"
         ></paggination>
         <table class="table custom-table">
@@ -119,7 +120,6 @@ export default {
     const roles = ref([]);
 
     onMounted(async () => {
-      getFilterFromStorage();
       var response = await getAllUsers();
 
       if (response && response.value) {
@@ -128,23 +128,26 @@ export default {
 
           let arr = [];
 
-          users.value.forEach(element => {
+          users.value.forEach((element) => {
             arr.push(element.roles);
           });
 
           // get unique roles from users
-          arr.forEach(element => {
-            let tmp = element.split(',');
+          arr.forEach((element) => {
+            let tmp = element.split(",");
 
-            tmp.forEach(el => {
-              if(roles.value.filter(x=>x.value.toLowerCase() === el.toLowerCase()).length===0) {
-                roles.value.push({title: el.toUpperCase(), value: el});
+            tmp.forEach((el) => {
+              if (
+                roles.value.filter(
+                  (x) => x.value.toLowerCase() === el.toLowerCase()
+                ).length === 0
+              ) {
+                roles.value.push({ title: el.toUpperCase(), value: el });
               }
             });
-
           });
+          getFilterFromStorage();
 
-          currentPage.value = 1;
           paggination.value = paginate(
             users.value.length,
             currentPage.value,
@@ -166,6 +169,7 @@ export default {
     };
 
     const filteredUsersByEFL = computed(() => {
+      currentPage.value = 1;
       return filterEFL.value
         ? users.value.filter(
             (x) =>
@@ -178,15 +182,21 @@ export default {
         : users.value;
     });
 
-   const filteredUserByRoles = computed(() => {
-     return filterRole.value? filteredUsersByEFL.value.filter(x=>x.roles.includes(filterRole.value)): filteredUsersByEFL.value;
-   }) 
+    const filteredUserByRoles = computed(() => {
+      currentPage.value = 1;
+
+      return filterRole.value
+        ? filteredUsersByEFL.value.filter((x) =>
+            x.roles.includes(filterRole.value)
+          )
+        : filteredUsersByEFL.value;
+    });
 
     const usersItems = computed(() => {
       filterStorage();
 
       paggination.value = paginate(
-        users.value.length,
+        filteredUserByRoles.value.length,
         currentPage.value,
         pageSize
       );
@@ -196,26 +206,26 @@ export default {
       );
     });
 
-
     const filterStorage = () => {
       let filterObj = {};
 
       filterObj.role = filterRole.value;
       filterObj.efl = filterEFL.value;
+      filterObj.currentPage = currentPage.value;
 
       sessionStorage.filterUsers = JSON.stringify(filterObj);
-    }
+    };
 
     const getFilterFromStorage = () => {
-      let filter = sessionStorage.getItem('filterUsers');
+      let filter = sessionStorage.getItem("filterUsers");
 
-      if(filter) {
-         let filterObj = JSON.parse(filter);
-         filterRole.value = filterObj.role?filterObj.role : "";
-         filterEFL.value = filterObj.efl?filterObj.efl : "";
-
+      if (filter) {
+        let filterObj = JSON.parse(filter);
+        filterRole.value = filterObj.role ? filterObj.role : "";
+        filterEFL.value = filterObj.efl ? filterObj.efl : "";
+        currentPage.value = filterObj.currentPage ? filterObj.currentPage : "";
       }
-    }
+    };
 
     // getFilterFromStorage() {
     //   let filter = sessionStorage.getItem('filterContents');
@@ -244,7 +254,6 @@ export default {
 
     //   sessionStorage.filterContents = JSON.stringify(filterObj);
     // },
-
 
     return {
       users,

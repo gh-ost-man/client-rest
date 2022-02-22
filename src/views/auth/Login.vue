@@ -11,7 +11,7 @@
         <input
           type="email"
           class="form-control c-input"
-          v-model="email"
+          v-model.trim="email"
           :disabled="loading"
         />
       </div>
@@ -38,6 +38,7 @@
       <router-link
         class="btn btn-outline-light mt-2 mx-1"
         :to="{ name: 'Register' }"
+        :disabled="loading"
         >Register</router-link
       >
     </form>
@@ -54,8 +55,8 @@ import Role from "@/_helpers/_role.js";
 export default {
   setup() {
     const loading = ref(null);
-    const email = ref("admin@google.com");
-    const password = ref("Admin1!");
+    const email = ref("user1@google.com");
+    const password = ref("User1!");
     const router = useRouter();
     const toast = getCurrentInstance().appContext.app.$toast;
     const { login } = authService();

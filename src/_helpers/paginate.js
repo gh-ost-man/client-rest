@@ -3,10 +3,10 @@ const paginate = (
     currentPage,
     itemsCntOnPage
 ) => {
-    
-    // itemsCntOnPage = 5;
 
-    let totalPages =  Math.ceil(totalItems / itemsCntOnPage);
+    //  itemsCntOnPage = 2;
+
+    let totalPages = Math.ceil(totalItems / itemsCntOnPage);
     // for (let i = 0; i < Math.ceil(totalItems / itemsCntOnPage); i++) {
     //     totalPages += 1;
     // }
@@ -28,7 +28,7 @@ const paginate = (
                 endPage = totalPages;
             }
         }
-        // endPage = currentPage > totalPages? totalItems : Math.ceil(count / itemsCntOnPage) 
+        // endPage = currentPage > totalPages? totalItems : Math.ceil(count / itemsCntOnPage)
         // endPage = Math.ceil(count / itemsCntOnPage  ) > currentPage + itemsCntOnPage  ? currentPage + itemsCntOnPage - 5  : Math.ceil(count / itemsCntOnPage);
     } else {
         startPage = 1;
@@ -51,7 +51,7 @@ const paginate = (
 
     let pages = Array.from(Array((endPage + 1) - startPage).keys()).map(i => startPage + i);
 
-   
+
 
     return {
         startPage: startPage,
@@ -59,7 +59,7 @@ const paginate = (
         startIndex: startIndex,
         endIndex: endIndex,
         pages: pages,
-        totalPages:totalPages
+        totalPages: totalPages
     }
 }
 

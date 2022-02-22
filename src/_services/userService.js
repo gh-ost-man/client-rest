@@ -35,7 +35,15 @@ const userService = () => {
     const removeUser = async(id) => {
         return await remove(apiUrl + "/" + id);
     }
-    return { getAllUsers , getById, update, changePassword,createUser, addRole, removeRole, removeUser }
+
+    const sendMessage = async(data) => {
+        return await post(apiUrl + "/SendMessage", data);
+    }
+
+    const updateEmail = async(data) => {
+        return await post(apiUrl + "/UpdateEmail", data);
+    }
+    return { getAllUsers , getById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
 }
 
 

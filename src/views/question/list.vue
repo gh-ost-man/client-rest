@@ -3,41 +3,46 @@
     <div class="container">
       <h2 class="mb-5 c-title">Questions</h2>
       <hr class="bg-info" />
-      <div>
-        <router-link
-          class="btn btn-outline-light"
-          :to="{ name: 'CreateQuestion' }"
-          >Create</router-link
-        >
-      </div>
-      <div class="d-flex" v-if="questions">
-        <div class="d-flex text-center mt-3">
-          <!-- <label class="labels text-white w-auto fw-bolder mx-2">Filter</label> -->
-          <select
-            class="form-select c-select"
-            aria-label="Default select example"
-            v-model="filterCategory"
-          >
-            <option value="" selected class="text-white">All</option>
-            <option
-              class="text-white"
-              v-for="cat in categories"
-              :key="cat.id"
-              :value="cat.id"
-            >
-              {{ cat.name }}
-            </option>
-          </select>
-
-          <!-- <div>
-            <button
+      <div class="row">
+        <div class="col-md-4 my-2">
+          <div>
+            <router-link
               class="btn btn-outline-light"
-              v-if="filterCategory"
-              @click="resetFilter"
+              :to="{ name: 'CreateQuestion' }"
+              >Create</router-link
             >
-              Reset
-            </button>
-          </div> -->
+          </div>
+        </div>
+        <div class="col-md-8 my-2">
+          <div class="row">
+            <div class="col-md-6 my-1">
+              <div>
+                <input
+                  class="form-control c-input"
+                  placeholder="filter by context"
+                  type="text"
+                  v-model.trim="filterContext"
+                />
+              </div>
+            </div>
+            <div class="col-md-6 my-1 ">
+              <select
+                class="form-select c-select"
+                aria-label="Default select example"
+                v-model="filterCategory"
+              >
+                <option value="" selected class="text-white">All</option>
+                <option
+                  class="text-white"
+                  v-for="cat in categories"
+                  :key="cat.id"
+                  :value="cat.id"
+                >
+                  {{ cat.name }}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
       <hr class="bg-info" />
@@ -45,6 +50,7 @@
         <paggination
           :pages="paggination.pages"
           :currentPage="currentPage"
+          :totalPages="paggination.totalPages"
           @changePage="changePage"
         ></paggination>
         <table class="table custom-table">
@@ -122,10 +128,12 @@ export default {
     const currentPage = ref(1);
     const pageSize = 15;
     const filterCategory = ref("");
+    const filterContext = ref(null);
 
     const paggination = ref(null);
 
     onMounted(async () => {
+      getFilterFromStorage();
       let response = await getAllCategories();
 
       if (response && response.value) {
@@ -140,6 +148,13 @@ export default {
                 res.value.data.forEach((q) => {
                   questions.value.push({ ...q, category: cat.name });
                 });
+              } else {
+                handleResponse(res.value).forEach((element) => {
+                  toast.error(element, {
+                    position: "top",
+                    duration: 5000,
+                  });
+                });
               }
             }
           });
@@ -150,7 +165,7 @@ export default {
             pageSize
           );
         } else {
-          handleResponse(res.value).forEach((element) => {
+          handleResponse(response.value).forEach((element) => {
             toast.error(element, {
               position: "top",
               duration: 5000,
@@ -166,25 +181,31 @@ export default {
         : null;
     });
 
-    // const resetFilter = () => {
-    //   filterCategory.value = null;
-    //   currentPage.value = 1;
-    // };
 
     const changePage = (pag) => {
       currentPage.value = pag;
     };
 
+    const filterByContext = computed(() => {
+       currentPage.value = 1;
+       return filterContext.value
+        ? sortedQuestions.value.filter(
+            (x) => x.context.includes(filterContext.value)
+          )
+        : sortedQuestions.value;
+    })
+
     const filterByCategory = computed(() => {
       currentPage.value = 1;
       return filterCategory.value
-        ? sortedQuestions.value.filter(
+        ? filterByContext.value.filter(
             (x) => x.questionCategoryId == filterCategory.value
           )
-        : sortedQuestions.value;
+        : filterByContext.value;
     });
 
     const questionsItems = computed(() => {
+      filterStorage();
       paggination.value = paginate(
         filterByCategory.value.length,
         currentPage.value,
@@ -197,6 +218,27 @@ export default {
       );
     });
 
+     //Save filter to storage
+    const filterStorage = () => {
+      let filterObj = {};
+
+      filterObj.context = filterContext.value;
+      filterObj.category = filterCategory.value;
+
+      sessionStorage.filterQuestions = JSON.stringify(filterObj);
+    };
+
+    //Get filter fromstorage
+    const getFilterFromStorage = () => {
+      let filter = sessionStorage.getItem("filterQuestions");
+
+      if (filter) {
+        let filterObj = JSON.parse(filter);
+        filterContext.value =  filterObj.context || "";
+        filterCategory.value = filterObj.category || "";
+      }
+    };
+
     return {
       categories,
       questions,
@@ -205,6 +247,7 @@ export default {
       currentPage,
       paggination,
       filterCategory,
+      filterContext,
       changePage,
       // resetFilter,
     };

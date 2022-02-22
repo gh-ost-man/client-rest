@@ -22,7 +22,7 @@ const requireAuth = (to, from, next) => {
         if (!userRoles.includes("Student")) {
           next({ name: 'ProfileAdmin' });
         } else {
-          next();
+          next({ name: 'ProfileStudent' });
         }
       } else {
         if (userRoles && userRoles !== '') {
@@ -71,6 +71,15 @@ const routes = [
     }
   },
   {
+    path: '/home',
+    name: 'HomePage',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue'),
+    beforeEnter: requireAuth,
+    meta: {
+      layout: 'home',
+    }
+  },
+  {
     path: '/error/forbidden',
     name: 'Forbidden',
     component: () => import(/* webpackChunkName: "about" */ '../views/error/forbidden'),
@@ -111,6 +120,18 @@ const routes = [
     beforeEnter: requireAuth,
     meta: {
       layout: 'admin', authorize: ["Admin", "Manager", "Teacher"],
+    }
+  },
+  {
+    path: '/profile',
+    name: 'ProfileStudent',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/profile'),
+    beforeEnter: requireAuth,
+    meta: {
+      layout: 'home', authorize: ["Student"],
     }
   },
 

@@ -12,7 +12,7 @@
           type="test"
           class="form-control bg-transparent c-input"
           placeholder="enter title"
-          v-model="examObj.title"
+          v-model.trim="examObj.title"
         />
       </div>
       <div class="mb-3">
@@ -20,7 +20,7 @@
         <textarea
           class="form-control bg-dark c-input"
           placeholder="enter description"
-          v-model="examObj.description"
+          v-model.trim="examObj.description"
         ></textarea>
       </div>
       <div class="mb-3">

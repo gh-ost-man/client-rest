@@ -17,10 +17,7 @@
     </div>
     <hr class="text-white" />
 
-    <div
-      class="table-responsive custom-table-responsive"
-      v-if="examQuestionsItems"
-    >
+    <div class="table-responsive custom-table-responsive" v-if="examQuestions">
       <paggination
         v-if="examQuestionsItems"
         :pages="paggiExamQ.pages"
@@ -86,9 +83,10 @@
           <div class="d-flex text-center">
             <!-- <label class="labels text-white w-auto fw-bolder mx-2">Filter</label> -->
             <select
-              class="form-select  c-select"
+              class="form-select c-select"
               aria-label="Default select example"
               v-model="filterCategory"
+              v-if="questions"
             >
               <option value="" selected class="text-white">All</option>
               <option
@@ -116,7 +114,7 @@
     </div>
 
     <hr class="text-white" />
-    <div class="table-responsive custom-table-responsive" v-if="questionItems">
+    <div class="table-responsive custom-table-responsive" v-if="questions">
       <paggination
         v-if="questionItems"
         :pages="paggiAllQ.pages"
@@ -202,9 +200,9 @@ export default {
   components: { Paggination },
   setup() {
     const loading = ref(null);
-    const questions = ref([]);
-    const categories = ref([]);
-    const examQuestions = ref([]);
+    const questions = ref(null);
+    const categories = ref(null);
+    const examQuestions = ref(null);
     const route = useRoute();
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getQuestions } = questionService();
@@ -231,7 +229,6 @@ export default {
       if (resExamQues && resExamQues.value) {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data;
-
           paggiExamQ.value = paginate(
             examQuestions.value.length,
             currentPageExamQ.value,
@@ -290,7 +287,7 @@ export default {
     const sortedQuestions = computed(() => {
       return questions.value
         ? questions.value.sort((x1, x2) => x1.id - x2.id)
-        : [];
+        : null;
     });
 
     const changeAddHandle = () => {
@@ -324,11 +321,13 @@ export default {
     const filterByCategoryItems = computed(() => {
       currentPageAllQ.value = 1;
 
-      return filterCategory.value
-        ? sortedQuestions.value.filter(
-            (x) => x.questionCategoryId == filterCategory.value
-          )
-        : sortedQuestions.value;
+      return sortedQuestions.value
+        ? filterCategory.value
+          ? sortedQuestions.value.filter(
+              (x) => x.questionCategoryId == filterCategory.value
+            )
+          : sortedQuestions.value
+        : null;
     });
 
     // питання який немає в тесті
@@ -338,11 +337,12 @@ export default {
       selectedAddQuestions.value = [];
 
       let arr = filterByCategoryItems.value
-        ? filterByCategoryItems.value.filter(
-            (element) =>
-              !examQuestions.value.filter(
-                (x) => x.questionItemId === element.id
-              ).length
+        ? filterByCategoryItems.value.filter((element) =>
+            examQuestions.value
+              ? !examQuestions.value.filter(
+                  (x) => x.questionItemId === element.id
+                ).length
+              : null
           )
         : [];
 

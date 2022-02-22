@@ -19,7 +19,7 @@ const useApi = () => {
                 toast.error("403 Forbidden");
                 console.log("403 Forbidden");
 
-                router.push({name: "Forbidden"})
+                router.push({ name: "Forbidden" })
             }
 
         } else if (error.request) {
@@ -33,7 +33,7 @@ const useApi = () => {
             response.value = error;
         }
     }
- 
+
     const refreshToken = async () => {
 
         if (localStorage.accessToken && localStorage.refreshToken) {
@@ -45,6 +45,7 @@ const useApi = () => {
             toast.info("Wait for refreshing token...")
 
             let res = await post("https://localhost:7001/api/Auth/RefreshToken", data);
+            console.log(res.value);
 
             if (res.value.status === 200) {
                 console.log("RERFESH TOKEN SUCCESS");
@@ -52,8 +53,12 @@ const useApi = () => {
                 localStorage.user = JSON.stringify(response.value.data.user)
                 localStorage.accessToken = response.value.data.token;
                 localStorage.refreshToken = response.value.data.refreshToken;
-            } else {
+            } else if (res.value.status === 226) {
+                toast.info(res.value.data);
+            }
+            else {
                 console.log("RERFESH TOKEN FAILDE");
+                toast.error("Refresh token is Failed");
                 localStorage.removeItem("user");
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
@@ -84,7 +89,7 @@ const useApi = () => {
 
         if (response && response.value) {
             if (response.value.status === 401) {
-               
+
                 let res = await refreshToken();
                 console.log("RERFESH TOKEN");
 
@@ -123,10 +128,10 @@ const useApi = () => {
 
                 if (res && res.value) {
                     if (res.value.status === 200) {
-                      
+
                         return await post(url, data)
                     } else {
-                       
+
                         router.push({ name: 'Login' });
                         return null;
                     }
@@ -158,10 +163,10 @@ const useApi = () => {
 
                 if (res && res.value) {
                     if (res.value.status === 200) {
-                       
+
                         return await put(url, data)
                     } else {
-                      
+
                         router.push({ name: 'Login' });
                         return null;
                     }
@@ -189,17 +194,17 @@ const useApi = () => {
         if (response && response.value) {
             if (response.value.status === 401) {
                 let res = await refreshToken();
-                
+
                 console.log("RERFESH TOKEN");
 
                 if (res && res.value) {
                     if (res.value.status === 200) {
-                        
+
                         return await remove(url)
                     } else {
                         console.log("RERFESH TOKEN FAILDE");
 
-                      
+
                         router.push({ name: 'Login' });
                         return null;
                     }
@@ -209,6 +214,6 @@ const useApi = () => {
         return response;
 
     }
-    return { response, get, post, put, remove };
+    return { response, get, post, put, remove, refreshToken };
 }
 export default useApi

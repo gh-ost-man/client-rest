@@ -52,16 +52,22 @@
           </div>
         </div>
       </div>
-      <!-- <div v-if="error">
-        <textarea
-          class="form-control bg-dark text-info border-0"
-          style="overflow: hidden"
-          cols="30"
-          rows="15"
-          readonly
-          :value="error"
-        ></textarea>
-      </div> -->
+      <div class="col-md-6">
+        <label class="labels c-label">
+          <i class="fa-solid fa-at m-2 fs-5"></i>
+         Change Email
+         </label
+        ><input
+          type="text"
+          class="form-control bg-transparent text-white c-input"
+          placeholder="enter email"
+          v-model.trim="userEmail"
+        />
+        <button class="btn btn-outline-info mt-2" @click="sendMessageHandle" :disabled="loading">
+          Update
+        </button>
+      </div>
+      <div class="col-md-6"></div>
       <div class="col-md-6 border-right text-white">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -80,7 +86,7 @@
                 type="text"
                 class="form-control bg-transparent text-white c-input"
                 placeholder="first name"
-                v-model="userUpdateObj.firstName"
+                v-model.trim="userUpdateObj.firstName"
               />
             </div>
             <div class="col-md-6">
@@ -90,32 +96,21 @@
               ><input
                 type="text"
                 class="form-control bg-transparent text-white c-input"
-                v-model="userUpdateObj.lastName"
+                v-model.trim="userUpdateObj.lastName"
                 placeholder="surname"
               />
             </div>
           </div>
           <hr class="bg-info" />
           <div class="row mt-3">
-            <div class="col-md-12">
-              <label class="labels c-label">
-                <i class="fa-solid fa-at m-2 fs-5"></i>
-                Email</label
-              ><input
-                type="text"
-                class="form-control bg-transparent text-white c-input"
-                placeholder="enter email"
-                v-model="userUpdateObj.email"
-              />
-            </div>
             <div class="col-md-12 mt-2">
               <label class="labels c-label">
                 <i class="fa-solid fa-circle-info m-2 fs-5"></i>
                 Additional info</label
               ><textarea
                 class="form-control bg-transparent text-white c-input"
-                placeholder="enter address line 1"
-                v-model="userUpdateObj.additionalInfo"
+                placeholder="enter additional info"
+                v-model.trim="userUpdateObj.additionalInfo"
               />
             </div>
           </div>
@@ -187,6 +182,7 @@
               class="btn btn-outline-info profile-button"
               @click="changePasswordHandle"
               type="button"
+              :disabled="loading"
             >
               Change password
             </button>
@@ -195,6 +191,10 @@
       </div>
     </div>
   </div>
+  <code-dialog
+    v-model:show="dialogVisible"
+    @submit="updateEmailHandle"
+  ></code-dialog>
 </template>
 
 <script>
@@ -204,19 +204,22 @@ import handleResponse from "@/_helpers/handleResponse.js";
 import Role from "@/_helpers/_role.js";
 import authService from "@/_services/authService.js";
 import userService from "@/_services/userService.js";
-import axios from 'axios';
+import CodeDialog from "@/components/AccessCodeDialog.vue";
 export default {
+  components: { CodeDialog },
   setup() {
     const { currentUser, setAuth, setAuthUser } = authService();
-    const { update, changePassword, getById } = userService();
+    const { update, changePassword, getById, sendMessage, updateEmail } =
+      userService();
     const loading = ref(false);
     const error = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
-
-
+    const dialogVisible = ref(false);
+const userEmail = ref(null);
 
     onMounted(async () => {
       await getUserData();
+      userEmail.value = currentUser.value.email;
     });
 
     const getUserData = async () => {
@@ -233,7 +236,6 @@ export default {
       id: currentUser.value.id,
       firstName: currentUser.value.firstName,
       lastName: currentUser.value.lastName,
-      email: currentUser.value.email,
       additionalInfo: currentUser.value.additionalInfo,
     });
     const changePasswordObj = ref({
@@ -242,10 +244,10 @@ export default {
       newPassword: null,
       confirmPassword: null,
     });
+    
 
     const saveProfileHandle = async () => {
       loading.value = true;
-     
 
       // console.log(userUpdateObj.value);
       let response = await update(userUpdateObj.value);
@@ -256,7 +258,6 @@ export default {
           toast.success("Update Successfully");
           await getUserData();
         } else {
-         
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
               position: "top",
@@ -268,8 +269,6 @@ export default {
     };
 
     const changePasswordHandle = async () => {
-   
-
       if (
         changePasswordObj.value.currentPassword &&
         changePasswordObj.value.newPassword &&
@@ -296,7 +295,6 @@ export default {
                 confirmPassword: null,
               };
             } else {
-             
               handleResponse(response.value).forEach((element) => {
                 toast.error(element, {
                   position: "top",
@@ -311,14 +309,69 @@ export default {
       }
     };
 
+    const sendMessageHandle = async () => {
+      if (!userEmail.value) {
+        toast.error("Email is required");
+        return;
+      }
+
+    loading.value = true;
+      let response = await sendMessage({
+        id: currentUser.value.id,
+        email: userEmail.value,
+      });
+    loading.value = false;
+
+      if (response && response.value) {
+        if (response.value.status === 204) {
+          return;
+        }
+
+        if (response.value.status === 200) {
+          dialogVisible.value = true;
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+    };
+
+    const updateEmailHandle = async (accessCode) => {
+
+      let response = await updateEmail({id: currentUser.value.id, email: userEmail.value, accessCode: accessCode });
+
+      if(response && response.value) {
+        if(response.value.status === 200) {
+          dialogVisible.value = false;
+          toast.success("Email updated successfully");
+          await getUserData();
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+    };
+
     return {
       loading,
       // error,
+      userEmail,
       currentUser,
+      dialogVisible,
       userUpdateObj,
       changePasswordObj,
       saveProfileHandle,
       changePasswordHandle,
+      sendMessageHandle,
+      updateEmailHandle,
     };
   },
 };
