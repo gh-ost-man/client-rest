@@ -2,7 +2,7 @@
   <div class="content">
     <div class="container">
       <h2 class="mb-5 c-title">Users</h2>
-      <div class="row">
+      <div class="row" v-if="users">
         <div class="col-md-6 my-2">
           <div>
             <select
@@ -73,7 +73,7 @@
                     class="btn btn-outline-light"
                     :to="{ name: 'EditUser', params: { id: user.id } }"
                   >
-                    <i class="fa-solid fa-pen-to-square icon"></i>
+                   <i class="icon"> <font-awesome-icon icon="pen-to-square" /></i>
                   </router-link>
                 </td>
               </tr>

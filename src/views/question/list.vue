@@ -3,7 +3,7 @@
     <div class="container">
       <h2 class="mb-5 c-title">Questions</h2>
       <hr class="bg-info" />
-      <div class="row">
+      <div class="row" v-if="questions">
         <div class="col-md-4 my-2">
           <div>
             <router-link
@@ -14,7 +14,7 @@
           </div>
         </div>
         <div class="col-md-8 my-2">
-          <div class="row">
+          <div class="row" >
             <div class="col-md-6 my-1">
               <div>
                 <input
@@ -25,7 +25,7 @@
                 />
               </div>
             </div>
-            <div class="col-md-6 my-1 ">
+            <div class="col-md-6 my-1">
               <select
                 class="form-select c-select"
                 aria-label="Default select example"
@@ -83,7 +83,7 @@
                       },
                     }"
                   >
-                    <i class="fa-solid fa-pen-to-square icon"></i>
+                  <i class="icon"> <font-awesome-icon icon="pen-to-square" /></i>
                   </router-link>
                 </td>
               </tr>
@@ -181,19 +181,18 @@ export default {
         : null;
     });
 
-
     const changePage = (pag) => {
       currentPage.value = pag;
     };
 
     const filterByContext = computed(() => {
-       currentPage.value = 1;
-       return filterContext.value
-        ? sortedQuestions.value.filter(
-            (x) => x.context.includes(filterContext.value)
+      currentPage.value = 1;
+      return filterContext.value
+        ? sortedQuestions.value.filter((x) =>
+            x.context.toLowerCase().includes(filterContext.value.toLowerCase())
           )
         : sortedQuestions.value;
-    })
+    });
 
     const filterByCategory = computed(() => {
       currentPage.value = 1;
@@ -218,7 +217,7 @@ export default {
       );
     });
 
-     //Save filter to storage
+    //Save filter to storage
     const filterStorage = () => {
       let filterObj = {};
 
@@ -234,7 +233,7 @@ export default {
 
       if (filter) {
         let filterObj = JSON.parse(filter);
-        filterContext.value =  filterObj.context || "";
+        filterContext.value = filterObj.context || "";
         filterCategory.value = filterObj.category || "";
       }
     };

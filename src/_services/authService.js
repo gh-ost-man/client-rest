@@ -2,7 +2,7 @@ import useApi from "../composables/useApi"
 import { ref } from "vue"
 
 const authService = () => {
-    const apiUrl = 'https://localhost:7001/api/Auth';
+    const apiUrl = 'https://localhost:9001/api/auth';
     const { post } = useApi();
     const currentUser = ref(localStorage.user ? JSON.parse(localStorage.user) : null);
 

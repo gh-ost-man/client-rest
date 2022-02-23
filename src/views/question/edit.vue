@@ -1,7 +1,7 @@
 <template>
-  <router-link :to="{ name: 'QuestionsList' }" class="btn btn-outline-info"
-    ><i class="fa-solid fa-circle-arrow-left"></i
-  ></router-link>
+  <router-link :to="{ name: 'QuestionsList' }" class="btn btn-outline-info">
+  <i><font-awesome-icon icon="circle-arrow-left" /></i> 
+  </router-link>
   <div class="p-5">
     <hr class="text-secondary" />
 
@@ -68,7 +68,7 @@
         ></textarea>
       </div>
 
-      <div class="col-md-12 mt-3">
+      <div class="col-md-12 mt-3" v-if="question.answerType !== 0">
         <input
           class="form-check-input"
           type="checkbox"
@@ -84,13 +84,19 @@
       </div>
 
       <div class="mt-3">
-        <button class="btn btn-outline-light" @click.prevent="addAnswerHandle">
+        <button
+          class="btn btn-outline-light"
+          @click.prevent="addAnswerHandle"
+          v-if="!isMaxAnswers"
+          :disabled="loading"
+        >
           Add Answer
         </button>
         <button
           v-if="updateAnswerStatus"
           class="btn btn-outline-warning mx-2"
           @click.prevent="updateAnswerHandle"
+          :disabled="loading"
         >
           Update Answer
         </button>
@@ -98,7 +104,10 @@
       <hr class="text-info" />
       <div class="mt-3">
         <label class="labels c-label">Answers</label>
-
+        <div v-if="isTextAnswer" class="text-danger m-3">
+          <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
+          <span class="mx-3">Must be only one answer</span>
+        </div>
         <div
           class="text-danger m-3"
           v-if="
@@ -182,6 +191,8 @@ export default {
     const typeAnswer = ref(null);
     const isMultyAnswers = ref(false);
     const isOneAnswer = ref(false);
+    const isTextAnswer = ref(false);
+    const isMaxAnswers = ref(false);
     const answerTypes = ref([
       { title: "Text", value: 0 },
       { title: "Single", value: 1 },
@@ -216,8 +227,6 @@ export default {
           if (responseQ.value.status === 200) {
             question.value = responseQ.value.data;
             typeAnswer.value = question.value.answerType;
-
-            
           } else {
             handleResponse(responseQ.value).forEach((element) => {
               toast.error(element, {
@@ -263,21 +272,27 @@ export default {
 
           answers.value.splice(index, 1);
 
-          answers.value.forEach((element, index) => {
-            element.charKey = String.fromCharCode(code + index);
+          answers.value.forEach((el, i) => {
+            el.context += "1111"
+            el.charKey = String.fromCharCode(code + i);
           });
 
+          console.log( answers.value);
           if (answers.value.length !== 0) {
-            await answers.value.reduce(async (a, element) => {
+            await answers.value.reduce(async (prev, currencEl, index,array) => {
+              console.log(currencEl);
               let res = await updateAnswer(
                 props.categoryId,
                 props.id,
-                element.id,
-                element
+                currencEl.id,
+                currencEl
               );
 
+
               if (res && res.value) {
-                if (res.value.status !== 204) {
+                if (res.value.status === 204) {
+                  checkAnswers();
+                } else {
                   handleResponse(res.value).forEach((element) => {
                     toast.error(element, {
                       position: "top",
@@ -286,11 +301,13 @@ export default {
                   });
                 }
               }
-            });
+            }, Promise.resolve());
+
+            checkAnswers();
           }
         } else {
-          handleResponse(response.value).forEach((element) => {
-            toast.error(element, {
+          handleResponse(response.value).forEach((el) => {
+            toast.error(el, {
               position: "top",
               duration: 3000,
             });
@@ -312,20 +329,19 @@ export default {
         return;
       }
 
-      // if (question.value.answerType === 0 || question.value.answerType === 1) {
-      //   if (isCorrectAnswer.value) {
-      //     if (answers.value.filter((x) => x.isCorrectAnswer).length >= 1) {
-      //       toast.error("The question can have only one correct answer!");
-      //       return;
-      //     }
-      //   }
-      // }
-
+      loading.value = true;
       let response = await createAnswer(props.categoryId, props.id, {
         context: answer.value,
-        charKey: String.fromCharCode(code + answers.value.length),
-        isCorrectAnswer: isCorrectAnswer.value,
+        charKey:
+          question.value.answerType === 0
+            ? "T"
+            : String.fromCharCode(code + answers.value.length),
+        isCorrectAnswer:
+          question.value.answerType === 0 ? true : isCorrectAnswer.value,
       });
+
+      loading.value = false;
+
 
       if (response && response.value) {
         if (response.value.status === 201) {
@@ -345,24 +361,6 @@ export default {
       }
 
       checkAnswers();
-
-      // if (coeficient.value == null) {
-      //   toast.error("Coeficient field is required");
-      //   return;
-      // }
-
-      // answers.value.push({
-      //   context: answer.value,
-      //   charKey: String.fromCharCode(code + answers.value.length).toUpperCase(),
-      //   isCorrectAnswer: isCorrectAnswer.value,
-      //   // correctAnswerCoefficient: coeficient.value,
-      //   status: "Added",
-      // });
-
-      // answer.value = null;
-      // // coeficient.value = null;
-      // indexUpdate.value = null;
-      // updateAnswerStatus.value = false;
     };
 
     const editAnswerHandle = (index) => {
@@ -380,15 +378,6 @@ export default {
         );
         return;
       }
-
-      // if (question.value.answerType === 0 || question.value.answerType === 1) {
-      //   if (isCorrectAnswer.value) {
-      //     if (answers.value.filter((x) => x.isCorrectAnswer).length >= 1) {
-      //       toast.error("The question can have only one correct answer!!");
-      //       return;
-      //     }
-      //   }
-      // }
 
       let response = await updateAnswer(
         props.categoryId,
@@ -442,7 +431,7 @@ export default {
         return;
       }
 
-      if(typeAnswer.value === null) {
+      if (typeAnswer.value === null) {
         toast.error("Type of answer is required");
         return;
       }
@@ -479,24 +468,41 @@ export default {
     };
 
     const checkAnswers = () => {
+      isOneAnswer.value = false;
+      isMultyAnswers.value = false;
+      isTextAnswer.value = false;
+
+
       if (question.value) {
-        if (
-          question.value.answerType === 0 ||
-          question.value.answerType === 1
-        ) {
+        if (question.value.answerType === 0) {
+          isMaxAnswers.value = answers.value.length >= 1 ? true : false;
+          isTextAnswer.value = answers.value.length > 1 ? true : false;
+        }
+
+        if (question.value.answerType === 1) {
           if (answers.value.filter((x) => x.isCorrectAnswer).length > 1) {
             isOneAnswer.value = true;
           } else {
-             isOneAnswer.value = false;
+            isOneAnswer.value = false;
           }
         }
-       
+
         if (question.value.answerType === 2) {
           if (answers.value.filter((x) => x.isCorrectAnswer).length <= 1) {
             isMultyAnswers.value = true;
           } else {
             isMultyAnswers.value = false;
           }
+        }
+
+        if (question.value.answerType === 0) {
+          isMaxAnswers.value = answers.value.length >= 1 ? true : false;
+        }
+        if (
+          question.value.answerType === 1 ||
+          question.value.answerType === 2
+        ) {
+          isMaxAnswers.value = answers.value.length >= 5 ? true : false;
         }
       }
     };
@@ -509,6 +515,8 @@ export default {
       question,
       answer,
       isCorrectAnswer,
+      isTextAnswer,
+      isMaxAnswers,
       answers,
       typeAnswer,
       answerTypes,

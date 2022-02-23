@@ -90,7 +90,7 @@ h2 {
 }
 .custom-table tbody tr th,
 .custom-table tbody tr td {
-  background: #25252b;
+  /* background: #25252b; */
   border: none;
   -webkit-transition: 0.3s all ease;
   -o-transition: 0.3s all ease;

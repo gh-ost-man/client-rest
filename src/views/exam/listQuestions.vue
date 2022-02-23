@@ -1,7 +1,7 @@
 <template>
-  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info"
-    ><i class="fa-solid fa-circle-arrow-left"></i
-  ></router-link>
+  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info">
+  <i><font-awesome-icon icon="circle-arrow-left" /></i>  
+  </router-link>
   <div class="p-3">
     <div class="d-flex">
       <h3 class="text-white">Exam questions</h3>

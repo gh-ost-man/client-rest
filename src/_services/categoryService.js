@@ -1,7 +1,7 @@
 import useApi from "../composables/useApi"
 
 const categoryService = () => {
-    const apiUrl = 'http://localhost:5002/api/Categories';
+    const apiUrl = 'https://localhost:9001/api/categories';
     const { post, get, put, remove } = useApi();
     
     const getAllCategories = async () => {

@@ -4,7 +4,8 @@
       <h3 class="text-info">Register</h3>
       <div class="form-group mt-1">
         <label class="c-label">
-          <i class="fa-solid fa-user-graduate"></i>
+          
+          <font-awesome-icon icon="user-graduate" />
           First name
         </label>
         <input
@@ -17,7 +18,7 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-          <i class="fa-solid fa-user-graduate"></i>
+          <font-awesome-icon icon="user-graduate" />
           Last name
         </label>
         <input
@@ -29,7 +30,7 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-          <i class="fa-solid fa-at"></i>
+           <font-awesome-icon icon="at" />
           Email address</label
         >
         <input
@@ -41,7 +42,7 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-          <i class="fa-solid fa-lock"></i>
+           <font-awesome-icon icon="lock" />
           Password</label
         >
         <input
@@ -54,7 +55,8 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-          <i class="fa-solid fa-circle-info"></i>
+           <font-awesome-icon icon="circle-info" />
+
           Additional Info</label
         >
         <textarea

@@ -1,5 +1,5 @@
 <template>
- <router-link :to="{name:'CategoriesList'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+ <router-link :to="{name:'CategoriesList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
   <div class="p-3 text-white">
     
     <form @submit.prevent="submitHandle" v-if="category">

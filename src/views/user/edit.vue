@@ -1,12 +1,12 @@
 <template>
   <div class="rounded mt-5 mb-5">
-      <router-link :to="{name:'UsersList'}" class="btn btn-outline-info"><i class="fa-solid fa-circle-arrow-left"></i></router-link>
+      <router-link :to="{name:'UsersList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
     <div class="row">
       <div class="col-md-12 border-right mb-3 text-white" v-if="user">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right c-title">
-              <i class="fa-solid fa-circle-user"></i>
+              <i><font-awesome-icon icon="circle-user" /></i>
               User
             </h4>
           </div>
@@ -71,7 +71,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right text-info">
-              <i class="fa-solid fa-key"></i>
+              <i><font-awesome-icon icon="key" /></i>
               Add Role
             </h4>
           </div>
@@ -80,14 +80,14 @@
             <div class="col-md-12">
              
               <label class="labels c-label">
-                 <i class="fa-solid fa-key m-2 fs-5"></i>
+                 <i class="m-2 fs-5"><font-awesome-icon icon="key" /></i>
                 Role</label>
               <select
-                class="form-control bg-transparent c-input"
+                class="form-select text-white  c-select"
                 v-model.trim="newRole"
               >
                 <option
-                  class="text-dark"
+                  class="text-white"
                   v-for="r in roles"
                   :key="r.value"
                   :value="r.value"
@@ -113,7 +113,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right text-info">
-              <i class="fa-solid fa-key"></i>
+              <i><font-awesome-icon icon="key" /></i>
               Remove Role
             </h4>
           </div>
@@ -122,14 +122,14 @@
             <div class="col-md-12">
              
               <label class="labels c-label">
-                 <i class="fa-solid fa-key m-2 fs-5"></i>
+                 <i class="m-2 fs-5"><font-awesome-icon icon="key" /></i>
                 Role</label>
               <select
-                class="form-control text-white bg-transparent c-input"
+                class="form-select text-white  c-select"
                 v-model.trim="roleRemove"
               >
                 <option
-                  class="text-dark"
+                  class="text-white"
                   v-for="r in userRoles"
                   :key="r.value"
                   :value="r.value"

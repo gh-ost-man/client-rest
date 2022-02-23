@@ -1,7 +1,7 @@
 <template>
-  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info"
-    ><i class="fa-solid fa-circle-arrow-left"></i
-  ></router-link>
+  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info">
+  <i><font-awesome-icon icon="circle-arrow-left" /></i> 
+  </router-link>
   <div class="p-3 text-white">
     <!-- <h3 class="c-title">Update test</h3> -->
 

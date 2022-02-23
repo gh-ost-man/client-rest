@@ -5,7 +5,7 @@
 
       <div class="form-group">
         <label class="labels c-label">
-          <i class="fa-solid fa-at"></i>
+          <font-awesome-icon icon="at" />
           Email address
         </label>
         <input
@@ -15,9 +15,9 @@
           :disabled="loading"
         />
       </div>
-      <div class="form-group">
-        <label class="text-info">
-          <i class="fa-solid fa-key"></i>
+      <div class="form-group mt-2">
+        <label class="text-info c-label">
+          <font-awesome-icon icon="key" />
           Password
         </label>
         <input

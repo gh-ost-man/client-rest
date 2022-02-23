@@ -5,7 +5,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right c-title">
-              <i class="fa-solid fa-circle-user"></i>
+              <i><font-awesome-icon icon="circle-user" /></i>
               Profile
             </h4>
           </div>
@@ -54,16 +54,19 @@
       </div>
       <div class="col-md-6">
         <label class="labels c-label">
-          <i class="fa-solid fa-at m-2 fs-5"></i>
-         Change Email
-         </label
+          <i class="m-2 fs-5"><font-awesome-icon icon="at" /></i>
+          Change Email </label
         ><input
           type="text"
           class="form-control bg-transparent text-white c-input"
           placeholder="enter email"
           v-model.trim="userEmail"
         />
-        <button class="btn btn-outline-info mt-2" @click="sendMessageHandle" :disabled="loading">
+        <button
+          class="btn btn-outline-info mt-2"
+          @click="sendMessageHandle"
+          :disabled="loading || userEmail === currentUser.email"
+        >
           Update
         </button>
       </div>
@@ -80,7 +83,7 @@
           <div class="row mt-2">
             <div class="col-md-6">
               <label class="labels c-label">
-                <i class="fa-solid fa-user m-2 fs-5"></i>
+                <i class="m-2 fs-5"><font-awesome-icon icon="user" /></i>
                 First name</label
               ><input
                 type="text"
@@ -91,8 +94,8 @@
             </div>
             <div class="col-md-6">
               <label class="labels c-label">
-                <i class="fa-solid fa-user m-2 fs-5"></i>
-                Last nmae</label
+                <i class=" m-2 fs-5"><font-awesome-icon icon="user" /></i>
+                Last name</label
               ><input
                 type="text"
                 class="form-control bg-transparent text-white c-input"
@@ -105,7 +108,7 @@
           <div class="row mt-3">
             <div class="col-md-12 mt-2">
               <label class="labels c-label">
-                <i class="fa-solid fa-circle-info m-2 fs-5"></i>
+                <i class=" m-2 fs-5"><font-awesome-icon icon="circle-info" /></i>
                 Additional info</label
               ><textarea
                 class="form-control bg-transparent text-white c-input"
@@ -131,7 +134,7 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right text-info">
-              <i class="fa-solid fa-lock"></i>
+              <i><font-awesome-icon icon="lock" /></i>
               Change password
             </h4>
           </div>
@@ -139,7 +142,7 @@
           <div class="row mt-3">
             <div class="col-md-12">
               <label class="labels c-label">
-                <i class="fa-solid fa-lock m-2 fs-5"></i>
+                <i class="m-2 fs-5"><font-awesome-icon icon="lock" /></i>
                 Current password</label
               ><input
                 type="password"
@@ -153,7 +156,7 @@
           <div class="row mt-3">
             <div class="col-md-12">
               <label class="labels c-label">
-                <i class="fa-solid fa-lock m-2 fs-5"></i>
+                <i class="m-2 fs-5"><font-awesome-icon icon="lock" /></i>
                 New password</label
               ><input
                 type="password"
@@ -166,7 +169,7 @@
           <div class="row mt-3">
             <div class="col-md-12">
               <label class="labels c-label">
-                <i class="fa-solid fa-lock m-2 fs-5"></i>
+                <i class="m-2 fs-5"><font-awesome-icon icon="lock" /></i>
                 Confirm password</label
               ><input
                 type="password"
@@ -215,7 +218,7 @@ export default {
     const error = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
     const dialogVisible = ref(false);
-const userEmail = ref(null);
+    const userEmail = ref(null);
 
     onMounted(async () => {
       await getUserData();
@@ -244,7 +247,6 @@ const userEmail = ref(null);
       newPassword: null,
       confirmPassword: null,
     });
-    
 
     const saveProfileHandle = async () => {
       loading.value = true;
@@ -315,12 +317,12 @@ const userEmail = ref(null);
         return;
       }
 
-    loading.value = true;
+      loading.value = true;
       let response = await sendMessage({
         id: currentUser.value.id,
         email: userEmail.value,
       });
-    loading.value = false;
+      loading.value = false;
 
       if (response && response.value) {
         if (response.value.status === 204) {
@@ -341,11 +343,14 @@ const userEmail = ref(null);
     };
 
     const updateEmailHandle = async (accessCode) => {
+      let response = await updateEmail({
+        id: currentUser.value.id,
+        email: userEmail.value,
+        accessCode: accessCode,
+      });
 
-      let response = await updateEmail({id: currentUser.value.id, email: userEmail.value, accessCode: accessCode });
-
-      if(response && response.value) {
-        if(response.value.status === 200) {
+      if (response && response.value) {
+        if (response.value.status === 200) {
           dialogVisible.value = false;
           toast.success("Email updated successfully");
           await getUserData();

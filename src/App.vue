@@ -58,5 +58,10 @@ body {
 .c-select {
   background-color: #19191d;
   color: white;
+  border-color:cyan ;
+}
+.c-select:focus{
+  border: 1px solid cyan !important;
+  border-color: cyan !important;
 }
 </style>

@@ -78,13 +78,14 @@
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'ExamQuestions', params: { id: exam.id } }"
                   >
-                    <i class="fa-solid fa-list-ul icon"></i>
+                    <!-- <i class="fa-solid fa-list-ul icon"></i> -->
+                    <i class="icon"> <font-awesome-icon icon="list-ul" /></i>
                   </router-link>
                   <router-link
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'EditExam', params: { id: exam.id } }"
                   >
-                    <i class="fa-solid fa-pen-to-square icon"></i>
+                    <i class="icon"> <font-awesome-icon icon="pen-to-square" /></i>
                   </router-link>
                 </td>
               </tr>

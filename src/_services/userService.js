@@ -1,7 +1,7 @@
 import useApi from "../composables/useApi"
 
 const userService = () => {
-    const apiUrl = 'https://localhost:7001/api/Users';
+    const apiUrl = 'https://localhost:9001/api/users';
     const { post, get, put, remove } = useApi();
 
     const getAllUsers = async () => {
@@ -48,3 +48,5 @@ const userService = () => {
 
 
 export default userService
+
+
