@@ -1,9 +1,9 @@
 <template>
- <router-link :to="{name:'ExamsList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
+  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info">
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
+  </router-link>
   <div class="p-3 text-white">
-    <!-- <h3 class="c-title">Create test</h3> -->
-   
-    <form @submit.prevent="submitHandle">
+    <form @submit.prevent="submitHandle" v-if="examObj">
       <div class="mb-3">
         <label class="labels c-label">Title</label
         ><input
@@ -16,7 +16,7 @@
       <div class="mb-3">
         <label class="labels c-label">Description</label>
         <textarea
-          class="form-control bg-dark c-input border-0"
+          class="form-control bg-dark c-input"
           placeholder="enter description"
           v-model.trim="examObj.description"
         ></textarea>
@@ -37,7 +37,7 @@
         <label class="labels c-label">Passing Score</label
         ><input
           type="number"
-          step="0.5"
+          step="1"
           min="40"
           max="100"
           class="form-control bg-transparent c-input"
@@ -63,27 +63,27 @@
         </select>
       </div>
       <button class="btn btn-outline-info" :disabled="loading">
-        <span v-if="!loading">Create</span>
-        <span v-else>Creating...</span>
+        <span v-if="!loading">Update</span>
+        <span v-else>Updating...</span>
       </button>
     </form>
   </div>
 </template>
 
 <script>
-import { ref, getCurrentInstance } from "vue";
+import { ref, getCurrentInstance, onMounted } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRouter } from 'vue-router';
+import { useRoute } from "vue-router";
 
 export default {
-  setup() {
-    const error = ref(null);
+  props: ["id"],
+  setup(props) {
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { createExam } = examService();
-    const router = useRouter();
-
+    const { getExamById, updateExam } = examService();
+    const route = useRoute();
+    const examObj = ref(null);
     const statuses = ref([
       {
         title: "NotAvailable",
@@ -98,34 +98,34 @@ export default {
         value: 2,
       },
     ]);
-    const examObj = ref({
-      title: null,
-      description: null,
-      durationTime: 30,
-      passingScore: 40,
-      status: 0,
+
+    onMounted(async () => {
+      let response = await getExamById(props.id);
+
+      if (response && response.value) {
+        if (response.value.status === 200) {
+          examObj.value = response.value.data;
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
     });
 
     const submitHandle = async () => {
       loading.value = true;
 
-      let response = await createExam(examObj.value);
+      let response = await updateExam(examObj.value.id, examObj.value);
 
       loading.value = false;
 
       if (response && response.value) {
-        if (response.value.status === 201) {
-          toast.success("The test created successfully");
-          examObj.value = {
-            title: null,
-            description: null,
-            durationTime: 30,
-            passingScore: 40,
-            status: 0,
-          };
-
-        router.push({name: 'TestQuestions', params: {id: response.value.data.id}});
-
+        if (response.value.status === 204) {
+          toast.success("The test updated successfully");
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -137,7 +137,7 @@ export default {
       }
     };
 
-    return { error, loading, examObj, statuses, submitHandle };
+    return { loading, examObj, statuses, submitHandle };
   },
 };
 </script>

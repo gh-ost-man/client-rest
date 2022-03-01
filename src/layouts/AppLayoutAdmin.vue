@@ -103,7 +103,7 @@
             <div class="job">{{ authEmail }}</div>
           </div>
           <!-- <i class="bx bx-log-out" @click="logout"></i> -->
-          <i> <font-awesome-icon icon="arrow-right-from-bracket" /></i>
+          <i  @click="logout"> <font-awesome-icon icon="arrow-right-from-bracket" /></i>
           <!-- <i class="fa-solid fa-arrow-right-from-bracket" @click="logout"></i> -->
           <!-- <div class="name-job">
           <div class="profile_name truncate-text">Hello world asdj kajdl jaskl;dj klasdkl </div>
@@ -144,9 +144,9 @@
 
 <script>
 import authService from "@/_services/authService.js";
-import { computed, ref, watch, watchEffect } from "vue";
+import {  ref  } from "vue";
 import { useRouter } from "vue-router";
-
+import { encryptData, decryptData } from "../_helpers/crypto";
 export default {
   name: "admin-layout",
   data() {
@@ -161,8 +161,8 @@ export default {
     const { logOut } = authService();
     const router = useRouter();
 
-    if (localStorage.user) {
-      let user = JSON.parse(localStorage.user);
+    if (localStorage.auth) {
+      let user =  JSON.parse(decryptData(localStorage.auth));
 
       authEmail.value = user.email;
       authFullName.value = user.firstName + " " + user.lastName;
@@ -220,7 +220,8 @@ export default {
   text-shadow: 0 0 10px #03bcf4, 0 0 20px #03bcf4, 0 0 40px #03bcf4,
     0 0 80px #03bcf4, 0 0 160px #03bcf4, 0 0 400px #03bcf4; */
 
-  background: darkcyan;
+  /* background: darkcyan; */
+   background: #2b2b2b;
 }
 /* Google Fonts Import Link */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -348,6 +349,7 @@ export default {
   margin-top: -10px;
   /* background: #1d1b31; */
   /* background: darkcyan; */
+  background: #2b2b2b;
   display: none;
 }
 

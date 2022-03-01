@@ -4,13 +4,20 @@
       <h2 class="mb-5 c-title">Categories</h2>
       <hr class="bg-secondary" />
       <div>
-        <router-link class="btn btn-outline-info" :to="{ name: 'CreateCategory' }"
+        <router-link
+          class="btn btn-outline-info"
+          :to="{ name: 'CreateCategory' }"
           >Create</router-link
         >
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="categories">
-        <paggination :pages="paggination.pages" :currentPage="currentPage" :totalPages="paggination.totalPages" @changePage="changePage"></paggination>
+        <paggination
+          :pages="paggination.pages"
+          :currentPage="currentPage"
+          :totalPages="paggination.totalPages"
+          @changePage="changePage"
+        ></paggination>
         <table class="table custom-table">
           <thead>
             <tr>
@@ -20,7 +27,7 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="category in categoriesItems" :key="category.id">
+            <template v-for="category in sortedCategories" :key="category.id">
               <tr scope="row">
                 <td>{{ category.id }}</td>
                 <td>{{ category.name }}</td>
@@ -29,7 +36,9 @@
                     class="btn btn-outline-light"
                     :to="{ name: 'EditCategory', params: { id: category.id } }"
                   >
-                     <i class="icon"> <font-awesome-icon icon="pen-to-square" /></i>
+                    <i class="icon">
+                      <font-awesome-icon icon="pen-to-square"
+                    /></i>
                   </router-link>
                 </td>
               </tr>
@@ -61,11 +70,10 @@ import paginate from "@/_helpers/paginate.js";
 import Paggination from "@/components/Paggination";
 
 export default {
-  components: {Paggination},
+  components: { Paggination },
   setup() {
     const error = ref(null);
     const categories = ref(null);
-    const router = useRouter();
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getAllCategories } = categoryService();
     const currentPage = ref(1);
@@ -74,16 +82,22 @@ export default {
     const paggination = ref(null);
 
     onMounted(async () => {
-      var response = await getAllCategories();
+      await getData();
+    });
+
+    const getData = async () => {
+      var response = await getAllCategories(currentPage.value, pageSize);
 
       if (response && response.value) {
         if (response.value.status === 200) {
-          categories.value = response.value.data;
+          categories.value = response.value.data.items;
 
-          currentPage.value = 1;
-          paggination.value = paginate(categories.value.length, currentPage.value, pageSize);
+          paggination.value = {
+            pages: response.value.data.pages,
+            totalPages: response.value.data.totalPages,
+          };
         } else {
-             handleResponse(response.value).forEach((element) => {
+          handleResponse(response.value).forEach((element) => {
             toast.error(element, {
               position: "top",
               duration: 5000,
@@ -91,29 +105,30 @@ export default {
           });
         }
       }
-    });
-
-    const sortedCategories = computed(() => {
-      return categories.value?categories.value.sort((x1,x2) => x1.id - x2.id):null;
-    });
-
-    const changePage = (pag) => {
-      currentPage.value = pag;
     };
-
-    const categoriesItems = computed(() => {
-      paggination.value = paginate(sortedCategories.value.length, currentPage.value, pageSize);
-      return sortedCategories.value.slice(
-        paggination.value.startIndex,
-        paggination.value.endIndex + 1
-      );
+    const sortedCategories = computed(() => {
+      return categories.value
+        ? categories.value.sort((x1, x2) => x1.id - x2.id)
+        : null;
     });
 
-    return { categories, sortedCategories, error, categoriesItems, currentPage, paggination, changePage };
+    const changePage = async (pag) => {
+      currentPage.value = pag;
+
+      await getData();
+    };
+    return {
+      categories,
+      sortedCategories,
+      error,
+      currentPage,
+      paggination,
+      changePage,
+    };
   },
 };
 </script>
 
 <style scoped>
-@import "../../assets/css/table.css";
+@import "../../../assets/css/table.css";
 </style>

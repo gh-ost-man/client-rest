@@ -1,26 +1,48 @@
 import useApi from "../composables/useApi"
 
 const questionService = () => {
-    const apiUrl = 'https://localhost:9001/api/c';
+    const apiUrl = 'https://localhost:9001/api/questions';
     const { post, get, put, remove } = useApi();
   
-    const getQuestions = async (idCategory) => {
-        return await get(apiUrl + "/" + idCategory + "/questions");
+    const getAllQuestions = async (page, limit, filter ) => {
+        let query = "?";
+        if(page) {
+            query  += "page=" + page;
+        }
+
+        if(filter) {
+            if(filter.category) {
+                query+= "&category="+filter.category;
+            }
+
+            if(filter.context) {
+                query+= "&context="+filter.context;
+            }
+
+        }
+
+        if(limit) {
+            query+= "&limit="+limit;
+        }
+
+        return await get(apiUrl + query);
     }
 
-    const getQuestionById = async(idCategory, id) => {
-        return await get(apiUrl + "/" + idCategory +"/questions/" + id);
+    const getQuestionById = async(id) => {
+        return await get(apiUrl +"/" + id);
     }
 
-    const createQuesiton = async(idCategory,data) => {
-        return await post(apiUrl + "/" + idCategory + "/questions", data);
+    const createQuesiton = async(data) => {
+        console.log(data);
+
+        return await post(apiUrl , data);
     }
 
-    const updateQuestion = async(idCategory, idQuestion, data) => {
-        return await put(apiUrl + "/" + idCategory + "/questions/" + idQuestion, data);
+    const updateQuestion = async(id, data) => {
+        return await put(apiUrl + "/"+ id, data);
     }
     
-    return {getQuestions, getQuestionById,createQuesiton, updateQuestion}
+    return {getAllQuestions, getQuestionById,createQuesiton, updateQuestion}
 }
 
 

@@ -12,16 +12,17 @@
 </template>
 
 <script>
-import Roles from "@/_helpers/_role.js"
+import Roles from "@/_helpers/_role.js";
+import { decryptData } from "@/_helpers/crypto";
 export default {
   methods: {
     clickHangle() {
-      if (localStorage.user) {
-        let user = JSON.parse(localStorage.user);
+      if (localStorage.auth) {
+        let user = JSON.parse(decryptData(localStorage.auth));
 
         if (user.roles) {
           let user_roles = user.roles.split(",");
-          let roles = Roles.filter(x=>x!== "Student");
+          let roles = Roles.filter((x) => x !== "Student");
 
           let isStaff = false;
 
@@ -31,7 +32,7 @@ export default {
           //   }
           // });
 
-           for (let role of user_roles) {
+          for (let role of user_roles) {
             if (roles.includes(role)) {
               isStaff = true;
               break;
@@ -43,7 +44,6 @@ export default {
           } else if (user_roles.includes("Student")) {
             this.$router.push({ name: "Home" });
           } else {
-
             this.$router.push({ name: "Login" });
           }
         } else {

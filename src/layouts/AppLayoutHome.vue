@@ -18,10 +18,11 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Exams</a>
+                <!-- <a class="nav-link active" aria-current="page" href="#">Exams</a> -->
+                <router-link class="nav-link active" :to="{name: 'ExamsStudent'}">Exams</router-link>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Profile</a>
+                 <router-link class="nav-link active" :to="{name: 'ProfileStudent'}">Profile</router-link>
               </li>
             </ul>
             <div class="d-flex">

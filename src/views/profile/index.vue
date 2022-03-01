@@ -222,7 +222,7 @@ export default {
 
     onMounted(async () => {
       await getUserData();
-      userEmail.value = currentUser.value.email;
+     
     });
 
     const getUserData = async () => {
@@ -231,6 +231,7 @@ export default {
       if (res && res.value) {
         if (res.value.status === 200) {
           setAuthUser(res.value.data);
+           userEmail.value = currentUser.value.email;
         }
       }
     };

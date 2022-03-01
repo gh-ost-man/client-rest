@@ -1,6 +1,6 @@
 <template>
   <router-link :to="{ name: 'QuestionsList' }" class="btn btn-outline-info">
-  <i><font-awesome-icon icon="circle-arrow-left" /></i> 
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
   </router-link>
   <div class="p-5">
     <hr class="text-secondary" />
@@ -52,9 +52,6 @@
         </div>
         <button class="btn btn-outline-light" :disabled="loading" type="submit">
           Update
-        </button>
-        <button class="btn btn-outline-danger mx-2" :disabled="loading">
-          Delete questions
         </button>
       </form>
       <hr class="text-info" />
@@ -115,31 +112,49 @@
             answers.filter((x) => x.isCorrectAnswer).length === 0
           "
         >
-          <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
+          <span>
+            <i class="fs-3">
+              <font-awesome-icon icon="circle-exclamation" />
+            </i>
+          </span>
           <span class="mx-3">Don't have a correct answer!!</span>
         </div>
         <div v-if="isOneAnswer" class="text-danger m-3">
-          <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
+          <span>
+            <i class="fs-3">
+              <font-awesome-icon icon="circle-exclamation" />
+            </i>
+          </span>
           <span class="mx-3">Must be only one correct answer</span>
         </div>
         <div v-if="isMultyAnswers" class="text-danger m-3">
-          <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
+          <span>
+            <i class="fs-3">
+              <font-awesome-icon icon="circle-exclamation" />
+            </i>
+          </span>
           <span class="mx-2">Must be more than one correct answer</span>
         </div>
         <ul style="list-style-type: none">
           <li v-for="(ans, index) in answers" :key="ans">
             <div class="d-flex">
               <div>
-                <i
+                <button
                   @click="removeAnswerHandle(index)"
-                  class="fa-solid fa-trash-can icon-op"
-                ></i>
+                  class="btn btn-outline-light icon-op"
+                  :disabled="loading"
+                >
+                  <font-awesome-icon icon="trash-can" />
+                </button>
               </div>
               <div>
-                <i
-                  class="fa-solid fa-pen-to-square icon-op"
+                <button
+                  class="btn btn-outline-light icon-op"
+                  :disabled="loading"
                   @click="editAnswerHandle(index)"
-                ></i>
+                >
+                  <font-awesome-icon icon="pen-to-square" />
+                </button>
               </div>
               <div
                 :class="{
@@ -175,7 +190,7 @@ import categoryService from "@/_services/categoryService.js";
 import answerService from "@/_services/answerService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 export default {
-  props: ["id", "categoryId"],
+  props: ["id"],
 
   setup(props) {
     const loading = ref(false);
@@ -201,17 +216,18 @@ export default {
 
     const { getCategory } = categoryService();
     const { getQuestionById, updateQuestion } = questionService();
-    const { getAnswerAll, updateAnswer, removeAnswer, createAnswer } =
+    const { getQuestionAnswers, updateAnswer, removeAnswer, createAnswer } =
       answerService();
 
     onMounted(async () => {
-      let response = await getCategory(props.categoryId);
+      let responseQ = await getQuestionById(props.id);
 
-      if (response && response.value) {
-        if (response.value.status === 200) {
-          category.value = response.value.data;
+      if (responseQ && responseQ.value) {
+        if (responseQ.value.status === 200) {
+          question.value = responseQ.value.data;
+          typeAnswer.value = question.value.answerType;
         } else {
-          handleResponse(response.value).forEach((element) => {
+          handleResponse(responseQ.value).forEach((element) => {
             toast.error(element, {
               position: "top",
               duration: 5000,
@@ -220,33 +236,12 @@ export default {
         }
       }
 
-      if (category.value) {
-        let responseQ = await getQuestionById(category.value.id, props.id);
-
-        if (responseQ && responseQ.value) {
-          if (responseQ.value.status === 200) {
-            question.value = responseQ.value.data;
-            typeAnswer.value = question.value.answerType;
-          } else {
-            handleResponse(responseQ.value).forEach((element) => {
-              toast.error(element, {
-                position: "top",
-                duration: 5000,
-              });
-            });
-          }
-        }
-      }
-
       if (question.value) {
-        let responseA = await getAnswerAll(props.categoryId, props.id);
+        let response = await getCategory(question.value.questionCategoryId);
 
-        if (responseA && responseA.value) {
-          if (responseA.value.status === 200) {
-            answers.value = responseA.value.data.sort((x1, x2) =>
-              x1.charKey?.localeCompare(x2.charKey)
-            );
-            checkAnswers();
+        if (response && response.value) {
+          if (response.value.status === 200) {
+            category.value = response.value.data;
           } else {
             handleResponse(response.value).forEach((element) => {
               toast.error(element, {
@@ -256,15 +251,36 @@ export default {
             });
           }
         }
+
+        await getAnswersQuestion();
       }
     });
 
+    const getAnswersQuestion = async () => {
+      let responseA = await getQuestionAnswers(question.value.id);
+
+      if (responseA && responseA.value) {
+        if (responseA.value.status === 200) {
+          answers.value = responseA.value.data.sort((x1, x2) =>
+            x1.charKey?.localeCompare(x2.charKey)
+          );
+          checkAnswers();
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+    };
+
     const removeAnswerHandle = async (index) => {
-      let response = await removeAnswer(
-        props.categoryId,
-        props.id,
-        answers.value[index].id
-      );
+      loading.value = true;
+      let response = await removeAnswer(answers.value[index].id);
+
+      loading.value = false;
 
       if (response && response.value) {
         if (response.value.status === 204) {
@@ -272,36 +288,29 @@ export default {
 
           answers.value.splice(index, 1);
 
-          answers.value.forEach((el, i) => {
-            el.context += "1111"
-            el.charKey = String.fromCharCode(code + i);
-          });
-
-          console.log( answers.value);
+          console.log(answers.value);
           if (answers.value.length !== 0) {
-            await answers.value.reduce(async (prev, currencEl, index,array) => {
-              console.log(currencEl);
-              let res = await updateAnswer(
-                props.categoryId,
-                props.id,
-                currencEl.id,
-                currencEl
-              );
+            await answers.value.reduce(
+              async (prev, currencEl, index, array) => {
+                currencEl.charKey = String.fromCharCode(code + index);
 
+                let res = await updateAnswer(currencEl.id, currencEl);
 
-              if (res && res.value) {
-                if (res.value.status === 204) {
-                  checkAnswers();
-                } else {
-                  handleResponse(res.value).forEach((element) => {
-                    toast.error(element, {
-                      position: "top",
-                      duration: 3000,
+                if (res && res.value) {
+                  if (res.value.status === 204) {
+                    checkAnswers();
+                  } else {
+                    handleResponse(res.value).forEach((element) => {
+                      toast.error(element, {
+                        position: "top",
+                        duration: 3000,
+                      });
                     });
-                  });
+                  }
                 }
-              }
-            }, Promise.resolve());
+              },
+              Promise.resolve()
+            );
 
             checkAnswers();
           }
@@ -330,8 +339,9 @@ export default {
       }
 
       loading.value = true;
-      let response = await createAnswer(props.categoryId, props.id, {
+      let response = await createAnswer({
         context: answer.value,
+        questionItemId: props.id,
         charKey:
           question.value.answerType === 0
             ? "T"
@@ -341,7 +351,6 @@ export default {
       });
 
       loading.value = false;
-
 
       if (response && response.value) {
         if (response.value.status === 201) {
@@ -379,16 +388,12 @@ export default {
         return;
       }
 
-      let response = await updateAnswer(
-        props.categoryId,
-        props.id,
-        answers.value[indexUpdate.value].id,
-        {
-          context: answer.value,
-          isCorrectAnswer: isCorrectAnswer.value,
-          charKey: answers.value[indexUpdate.value].charKey,
-        }
-      );
+      let response = await updateAnswer(answers.value[indexUpdate.value].id, {
+        context: answer.value,
+        isCorrectAnswer: isCorrectAnswer.value,
+        charKey: answers.value[indexUpdate.value].charKey,
+        questionItemId: props.id,
+      });
 
       if (response && response.value) {
         if (response.value.status === 204) {
@@ -416,6 +421,11 @@ export default {
     };
 
     const submitHandle = async () => {
+      indexUpdate.value = null;
+      updateAnswerStatus.value = false;
+      answer.value = null;
+      isCorrectAnswer.value = false;
+
       if (!question.value.context) {
         toast.error("Context is required");
         return;
@@ -439,11 +449,11 @@ export default {
       loading.value = true;
 
       console.log(typeAnswer.value);
-      let response = await updateQuestion(
-        category.value.id,
-        question.value.id,
-        { context: question.value.context, answerType: typeAnswer.value }
-      );
+      let response = await updateQuestion(question.value.id, {
+        context: question.value.context,
+        answerType: typeAnswer.value,
+        questionCategoryId: question.value.questionCategoryId,
+      });
 
       loading.value = false;
       if (response && response.value) {
@@ -452,7 +462,7 @@ export default {
           question.value.answerType = typeAnswer.value;
 
           console.log(question.value);
-
+          await getAnswersQuestion();
           checkAnswers();
         } else {
           handleResponse(response.value).forEach((element) => {
@@ -471,7 +481,6 @@ export default {
       isOneAnswer.value = false;
       isMultyAnswers.value = false;
       isTextAnswer.value = false;
-
 
       if (question.value) {
         if (question.value.answerType === 0) {

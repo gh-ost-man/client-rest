@@ -2,6 +2,7 @@ import { ref, getCurrentInstance, } from "vue";
 import axios from 'axios';
 import { useRouter } from "vue-router";
 
+import { encryptData } from "../_helpers/crypto";
 const useApi = () => {
     const toast = getCurrentInstance().appContext.app.$toast;
     const response = ref(null);
@@ -50,7 +51,7 @@ const useApi = () => {
             if (res.value.status === 200) {
                 console.log("RERFESH TOKEN SUCCESS");
                 toast.info("The token is refreshed")
-                localStorage.user = JSON.stringify(response.value.data.user)
+                localStorage.auth = encryptData(JSON.stringify(response.value.data.user).toString());
                 localStorage.accessToken = response.value.data.token;
                 localStorage.refreshToken = response.value.data.refreshToken;
             } else if (res.value.status === 226) {
@@ -74,11 +75,9 @@ const useApi = () => {
 
     }
     const get = async (url) => {
-        axios.defaults.headers = {
+        axios.defaults.headers.common = {
             'Authorization': localStorage.accessToken ? `Bearer ${localStorage.accessToken}` : '',
-            "content-Type": "application/json; charset=utf-8",
         }
-
         await axios.get(url)
             .then(res => {
                 response.value = res;

@@ -1,7 +1,8 @@
 <template>
- <router-link :to="{name:'CategoriesList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
+  <router-link :to="{ name: 'CategoriesList' }" class="btn btn-outline-info"
+    ><i><font-awesome-icon icon="circle-arrow-left" /></i
+  ></router-link>
   <div class="p-3 text-white">
-    
     <form @submit.prevent="submitHandle" v-if="category">
       <div>
         <label class="labels c-label">Name of category</label
@@ -17,7 +18,11 @@
           <span v-if="!loading">Edit</span>
           <span v-else>Editing...</span>
         </button>
-         <button class="btn btn-outline-danger mx-2" @click="deleteCategoryHandle" :disabled="loadingDelete">
+        <button
+          class="btn btn-outline-danger mx-2"
+          @click="deleteCategoryHandle"
+          :disabled="loadingDelete"
+        >
           <span v-if="!loadingDelete">Delete</span>
           <span v-else>Deleting...</span>
         </button>
@@ -44,7 +49,7 @@ export default {
       let response = await getCategory(route.params.id);
       if (response && response.value) {
         if (response.value.status === 200) {
-            category.value = response.value.data;
+          category.value = response.value.data;
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -52,15 +57,15 @@ export default {
               duration: 5000,
             });
           });
-
         }
       }
     });
 
     const submitHandle = async () => {
-
       loading.value = true;
-      let response = await updateCategory(category.value.id, { name: category.value.name });
+      let response = await updateCategory(category.value.id, {
+        name: category.value.name,
+      });
       loading.value = false;
 
       if (response && response.value) {
@@ -77,16 +82,15 @@ export default {
       }
     };
 
-    const deleteCategoryHandle = async() => {
-
+    const deleteCategoryHandle = async () => {
       loadingDelete.value = true;
 
       let response = await deleteCategory(category.value.id);
 
-      loadingDelete.value =false;
+      loadingDelete.value = false;
 
-      if(response && response.value) {
-        if(response.value.status === 204) {
+      if (response && response.value) {
+        if (response.value.status === 204) {
           toast.success("The category removed successfully");
         } else {
           handleResponse(response.value).forEach((element) => {
@@ -96,11 +100,16 @@ export default {
             });
           });
         }
-
       }
-    }
+    };
 
-    return { category, loading, loadingDelete,submitHandle, deleteCategoryHandle };
+    return {
+      category,
+      loading,
+      loadingDelete,
+      submitHandle,
+      deleteCategoryHandle,
+    };
   },
 };
 </script>

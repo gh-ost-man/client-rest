@@ -40,6 +40,8 @@
       <li class="btn next" @click="nextHandle">Next</li>
     </ul>
   </div>
+
+
 </template>
 
 <script>
@@ -52,7 +54,6 @@ export default {
       this.$emit("changePage", page);
     },
     prevHanlde() {
-      console.log("CLOICK");
       this.$emit(
         "changePage",
         this.currentPage - 1 > 0 ? this.currentPage - 1 : 1

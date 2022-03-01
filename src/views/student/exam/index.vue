@@ -5,14 +5,14 @@
       <hr class="bg-secondary" />
 
       <div class="row" v-if="exams">
-        <div class="col-md-4 my-2">
+        <!-- <div class="col-md-4 my-2">
           <router-link
             class="btn btn-outline-light"
             :to="{ name: 'CreateExam' }"
             >Create</router-link
           >
-        </div>
-        <div class="col-md-8 my-2">
+        </div> -->
+        <div class="col-md-12 my-2">
           <div class="row">
             <div class="col-md-6 my-2">
               <div>
@@ -21,6 +21,7 @@
                   placeholder="filter by title"
                   type="text"
                   v-model.trim="filterTitle"
+                  @keydown.enter="filterByTitle"
                 />
               </div>
             </div>
@@ -29,6 +30,7 @@
                 class="form-select c-select"
                 aria-label="Default select example"
                 v-model="filterStatus"
+                @change="filterByStatus"
               >
                 <option value="" selected class="text-white">All</option>
                 <option
@@ -59,34 +61,36 @@
               <th scope="col">Title</th>
               <th scope="col">DurationTime</th>
               <th scope="col">PassingScore</th>
-              <th scope="col">Status</th>
+              <!-- <th scope="col">Status</th> -->
               <th scope="col">Qty of quesitons</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <template v-for="exam in examsItems" :key="exam.id">
+            <template v-for="exam in sortedExams" :key="exam.id">
               <tr scope="row">
                 <td>{{ exam.id }}</td>
                 <td>{{ exam.title }}</td>
                 <td>{{ exam.durationTime }}</td>
                 <td>{{ exam.passingScore }}</td>
-                <td>{{ exam.status }}</td>
+                <!-- <td>{{ exam.status }}</td> -->
                 <td>{{ exam.qtyOfQuestions }}</td>
                 <td>
-                  <router-link
+                  <router-link class="btn btn-outline-light " :to="{ name: 'PassExamStudent', params: { id: exam.id } }">Pass</router-link>
+                  <!-- <router-link
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'ExamQuestions', params: { id: exam.id } }"
                   >
-                    <!-- <i class="fa-solid fa-list-ul icon"></i> -->
                     <i class="icon"> <font-awesome-icon icon="list-ul" /></i>
-                  </router-link>
-                  <router-link
+                  </router-link> -->
+                  <!-- <router-link
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'EditExam', params: { id: exam.id } }"
                   >
-                    <i class="icon"> <font-awesome-icon icon="pen-to-square" /></i>
-                  </router-link>
+                    <i class="icon">
+                      <font-awesome-icon icon="pen-to-square"
+                    /></i>
+                  </router-link> -->
                 </td>
               </tr>
               <tr class="spacer">
@@ -146,11 +150,22 @@ export default {
     ]);
 
     onMounted(async () => {
-      getFilterFromStorage();
-      let response = await getAllExams();
+      await getData();
+    });
+
+    const getData = async () => {
+      let filter = {};
+      if (filterTitle.value) {
+        filter.title = filterTitle.value;
+      }
+
+      if (filterStatus.value) {
+        filter.status = filterStatus.value;
+      }
+      let response = await getAllExams(currentPage.value, pageSize, filter,);
       if (response && response.value) {
         if (response.value.status === 200) {
-          exams.value = response.value.data;
+          exams.value = response.value.data.items;
 
           exams.value.forEach(async (element) => {
             element.status = statuses.value.find(
@@ -161,9 +176,7 @@ export default {
 
             if (res && res.value) {
               if (res.value.status === 200) {
-                element.qtyOfQuestions = res.value.data.length;
-
-                 
+                element.qtyOfQuestions = res.value.data.items.length;
               } else {
                 handleResponse(res.value).forEach((element) => {
                   toast.error(element, {
@@ -175,12 +188,15 @@ export default {
             }
           });
 
-         
-          paggination.value = paginate(
-            exams.value.length,
-            currentPage.value,
-            pageSize
-          );
+          paggination.value = {
+            pages: response.value.data.pages,
+            totalPages: response.value.data.totalPages,
+          };
+          // paggination.value = paginate(
+          //   exams.value.length,
+          //   currentPage.value,
+          //   pageSize
+          // );
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -190,10 +206,23 @@ export default {
           });
         }
       }
-    });
+    };
 
-    const changePage = (pag) => {
+    const filterByTitle = async () => {
+      currentPage.value = 1;
+      await getData();
+    }
+
+    const filterByStatus = async() => {
+       currentPage.value = 1;
+      await getData();
+    }
+
+    const changePage = async (pag) => {
       currentPage.value = pag;
+      exams.value = [];
+
+      await getData();
     };
 
     const sortedExams = computed(() => {
@@ -202,76 +231,27 @@ export default {
         : exams.value;
     });
 
-    const filterByTitleExams = computed(() => {
-      currentPage.value = 1;
-      return filterTitle.value
-        ? sortedExams.value.filter((x) =>
-            x.title.toLowerCase().includes(filterTitle.value.toLowerCase())
-          )
-        : sortedExams.value;
-    });
-
-    const filterByStatusExams = computed(() => {
-      currentPage.value = 1;
-      return filterStatus.value
-        ? filterByTitleExams.value.filter(
-            (x) => x.status.toLowerCase() === filterStatus.value.toLowerCase()
-          )
-        : filterByTitleExams.value;
-    });
-
-    const examsItems = computed(() => {
-      filterStorage();
-      paggination.value = paginate(
-        filterByStatusExams.value.length,
-        currentPage.value,
-        pageSize
-      );
-      return filterByStatusExams.value.slice(
-        paggination.value.startIndex,
-        paggination.value.endIndex + 1
-      );
-    });
-
-    //Save filter to storage
-    const filterStorage = () => {
-      let filterObj = {};
-
-      filterObj.title = filterTitle.value;
-      filterObj.status = filterStatus.value;
-      filterObj.currentPage = currentPage.value;
-
-      sessionStorage.filterExams = JSON.stringify(filterObj);
-    };
-
-    //Get filter fromstorage
-    const getFilterFromStorage = () => {
-      let filter = sessionStorage.getItem("filterExams");
-
-      if (filter) {
-        let filterObj = JSON.parse(filter);
-        filterTitle.value = filterObj.title ? filterObj.title : "";
-        filterStatus.value = filterObj.status ? filterObj.status : "";
-        currentPage.value = filterObj.currentPage || "";
-
-      }
-    };
-
     return {
       exams,
       sortedExams,
-      examsItems,
+      // examsItems,
       currentPage,
       statuses,
       filterTitle,
       filterStatus,
       paggination,
       changePage,
+      filterByTitle,
+      filterByStatus,
     };
   },
 };
 </script>
 
 <style scoped>
-@import "../../assets/css/table.css";
+@import "../../../assets/css/table.css";
+
+.btn:hover {
+  color: black;
+}
 </style>

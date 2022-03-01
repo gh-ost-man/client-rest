@@ -1,6 +1,6 @@
 <template>
   <router-link :to="{ name: 'QuestionsList' }" class="btn btn-outline-info">
-  <i><font-awesome-icon icon="circle-arrow-left" /></i>  
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
   </router-link>
   <div class="p-5 text-white">
     <h3 class="text-white c-title">Question</h3>
@@ -11,12 +11,12 @@
           <div class="mb-3">
             <label class="labels c-label">Category</label>
             <select
-              class="form-select bg-transparent text-white c-input"
+              class="form-select c-select"
               aria-label="Default select example"
               v-model="categoryId"
             >
               <option
-                class="text-dark"
+                class="text-white"
                 v-for="c in categories"
                 :key="c.id"
                 :value="c.id"
@@ -35,12 +35,6 @@
               placeholder="enter context"
               v-model.trim="context"
             ></textarea>
-            <!-- <input
-              type="text"
-              class="form-control bg-transparent text-white"
-              placeholder="enter context"
-              v-model="context"
-            /> -->
           </div>
         </div>
         <div class="col-md-12">
@@ -75,12 +69,10 @@
 import { ref, getCurrentInstance, onMounted } from "vue";
 import questionService from "@/_services/questionService.js";
 import categoryService from "@/_services/categoryService.js";
-import answerService from "@/_services/answerService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import { useRouter } from "vue-router";
 export default {
   setup() {
-    // const error = ref(null);
     const loading = ref(false);
     const categoryId = ref(null);
     const categories = ref(null);
@@ -102,7 +94,9 @@ export default {
 
       if (respose && respose.value) {
         if (respose.value.status === 200) {
-          categories.value = respose.value.data;
+          categories.value = respose.value.data.items;
+
+          console.log(categories.value);
         }
       }
     });
@@ -124,19 +118,17 @@ export default {
         return;
       }
 
-      if (typeAnswer.value===null) {
+      if (typeAnswer.value === null) {
         toast.error("Type of answer is required");
         return;
       }
-      loading.value = true; 
+      loading.value = true;
 
-
-      let response = await createQuesiton(categoryId.value, {
+      let response = await createQuesiton({
         context: context.value,
-        answerType: typeAnswer.value
-
+        answerType: typeAnswer.value,
+        questionCategoryId: categoryId.value,
       });
-
 
       loading.value = false;
 
@@ -149,7 +141,6 @@ export default {
             name: "EditQuestion",
             params: {
               id: response.value.data.id,
-              categoryId: categoryId.value,
             },
           });
         } else {

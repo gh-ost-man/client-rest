@@ -1,14 +1,14 @@
 import useApi from "../composables/useApi"
 import { ref } from "vue"
 
+import { encryptData, decryptData } from "../_helpers/crypto";
+
 const authService = () => {
     const apiUrl = 'https://localhost:9001/api/auth';
     const { post } = useApi();
-    const currentUser = ref(localStorage.user ? JSON.parse(localStorage.user) : null);
+    const currentUser = ref(localStorage.auth ? JSON.parse(decryptData(localStorage.auth)) : null);
 
     const login = async (data) => {
-
-
         var response = await post(apiUrl + "/Login", data);
 
         if (response.value) {
@@ -22,15 +22,15 @@ const authService = () => {
 
     const setAuth = (data) => {
 
-        localStorage.user = JSON.stringify(data.user)
+        localStorage.auth = encryptData(JSON.stringify(data.user).toString());
         localStorage.accessToken = data.token;
         localStorage.refreshToken = data.refreshToken;
 
-        currentUser.value = JSON.parse(localStorage.user);
+        currentUser.value = JSON.parse(decryptData(localStorage.auth));
     }
 
     const setAuthUser = (user) => {
-        localStorage.user = JSON.stringify(user);
+        localStorage.auth = encryptData(JSON.stringify(user).toString());
         currentUser.value = user;
     }
 
@@ -57,7 +57,7 @@ const authService = () => {
 
         currentUser.value = null;
     }
-    return { currentUser, setAuth, setAuthUser, login, register, accessCode, logOut }
+    return { currentUser,encryptData, decryptData, setAuth, setAuthUser, login, register, accessCode, logOut }
 }
 
 export default authService

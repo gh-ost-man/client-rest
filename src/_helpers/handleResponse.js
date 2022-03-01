@@ -93,6 +93,15 @@ const handleResponse = (response) => {
 
 
         }
+
+        if(response.status == 415) {
+        return [response.data.title];
+        }
+
+        if(response.status === 502) {
+            return ["Bad Gateway"]
+        }
+        
     }
 
     return response;

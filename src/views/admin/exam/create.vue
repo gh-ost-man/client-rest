@@ -1,11 +1,7 @@
 <template>
-  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info">
-  <i><font-awesome-icon icon="circle-arrow-left" /></i> 
-  </router-link>
+ <router-link :to="{name:'ExamsList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
   <div class="p-3 text-white">
-    <!-- <h3 class="c-title">Update test</h3> -->
-
-    <form @submit.prevent="submitHandle" v-if="examObj">
+    <form @submit.prevent="submitHandle">
       <div class="mb-3">
         <label class="labels c-label">Title</label
         ><input
@@ -18,7 +14,7 @@
       <div class="mb-3">
         <label class="labels c-label">Description</label>
         <textarea
-          class="form-control bg-dark c-input"
+          class="form-control bg-dark c-input border-0"
           placeholder="enter description"
           v-model.trim="examObj.description"
         ></textarea>
@@ -39,7 +35,7 @@
         <label class="labels c-label">Passing Score</label
         ><input
           type="number"
-          step="1"
+          step="0.5"
           min="40"
           max="100"
           class="form-control bg-transparent c-input"
@@ -65,31 +61,27 @@
         </select>
       </div>
       <button class="btn btn-outline-info" :disabled="loading">
-        <span v-if="!loading">Update</span>
-        <span v-else>Updating...</span>
+        <span v-if="!loading">Create</span>
+        <span v-else>Creating...</span>
       </button>
-      <button class="btn btn-outline-danger mx-3" :disabled="true">
-        <span>Delete</span>
-      </button>
-      
     </form>
   </div>
 </template>
 
 <script>
-import { ref, getCurrentInstance, onMounted } from "vue";
+import { ref, getCurrentInstance } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRoute } from "vue-router";
+import { useRouter } from 'vue-router';
 
 export default {
-  props:['id'],
-  setup(props) {
+  setup() {
+    const error = ref(null);
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { getExamById, updateExam } = examService();
-    const route = useRoute();
-  const examObj = ref(null);
+    const { createExam } = examService();
+    const router = useRouter();
+
     const statuses = ref([
       {
         title: "NotAvailable",
@@ -104,35 +96,34 @@ export default {
         value: 2,
       },
     ]);
-    
-
-    onMounted(async () => {
-      let response = await getExamById(props.id);
-
-      if (response && response.value) {
-        if (response.value.status === 200) {
-          examObj.value = response.value.data;
-        } else {
-          handleResponse(response.value).forEach((element) => {
-            toast.error(element, {
-              position: "top",
-              duration: 5000,
-            });
-          });
-        }
-      }
+    const examObj = ref({
+      title: null,
+      description: null,
+      durationTime: 30,
+      passingScore: 40,
+      status: 0,
     });
 
     const submitHandle = async () => {
       loading.value = true;
 
-      let response = await updateExam(examObj.value.id, examObj.value);
+      let response = await createExam(examObj.value);
 
       loading.value = false;
 
       if (response && response.value) {
-        if (response.value.status === 204) {
-          toast.success("The test updated successfully");
+        if (response.value.status === 201) {
+          toast.success("The test created successfully");
+          examObj.value = {
+            title: null,
+            description: null,
+            durationTime: 30,
+            passingScore: 40,
+            status: 0,
+          };
+
+        router.push({name: 'TestQuestions', params: {id: response.value.data.id}});
+
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -144,7 +135,7 @@ export default {
       }
     };
 
-    return { loading, examObj, statuses, submitHandle };
+    return { error, loading, examObj, statuses, submitHandle };
   },
 };
 </script>

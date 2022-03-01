@@ -15,14 +15,12 @@
 
 <script>
 import Roles from "@/_helpers/_role.js"
-
+import { decryptData } from "@/_helpers/crypto.js";
 export default {
   methods: {
      clickHangle() {
-      console.log(localStorage.user);
-      console.log(localStorage.user.roles);
-      if (localStorage.user) {
-        let user = JSON.parse(localStorage.user);
+      if (localStorage.auth) {
+        let user = JSON.parse(decryptData( localStorage.auth));
 
         if (user.roles) {
           let user_roles = user.roles.split(",");

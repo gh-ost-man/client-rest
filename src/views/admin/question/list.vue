@@ -14,22 +14,24 @@
           </div>
         </div>
         <div class="col-md-8 my-2">
-          <div class="row" >
-            <div class="col-md-6 my-1">
+          <div class="row">
+            <div class="col-md-4 my-1">
               <div>
                 <input
                   class="form-control c-input"
                   placeholder="filter by context"
                   type="text"
                   v-model.trim="filterContext"
+                  @keydown.enter="filterHandle"
                 />
               </div>
             </div>
-            <div class="col-md-6 my-1">
+            <div class="col-md-4 my-1">
               <select
                 class="form-select c-select"
                 aria-label="Default select example"
                 v-model="filterCategory"
+                @change="filterHandle"
               >
                 <option value="" selected class="text-white">All</option>
                 <option
@@ -41,6 +43,9 @@
                   {{ cat.name }}
                 </option>
               </select>
+            </div>
+            <div class="col-md-4 my-1">
+              <button class="btn btn-outline-light" @click="resetFilterHandle">Reset</button>
             </div>
           </div>
         </div>
@@ -64,7 +69,7 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="question in questionsItems" :key="question.id">
+            <template v-for="question in sortedQuestions" :key="question.id">
               <tr scope="row">
                 <td>{{ question.id }}</td>
                 <td>{{ question.context }}</td>
@@ -79,11 +84,12 @@
                       name: 'EditQuestion',
                       params: {
                         id: question.id,
-                        categoryId: question.questionCategoryId,
                       },
                     }"
                   >
-                  <i class="icon"> <font-awesome-icon icon="pen-to-square" /></i>
+                    <i class="icon">
+                      <font-awesome-icon icon="pen-to-square"
+                    /></i>
                   </router-link>
                 </td>
               </tr>
@@ -123,14 +129,17 @@ export default {
     const categories = ref(null);
     const router = useRouter();
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { getQuestions } = questionService();
+    const { getAllQuestions } = questionService();
     const { getAllCategories } = categoryService();
     const currentPage = ref(1);
     const pageSize = 15;
     const filterCategory = ref("");
     const filterContext = ref(null);
 
-    const paggination = ref(null);
+    const paggination = ref({
+      pages: [1],
+      totalPages: 1,
+    });
 
     onMounted(async () => {
       getFilterFromStorage();
@@ -138,32 +147,7 @@ export default {
 
       if (response && response.value) {
         if (response.value.status === 200) {
-          categories.value = response.value.data;
-          questions.value = [];
-          categories.value.forEach(async (cat) => {
-            let res = await getQuestions(cat.id);
-
-            if (res && res.value) {
-              if (res.value.status === 200) {
-                res.value.data.forEach((q) => {
-                  questions.value.push({ ...q, category: cat.name });
-                });
-              } else {
-                handleResponse(res.value).forEach((element) => {
-                  toast.error(element, {
-                    position: "top",
-                    duration: 5000,
-                  });
-                });
-              }
-            }
-          });
-          currentPage.value = 1;
-          paggination.value = paginate(
-            questions.value.length,
-            currentPage.value,
-            pageSize
-          );
+          categories.value = response.value.data.items;
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -173,7 +157,42 @@ export default {
           });
         }
       }
+      await getData();
     });
+
+    const getData = async () => {
+     
+      let filter = {};
+      if(filterCategory.value) {
+        filter.category = filterCategory.value;
+      }
+
+      if(filterContext.value) {
+        filter.context = filterContext.value;
+      }
+
+      filterStorage();
+      let responseQ = await getAllQuestions(currentPage.value, 15, filter);
+
+      if (responseQ && responseQ.value) {
+        if (responseQ.value.status === 200) {
+          questions.value = responseQ.value.data.items;
+
+          questions.value.forEach((element) => {
+            let cat = categories.value.find(
+              (x) => x.id === element.questionCategoryId
+            );
+            element.category = cat.name;
+          });
+
+          paggination.value = {
+            pages: responseQ.value.data.pages,
+            totalPages: responseQ.value.data.totalPages,
+          };
+
+        }
+      }
+    };
 
     const sortedQuestions = computed(() => {
       return questions.value
@@ -181,41 +200,24 @@ export default {
         : null;
     });
 
-    const changePage = (pag) => {
+    const changePage = async (pag) => {
       currentPage.value = pag;
+
+      await getData();
     };
 
-    const filterByContext = computed(() => {
+    const filterHandle = async() => {
+       currentPage.value = 1;
+      await getData();
+    }
+
+    const resetFilterHandle = async() => {
+      filterContext.value = null;
+      filterCategory.value = "";
       currentPage.value = 1;
-      return filterContext.value
-        ? sortedQuestions.value.filter((x) =>
-            x.context.toLowerCase().includes(filterContext.value.toLowerCase())
-          )
-        : sortedQuestions.value;
-    });
 
-    const filterByCategory = computed(() => {
-      currentPage.value = 1;
-      return filterCategory.value
-        ? filterByContext.value.filter(
-            (x) => x.questionCategoryId == filterCategory.value
-          )
-        : filterByContext.value;
-    });
-
-    const questionsItems = computed(() => {
-      filterStorage();
-      paggination.value = paginate(
-        filterByCategory.value.length,
-        currentPage.value,
-        pageSize
-      );
-
-      return filterByCategory.value.slice(
-        paggination.value.startIndex,
-        paggination.value.endIndex + 1
-      );
-    });
+      await getData();
+    }
 
     //Save filter to storage
     const filterStorage = () => {
@@ -223,6 +225,7 @@ export default {
 
       filterObj.context = filterContext.value;
       filterObj.category = filterCategory.value;
+      filterObj.currentPage = currentPage.value;
 
       sessionStorage.filterQuestions = JSON.stringify(filterObj);
     };
@@ -235,6 +238,7 @@ export default {
         let filterObj = JSON.parse(filter);
         filterContext.value = filterObj.context || "";
         filterCategory.value = filterObj.category || "";
+        currentPage.value = filterObj.currentPage ? filterObj.currentPage : 1;
       }
     };
 
@@ -242,18 +246,19 @@ export default {
       categories,
       questions,
       error,
-      questionsItems,
+      sortedQuestions,
       currentPage,
       paggination,
       filterCategory,
       filterContext,
+      filterHandle,
       changePage,
-      // resetFilter,
+      resetFilterHandle,
     };
   },
 };
 </script>
 
 <style scoped>
-@import "../../assets/css/table.css";
+@import "../../../assets/css/table.css";
 </style>

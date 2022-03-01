@@ -4,8 +4,17 @@ const categoryService = () => {
     const apiUrl = 'https://localhost:9001/api/categories';
     const { post, get, put, remove } = useApi();
     
-    const getAllCategories = async () => {
-        return await get(apiUrl);
+    const getAllCategories = async (page, limit) => {
+        let query = "?";
+        if(page) {
+            query  += "page=" + page;
+        }
+
+        if(limit) {
+            query+= "&limit="+limit;
+        }
+        
+        return await get(apiUrl + query);
     }
     const getCategory = async (id) => {
         return await get(apiUrl + "/" + id);

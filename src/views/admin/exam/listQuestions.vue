@@ -1,6 +1,6 @@
 <template>
   <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info">
-  <i><font-awesome-icon icon="circle-arrow-left" /></i>  
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
   </router-link>
   <div class="p-3">
     <div class="d-flex">
@@ -19,7 +19,7 @@
 
     <div class="table-responsive custom-table-responsive" v-if="examQuestions">
       <paggination
-        v-if="examQuestionsItems"
+        v-if="examQuestions"
         :pages="paggiExamQ.pages"
         :currentPage="currentPageExamQ"
         :totalPages="paggiExamQ.totalPages"
@@ -44,7 +44,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="eq in examQuestionsItems" :key="eq.id">
+          <template v-for="eq in examQuestions" :key="eq.id">
             <tr
               scope="row"
               :class="{ 'checked-row': checkedRemoveHandle(eq.id) }"
@@ -81,7 +81,6 @@
         </div>
         <div class="col-md-6">
           <div class="d-flex text-center">
-            <!-- <label class="labels text-white w-auto fw-bolder mx-2">Filter</label> -->
             <select
               class="form-select c-select"
               aria-label="Default select example"
@@ -99,15 +98,6 @@
                 {{ cat.name }}
               </option>
             </select>
-            <!-- <div>
-          <button
-            class="btn btn-outline-light"
-            v-if="filterCategory"
-            @click="resetFilter"
-          >
-            Reset
-          </button>
-        </div> -->
           </div>
         </div>
       </div>
@@ -184,6 +174,17 @@
         </tbody>
       </table>
     </div>
+    <div
+      class="d-flex justify-content-center"
+      v-if="!questions || !examQuestions"
+    >
+      <div
+        class="spinner-border align-center text-primary text-center"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -205,7 +206,7 @@ export default {
     const examQuestions = ref(null);
     const route = useRoute();
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { getQuestions } = questionService();
+    const { getAllQuestions } = questionService();
     const { getAllCategories } = categoryService();
     const { getAllExamQuestions, addQuestionToExam, removeQuestionFromExam } =
       examService();
@@ -220,20 +221,56 @@ export default {
     const paggiAllQ = ref(null);
     const currentPageAllQ = ref(1);
 
-    const paggiExamQ = ref(null);
+    const paggiExamQ = ref({ pages: [1], totalPages: 1 });
     const currentPageExamQ = ref(1);
 
-    const fetchExamQuestions = async () => {
-      let resExamQues = await getAllExamQuestions(route.params.id);
+    onMounted(async () => {
+      await getDataExams();
+
+      let resCategory = await getAllCategories();
+
+      if (resCategory && resCategory.value) {
+        if (resCategory.value.status === 200) {
+          categories.value = resCategory.value.data.items;
+          questions.value = [];
+        } else {
+          handleResponse(resCategory.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+      await getDataQuestions();
+    });
+
+    ///////////////////////////////////////////////////////////////////////
+    //ExamQuestions
+
+    const getDataExams = async () => {
+      let resExamQues = await getAllExamQuestions(
+        route.params.id,
+        currentPageExamQ.value,
+        pageSize
+      );
 
       if (resExamQues && resExamQues.value) {
         if (resExamQues.value.status === 200) {
-          examQuestions.value = resExamQues.value.data;
-          paggiExamQ.value = paginate(
-            examQuestions.value.length,
-            currentPageExamQ.value,
-            pageSize
-          );
+          examQuestions.value = resExamQues.value.data.items;
+
+          paggiExamQ.value = {
+            pages: resExamQues.value.data.pages,
+            totalPages: resExamQues.value.data.totalPages,
+            startPage: resExamQues.value.data.startPage,
+            endPage: resExamQues.value.data.endPage
+          };
+
+          console.log( paggiExamQ.value);
+
+          if (currentPageExamQ.value > paggiExamQ.value.endPage) {
+            currentPageExamQ.value = 1;
+          }
         } else {
           handleResponse(resExamQues.value).forEach((element) => {
             toast.error(element, {
@@ -245,36 +282,80 @@ export default {
       }
     };
 
-    onMounted(async () => {
-      await fetchExamQuestions();
+    const changeRemoveHandle = () => {
+      selectedRemoveAll.value = !selectedRemoveAll.value;
 
-      let resCategory = await getAllCategories();
+      if (selectedRemoveAll.value) {
+        selectedRemoveQuestions.value = examQuestions.value;
+      } else {
+        selectedRemoveQuestions.value = [];
+      }
+    };
 
-      if (resCategory && resCategory.value) {
-        if (resCategory.value.status === 200) {
-          categories.value = resCategory.value.data;
-          questions.value = [];
+    const checkedRemoveHandle = (value) => {
+      return selectedRemoveQuestions.value.find((x) => x.id == value);
+    };
 
-          categories.value.forEach(async (cat) => {
-            let res = await getQuestions(cat.id);
+    const changePageExamQ = async (pag) => {
+      currentPageExamQ.value = pag;
 
-            if (res && res.value) {
-              if (res.value.status === 200) {
-                res.value.data.forEach((q) => {
-                  questions.value.push({ ...q, category: cat.name });
-                });
-              } else {
-                handleResponse(res.value).forEach((element) => {
-                  toast.error(element, {
-                    position: "top",
-                    duration: 5000,
-                  });
-                });
-              }
-            }
+      await getDataExams();
+    };
+
+    const removeQuestionFromExamHandle = async () => {
+      loading.value = true;
+
+      await selectedRemoveQuestions.value.reduce(async (a, element) => {
+        let res = await removeQuestionFromExam(route.params.id, element.id);
+        if (res && res.value) {
+          if (res.value.status !== 204) {
+            handleResponse(res.value).forEach((element) => {
+              toast.error(element, {
+                position: "top",
+                duration: 5000,
+              });
+            });
+          }
+        }
+      }, Promise.resolve());
+
+      loading.value = false;
+
+      if (
+        examQuestions.value.length - selectedRemoveQuestions.value.length ===
+        0
+      ) {
+        if (currentPageExamQ.value === paggiExamQ.value.endPage) {
+          currentPageExamQ.value =
+            currentPageExamQ.value - 1 < 1 ? 1 : currentPageExamQ.value - 1;
+        }
+      }
+
+      console.log("Current page: ", currentPageExamQ.value);
+
+      await getDataExams();
+     selectedAddQuestions.value = [];
+      selectedAddAll.value = false;
+      selectedRemoveQuestions.value = [];
+      selectedRemoveAll.value = false;
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    //AllQuestions
+
+    const getDataQuestions = async () => {
+      let res = await getAllQuestions();
+
+      if (res && res.value) {
+        if (res.value.status === 200) {
+          res.value.data.items.forEach((q) => {
+            let cat = categories.value.find(
+              (x) => x.id === q.questionCategoryId
+            );
+            questions.value.push({ ...q, category: cat.name });
           });
         } else {
-          handleResponse(resCategory.value).forEach((element) => {
+          handleResponse(res.value).forEach((element) => {
             toast.error(element, {
               position: "top",
               duration: 5000,
@@ -282,7 +363,7 @@ export default {
           });
         }
       }
-    });
+    };
 
     const sortedQuestions = computed(() => {
       return questions.value
@@ -302,20 +383,6 @@ export default {
 
     const checkedAddHandle = (value) => {
       return selectedAddQuestions.value.find((x) => x.id == value);
-    };
-
-    const changeRemoveHandle = () => {
-      selectedRemoveAll.value = !selectedRemoveAll.value;
-
-      if (selectedRemoveAll.value) {
-        selectedRemoveQuestions.value = examQuestionsItems.value;
-      } else {
-        selectedRemoveQuestions.value = [];
-      }
-    };
-
-    const checkedRemoveHandle = (value) => {
-      return selectedRemoveQuestions.value.find((x) => x.id == value);
     };
 
     const filterByCategoryItems = computed(() => {
@@ -348,35 +415,14 @@ export default {
 
       paggiAllQ.value = paginate(arr.length, currentPageAllQ.value, pageSize);
 
-      // console.log("CONDD: >>>> ", currentPageAllQ.value > paggiAllQ.value.endPage? paggiAllQ.value.endPage:currentPageAllQ.value);
-      // console.log("CURPAGE_>>>", currentPageAllQ.value);
-      // console.log("PAGGI: ",  paggiAllQ.value)
-
       return arr.slice(
         paggiAllQ.value.startIndex,
         paggiAllQ.value.endIndex + 1
       );
     });
 
-    const examQuestionsItems = computed(() => {
-      paggiExamQ.value = paginate(
-        examQuestions.value.length,
-        currentPageExamQ.value,
-        pageSize
-      );
-
-      return examQuestions.value.slice(
-        paggiExamQ.value.startIndex,
-        paggiExamQ.value.endIndex + 1
-      );
-    });
-
     const changePageAllQ = (pag) => {
       currentPageAllQ.value = pag;
-    };
-
-    const changePageExamQ = (pag) => {
-      currentPageExamQ.value = pag;
     };
 
     const addQuestionToExamHandle = async () => {
@@ -413,51 +459,13 @@ export default {
         }
       }
 
-      await fetchExamQuestions();
+      await getDataExams();
 
       selectedAddQuestions.value = [];
       selectedAddAll.value = false;
-    };
-
-    const removeQuestionFromExamHandle = async () => {
-      loading.value = true;
-
-      await selectedRemoveQuestions.value.reduce(async (a, element) => {
-        let res = await removeQuestionFromExam(route.params.id, element.id);
-        if (res && res.value) {
-          if (res.value.status !== 204) {
-            handleResponse(res.value).forEach((element) => {
-              toast.error(element, {
-                position: "top",
-                duration: 5000,
-              });
-            });
-          }
-        }
-      }, Promise.resolve());
-
-      loading.value = false;
-
-      if (
-        examQuestionsItems.value.length -
-          selectedRemoveQuestions.value.length ===
-        0
-      ) {
-        if (currentPageExamQ.value === paggiExamQ.value.endPage) {
-          currentPageExamQ.value =
-            currentPageExamQ.value - 1 < 1 ? 1 : currentPageExamQ.value - 1;
-        }
-      }
-
-      await fetchExamQuestions();
       selectedRemoveQuestions.value = [];
       selectedRemoveAll.value = false;
     };
-
-    // const resetFilter = () => {
-    //   filterCategory.value = null;
-    //   currentPage.value = 1;
-    // };
 
     return {
       loading,
@@ -468,7 +476,6 @@ export default {
       pageSize,
       paggiAllQ,
       currentPageAllQ,
-      examQuestionsItems,
       paggiExamQ,
       currentPageExamQ,
       selectedAddAll,
@@ -483,7 +490,6 @@ export default {
       changeRemoveHandle,
       checkedRemoveHandle,
       removeQuestionFromExamHandle,
-      // resetFilter,
       changePageAllQ,
       changePageExamQ,
     };
@@ -492,5 +498,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../../assets/css/table.css";
+@import "../../../assets/css/table.css";
 </style>

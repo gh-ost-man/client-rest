@@ -1,34 +1,30 @@
 import useApi from "../composables/useApi"
 
 const answerService = () => {
-    const apiUrl = 'https://localhost:9001/api/c';
+    const apiUrl = 'https://localhost:9001/api/answers';
     const { post, get, put, remove } = useApi();
 
-    const getAnswerAll = async (idCategory, idQuestion) => {
-        return await get(apiUrl + "/" + idCategory + "/q/" + idQuestion + "/Answers");
+    const getAnswerAll = async () => {
+        return await get(apiUrl);
     }
 
-    const createAnswer = async (idCategory, idQuestion, data) => {
-        return await post(apiUrl + "/" + idCategory + "/q/" + idQuestion + "/Answers", data);
+    const getQuestionAnswers = async(idQuestion) => {
+        return await get(apiUrl + "/q/" + idQuestion);
     }
 
-    const updateAnswer = async (idCategory, idQuestion, idAnswer, data) => {
-        return await put(apiUrl + "/" + idCategory + "/q/" + idQuestion + "/Answers/" + idAnswer, data);
+    const createAnswer = async (data) => {
+        return await post(apiUrl, data);
     }
 
-    const removeAnswer = async (idCategory, idQuestion, idAnswer) => {
-        return await remove(apiUrl + "/" + idCategory + "/q/" + idQuestion + "/Answers/ " + idAnswer);
+    const updateAnswer = async (id, data) => {
+        return await put(apiUrl +"/"+ id, data);
     }
 
-    // const getQuestions = async (idCategory) => {
-    //     return await get(apiUrl + "/" + idCategory + "/Questions");
-    // }
+    const removeAnswer = async ( idAnswer) => {
+        return await remove(apiUrl + "/" + idAnswer);
+    }
 
-    // const createQuesiton = async(idCategory,data) => {
-    //     return await post(apiUrl + "/" + idCategory + "/Questions", data);
-    // }
-
-    return { getAnswerAll, createAnswer, updateAnswer, removeAnswer }
+    return { getAnswerAll, getQuestionAnswers, createAnswer, updateAnswer, removeAnswer }
 }
 
 

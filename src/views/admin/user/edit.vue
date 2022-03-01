@@ -58,15 +58,6 @@
           </div>
         </div>
       </div>
-      <!-- <div v-if="error">
-        <textarea
-          class="form-control bg-dark text-secondary border-0"
-          style="overflow: hidden"
-          cols="30"
-          rows="15"
-          :value="error"
-        ></textarea>
-      </div> -->
       <div class="col-md-6 border-right text-white" v-if="user">
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -275,9 +266,7 @@ export default {
 
     const saveProfileHandle = async () => {
       loading.value = true;
-     
 
-      // console.log(userUpdateObj.value);
       let response = await update(userUpdateObj.value);
       loading.value = false;
 
@@ -417,7 +406,6 @@ export default {
 
     return {
       loading,
-      // error,
       user,
       newRole,
       roleRemove,

@@ -4,8 +4,29 @@ const userService = () => {
     const apiUrl = 'https://localhost:9001/api/users';
     const { post, get, put, remove } = useApi();
 
-    const getAllUsers = async () => {
-        return await get(apiUrl);
+    const getAllUsers = async (page, limit, filter,) => {
+        let query = "?";
+        if(page) {
+            query  += "page=" + page;
+        }
+
+        if(filter) {
+            if(filter.efl) {
+                query+= "&filter="+filter.efl;
+            }
+
+            if(filter.role) {
+                query+= "&role="+filter.role;
+            }
+
+        }
+
+        if(limit) {
+            query+= "&limit="+limit;
+        }
+
+        console.log(query);
+        return await get(apiUrl + query);
     }
 
     const getById = async (id) => {
@@ -48,5 +69,3 @@ const userService = () => {
 
 
 export default userService
-
-
