@@ -64,7 +64,21 @@ const userService = () => {
     const updateEmail = async(data) => {
         return await post(apiUrl + "/UpdateEmail", data);
     }
-    return { getAllUsers , getById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
+
+    const getUserExams = async(id) => {
+        return await get(apiUrl + "/exams/" +id);
+    }
+
+    const addExamToUser = async(data) =>{
+        return await post(apiUrl+"/addExam", data);
+    }
+    
+
+    const removeExamFromUser = async(data) =>{
+        return await post(apiUrl+"/removeExam", data);
+    }
+
+    return { getAllUsers, getUserExams,addExamToUser, removeExamFromUser, getById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
 }
 
 

@@ -79,12 +79,20 @@
                 <td>{{ new Date(user.createdAt).toLocaleDateString() }}</td>
                 <td>
                   <router-link
-                    class="btn btn-outline-light"
+                    class="btn btn-outline-light mx-1"
                     :to="{ name: 'EditUser', params: { id: user.id } }"
                   >
                     <i class="icon">
                       <font-awesome-icon icon="pen-to-square"
                     /></i>
+                  </router-link>
+                  <router-link
+                    class="btn btn-outline-light mx-1"
+                    :to="{ name: 'UserExams', params: { id: user.id } }"
+                  >
+                    <i class="icon">
+                      <font-awesome-icon icon="clipboard-list" />
+                    </i>
                   </router-link>
                 </td>
               </tr>
@@ -123,6 +131,7 @@ export default {
     const { getAllUsers } = usersService();
     const currentPage = ref(1);
     const paggination = ref({ pages: [1], totalPages: 1 });
+    const pageSize = 15;
 
     const filterEFL = ref(null); // by email or firstname or lastname
     const filterRole = ref("");
@@ -152,7 +161,7 @@ export default {
 
       filterStorage();
 
-      var response = await getAllUsers(currentPage.value, 5, filter);
+      var response = await getAllUsers(currentPage.value, pageSize, filter);
 
       if (response && response.value) {
         if (response.value.status === 200) {

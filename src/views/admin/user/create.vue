@@ -184,7 +184,7 @@ export default {
       }
     };
 
-    return { userObj, error, loading, role, roles, submitHandle };
+    return { userObj,  loading, role, roles, submitHandle };
   },
 };
 </script>

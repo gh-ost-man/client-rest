@@ -190,8 +190,8 @@
 import { ref, getCurrentInstance, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import handleResponse from "@/_helpers/handleResponse.js";
-import Role from "@/_helpers/_role.js";
 import userService from "@/_services/userService.js";
+import Role from "@/_helpers/_role.js";
 export default {
   setup() {
     const { update, changePassword, getById, addRole, removeRole, removeUser } =

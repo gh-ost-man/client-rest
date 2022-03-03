@@ -27,7 +27,7 @@ import {
 library.add(faUserGraduate, faAt, faLock, faCircleInfo, faKey,
     faUserSecret, faCircleUser, faUsers, faGraduationCap, faClipboardList,
     faArrowRightFromBracket, faBars, faUserGear, faUser, faPenToSquare, faListUl, faCircleArrowLeft, faAngleDown, faCircleExclamation,
-    faTrashCan, faCircleExclamation);
+    faTrashCan, faCircleExclamation, faClipboardList);
 
 const app = createApp(App);
 app.use(store)

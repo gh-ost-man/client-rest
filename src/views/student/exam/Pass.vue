@@ -49,14 +49,22 @@
               :class="{
                 active: currentQuestion === index,
                 'bg-success':
-                  userAnswers?.filter((x) => x.idQuesiton === q.id).length>0
+                  userAnswers?.filter((x) => x.idQuesiton === q.id).length > 0,
               }"
               @click="changeQuestion(index)"
               v-for="(q, index) in questions"
               :key="q.id"
             >
-              <button class="page-link" :class="{'bg-success':
-                  userAnswers?.filter((x) => x.idQuesiton === q.id).length>0}">{{ index + 1 }}</button>
+              <button
+                class="page-link"
+                :class="{
+                  'bg-success':
+                    userAnswers?.filter((x) => x.idQuesiton === q.id).length >
+                    0,
+                }"
+              >
+                {{ index + 1 }}
+              </button>
             </li>
             <li class="page-item"><a class="page-link" href="#">Next</a></li>
           </ul>
@@ -80,21 +88,25 @@ import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import questionService from "@/_services/questionService.js";
 import answerService from "@/_services/answerService.js";
-import { onMounted, ref, getCurrentInstance, computed } from "vue";
+import authService from "@/_services/authService.js";
+import { onMounted, ref, getCurrentInstance } from "vue";
+import reportService from "@/_services/reportService.js";
 export default {
   props: ["id"],
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
 
+    const { currentUser } = authService();
+    const { createReport } = reportService();
     const { getExamById, getAllExamQuestions } = examService();
-    const { getQuestionById, updateQuestion } = questionService();
-    const { getQuestionAnswers, updateAnswer, removeAnswer, createAnswer } =
-      answerService();
+    const { getQuestionById } = questionService();
+    const { getQuestionAnswers } = answerService();
+
     const exam = ref(null);
     const examQuestions = ref(null);
     const questions = ref(null);
     const question = ref(null);
-    const currentQuestion = ref(1);
+    const currentQuestion = ref(0);
     const answerInput = ref(null);
 
     const userAnswers = ref([]);
@@ -167,11 +179,8 @@ export default {
       }
     });
 
-    const changeQuestion = (index) => {
-
-      console.log("Index: ", index);
-
-      if(currentQuestion.value === index) return;
+    const changeQuestion = async (index) => {
+      if (currentQuestion.value === index) return;
 
       if (question.value.answerType === 0) {
         if (answerInput.value) {
@@ -182,12 +191,33 @@ export default {
       let obj = userAnswers.value.find(
         (x) => x.idQuesiton === question.value.id
       );
-      if (obj) {
-        obj.status = "Added";
+      if (obj && (obj.status === "New" || obj.status === "Modify")) {
+        let response = await createReport({
+          examId: exam.value.id,
+          applicantId: currentUser.value.id,
+          questionId: question.value.id,
+          currentKeys: obj.answers.join(","),
+        });
+
+        if (response && response.value) {
+          if (response.value.status === 200) {
+            obj.status = "Added";
+          
+          } else {
+            handleResponse(response.value).forEach((element) => {
+              toast.error(element, {
+                position: "top",
+                duration: 5000,
+              });
+            });
+          }
+        }
       }
 
-      currentQuestion.value = index;
-      question.value = questions.value[index];
+
+        currentQuestion.value = index;
+            question.value = questions.value[index];
+            answerInput.value = null;
     };
 
     const answerInputHandle = (e) => {
@@ -257,8 +287,10 @@ export default {
             if (obj.answers.find((x) => x === answer.charKey)) {
               obj.answers = obj.answers.filter((x) => x !== answer.charKey);
 
-              if(obj.answers.length === 0) {
-                userAnswers.value =userAnswers.value.filter(x=>x.idQuesiton !== question.value.id); 
+              if (obj.answers.length === 0) {
+                userAnswers.value = userAnswers.value.filter(
+                  (x) => x.idQuesiton !== question.value.id
+                );
               }
 
               return;

@@ -160,10 +160,6 @@ const routes = [
     props: true
   },
 
-
-
-
-
   /* Users */
   {
     path: '/d/users',
@@ -212,6 +208,19 @@ const routes = [
         meta: {
           layout: 'admin', authorize: ["Admin"],
         },
+      },
+      {
+        path: '/d/users/e/:id/',
+        name: 'UserExams',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/user/listExams.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Manager"],
+        },
+        props: true
       },
     ]
   },
@@ -268,7 +277,6 @@ const routes = [
       },
     ]
   },
-
 
   /* Questions */
   {
@@ -374,7 +382,6 @@ const routes = [
         },
         props: true
       },
-
       {
         path: '/d/exams/:id/questions',
         name: 'ExamQuestions',
@@ -387,8 +394,39 @@ const routes = [
           layout: 'admin', authorize: ["Teacher"],
         },
       },
+      
     ]
   },
+
+  /* Reports */
+  {
+    path: '/d/reports',
+    name: 'Reports',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/'),
+    beforeEnter: requireAuth,
+    meta: {
+      layout: 'admin',
+    },
+    children: [
+      {
+        path: '/d/reports/exam/:idExam',
+        name: 'ReporDetails',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/details.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ['Teacher'],
+        },
+        props: true
+      },
+    ]
+  }
+
 
 ]
 
