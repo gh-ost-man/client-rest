@@ -5,8 +5,8 @@
   <div class="p-3 text-white">
     <form @submit.prevent="submitHandle" v-if="examObj">
       <div class="mb-3">
-        <label class="labels c-label">Title</label
-        ><input
+        <label class="labels c-label">Title</label>
+        <input
           type="test"
           class="form-control bg-transparent c-input"
           placeholder="enter title"
@@ -22,8 +22,8 @@
         ></textarea>
       </div>
       <div class="mb-3">
-        <label class="labels c-label">Duration time</label
-        ><input
+        <label class="labels c-label">Duration time</label>
+        <input
           type="number"
           step="5"
           min="30"
@@ -34,8 +34,8 @@
         />
       </div>
       <div class="mb-3">
-        <label class="labels c-label">Passing Score</label
-        ><input
+        <label class="labels c-label">Passing Score</label>
+        <input
           type="number"
           step="1"
           min="40"
@@ -116,6 +116,9 @@ export default {
       }
     });
 
+    /**
+     * Updates exam
+     */
     const submitHandle = async () => {
       loading.value = true;
 

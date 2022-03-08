@@ -209,6 +209,9 @@ export default {
     const newRole = ref(null); // role for add
     const roleRemove = ref(null); // role f remove
 
+    /**
+     * Gets data of user
+     */
     const fetchData = async () => {
       
       userRoles.value = [];
@@ -264,6 +267,9 @@ export default {
       await fetchData();
     });
 
+    /**
+     * Updates data of user
+     */
     const saveProfileHandle = async () => {
       loading.value = true;
 
@@ -286,6 +292,9 @@ export default {
       }
     };
 
+    /**
+     * Changes password of user
+     */
     const changePasswordHandle = async () => {
     
 
@@ -330,6 +339,9 @@ export default {
       }
     };
 
+    /**
+     * Add new role to user
+     */
     const addRoleHandle = async () => {
      
       loading.value = true;
@@ -356,6 +368,9 @@ export default {
       }
     };
 
+    /**
+     * Delete role from user
+     */
     const removeRoleHandle = async () => {
     
       loading.value = true;
@@ -382,6 +397,9 @@ export default {
       }
     };
 
+    /**
+     * Delete user
+     */
     const removeUserHandle = async () => {
      
       loading.value = true;

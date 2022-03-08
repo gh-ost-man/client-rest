@@ -105,6 +105,14 @@
           <span><i class="fa-solid fa-circle-exclamation fs-3"></i> </span>
           <span class="mx-3">Must be only one answer</span>
         </div>
+        <div v-if="isKeysWords" class="text-info m-3">
+          <span>
+            <i class="fs-3">
+               <font-awesome-icon icon="circle-exclamation" />
+            </i>
+          </span>
+          <span class="mx-3">Must be KeysWords</span>
+        </div>
         <div
           class="text-danger m-3"
           v-if="
@@ -208,6 +216,7 @@ export default {
     const isOneAnswer = ref(false);
     const isTextAnswer = ref(false);
     const isMaxAnswers = ref(false);
+    const isKeysWords = ref(false);
     const answerTypes = ref([
       { title: "Text", value: 0 },
       { title: "Single", value: 1 },
@@ -226,6 +235,8 @@ export default {
         if (responseQ.value.status === 200) {
           question.value = responseQ.value.data;
           typeAnswer.value = question.value.answerType;
+
+          checkAnswers();
         } else {
           handleResponse(responseQ.value).forEach((element) => {
             toast.error(element, {
@@ -256,6 +267,9 @@ export default {
       }
     });
 
+    /**
+     * Gets answer of question
+     */
     const getAnswersQuestion = async () => {
       let responseA = await getQuestionAnswers(question.value.id);
 
@@ -276,6 +290,9 @@ export default {
       }
     };
 
+    /**
+     * Deletes answer from quesion
+     */
     const removeAnswerHandle = async (index) => {
       loading.value = true;
       let response = await removeAnswer(answers.value[index].id);
@@ -298,7 +315,7 @@ export default {
 
                 if (res && res.value) {
                   if (res.value.status === 204) {
-                    checkAnswers();
+                   
                   } else {
                     handleResponse(res.value).forEach((element) => {
                       toast.error(element, {
@@ -325,6 +342,9 @@ export default {
       }
     };
 
+    /**
+     * Add new answer to question
+     */
     const addAnswerHandle = async () => {
       if (!answer.value) {
         toast.error("Answer field is required");
@@ -372,6 +392,9 @@ export default {
       checkAnswers();
     };
 
+    /**
+     * Sets data for update
+     */
     const editAnswerHandle = (index) => {
       updateAnswerStatus.value = true;
       answer.value = answers.value[index].context;
@@ -380,6 +403,9 @@ export default {
       indexUpdate.value = index;
     };
 
+    /**
+     * Updates answers
+     */
     const updateAnswerHandle = async () => {
       if (answer.value.length > 400 || answer.value.length < 3) {
         toast.error(
@@ -481,11 +507,13 @@ export default {
       isOneAnswer.value = false;
       isMultyAnswers.value = false;
       isTextAnswer.value = false;
+      isKeysWords.value = false;
 
       if (question.value) {
         if (question.value.answerType === 0) {
           isMaxAnswers.value = answers.value.length >= 1 ? true : false;
           isTextAnswer.value = answers.value.length > 1 ? true : false;
+          isKeysWords.value = true;
         }
 
         if (question.value.answerType === 1) {
@@ -525,6 +553,7 @@ export default {
       answer,
       isCorrectAnswer,
       isTextAnswer,
+      isKeysWords,
       isMaxAnswers,
       answers,
       typeAnswer,

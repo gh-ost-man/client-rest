@@ -73,7 +73,7 @@
           </thead>
           <tbody>
             <template v-for="exam in sortedExams" :key="exam.id">
-              <tr scope="row">
+              <tr class="c-table-hover" scope="row">
                 <td>{{ exam.id }}</td>
                 <td>{{ exam.title }}</td>
                 <td>{{ exam.durationTime }}</td>
@@ -156,6 +156,9 @@ export default {
       await getData();
     });
 
+    /**
+     * Gets all exams from server
+     */
     const getData = async () => {
       let filter = {};
       if (filterTitle.value) {
@@ -168,7 +171,7 @@ export default {
 
       filterStorage();
 
-      let response = await getAllExams(currentPage.value, pageSize,  filter,);
+      let response = await getAllExams(currentPage.value, pageSize, filter);
       if (response && response.value) {
         if (response.value.status === 200) {
           exams.value = response.value.data.items;
@@ -209,16 +212,27 @@ export default {
       }
     };
 
+    /**
+     * Filters exams by title exam
+     */
     const filterByTitle = async () => {
       currentPage.value = 1;
       await getData();
     };
 
+     /**
+     * Filters exams by status exam
+     */
     const filterByStatus = async () => {
       currentPage.value = 1;
       await getData();
     };
 
+    /**
+     * Changes current page
+     * 
+     * @param {number} pag New page
+     */
     const changePage = async (pag) => {
       currentPage.value = pag;
       exams.value = [];
@@ -226,12 +240,18 @@ export default {
       await getData();
     };
 
+    /**
+     * Sort exams by id
+     */
     const sortedExams = computed(() => {
       return exams.value
         ? exams.value.sort((x1, x2) => x1.id - x2.id)
         : exams.value;
     });
 
+    /**
+     * Reset all filters
+     */
     const resetFilterHandle = async () => {
       filterTitle.value = null;
       filterStatus.value = "";
@@ -240,7 +260,9 @@ export default {
       await getData();
     };
 
-    //Save filter to storage
+    /**
+     * Saves all filter into storage
+     */
     const filterStorage = () => {
       let filterObj = {};
 
@@ -251,7 +273,9 @@ export default {
       sessionStorage.filterExams = JSON.stringify(filterObj);
     };
 
-    //Get filter from storage
+    /**
+     * Gets all filters from storage
+     */
     const getFilterFromStorage = () => {
       let filter = sessionStorage.getItem("filterExams");
 

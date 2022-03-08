@@ -1,12 +1,12 @@
 <template>
-  <router-link :to="{ name: 'CategoriesList' }" class="btn btn-outline-info"
-    ><i><font-awesome-icon icon="circle-arrow-left" /></i
-  ></router-link>
+  <router-link :to="{ name: 'CategoriesList' }" class="btn btn-outline-info">
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
+  </router-link>
   <div class="p-3 text-white">
     <form @submit.prevent="submitHandle" v-if="category">
       <div>
-        <label class="labels c-label">Name of category</label
-        ><input
+        <label class="labels c-label">Name of category</label>
+        <input
           type="text"
           class="form-control bg-transparent c-input"
           placeholder="enter name"
@@ -18,14 +18,14 @@
           <span v-if="!loading">Edit</span>
           <span v-else>Editing...</span>
         </button>
-        <button
+        <!-- <button
           class="btn btn-outline-danger mx-2"
           @click="deleteCategoryHandle"
           :disabled="loadingDelete"
         >
           <span v-if="!loadingDelete">Delete</span>
           <span v-else>Deleting...</span>
-        </button>
+        </button> -->
       </div>
     </form>
   </div>
@@ -61,6 +61,10 @@ export default {
       }
     });
 
+    /**
+     * Updates category
+     */
+
     const submitHandle = async () => {
       loading.value = true;
       let response = await updateCategory(category.value.id, {
@@ -81,6 +85,10 @@ export default {
         }
       }
     };
+
+     /**
+     * Deletes category
+     */
 
     const deleteCategoryHandle = async () => {
       loadingDelete.value = true;

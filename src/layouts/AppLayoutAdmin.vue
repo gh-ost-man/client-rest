@@ -1,76 +1,66 @@
 <template>
   <div class="sidebar" :class="{ close: isClosedSideBar }">
     <div class="logo-details c-logo text-center">
-      <!-- <span>  <i class="fa-solid fa-user-secret fs-1"></i></span> -->
       <i> <font-awesome-icon icon="user-secret" class="fs-1" /></i>
 
       <span class="logo_name fs-3">IT STEP</span>
     </div>
     <ul class="nav-links">
-      <li :class="{ 'menu-active': $route.fullPath.includes('profile') }">
+      <li
+        v-if="isVisibleHandle(['Admin', 'Manager', 'Teacher'])"
+        :class="{ 'menu-active': $route.fullPath.includes('profile') }"
+      >
         <router-link :to="{ name: 'ProfileAdmin' }">
-          <!-- <i class="fa-solid fa-circle-user"></i> -->
           <i><font-awesome-icon icon="circle-user" /></i>
           <span class="link_name">Profile</span>
         </router-link>
-
         <ul class="sub-menu blank">
           <li>
             <router-link :to="{ name: 'ProfileAdmin' }">Profile</router-link>
           </li>
         </ul>
       </li>
-      <li>
+      <li v-if="isVisibleHandle(['Admin', 'Manager'])">
         <router-link
           :to="{ name: 'UsersList' }"
           :class="{ 'menu-active': $route.fullPath.includes('users') }"
         >
-          <!-- <i class="fas fa-users"></i> -->
           <i> <font-awesome-icon icon="users" /></i>
           <span class="link_name">Users</span>
         </router-link>
-        <!-- <a href="/users">
-          <i class="fa-solid fa-users"></i>
-          <span class="link_name">Users</span>
-        </a> -->
+
         <ul class="sub-menu blank">
           <li>
-            <!-- <a class="link_name" href="/users">Users</a> -->
             <router-link :to="{ name: 'UsersList' }">Users</router-link>
           </li>
         </ul>
       </li>
-      <li :class="{ showMenu: showSubMenuService,'menu-active': $route.fullPath.includes('exams') ||$route.fullPath.includes('categories') || $route.fullPath.includes('questions')   }" >
-        <div class="iocn-link" >
-          <!-- <a href="#">
-           <i class="fa-solid fa-graduation-cap"></i>
-            <span class="link_name">Tests</span>
-          </a> -->
+      <li
+        v-if="isVisibleHandle(['Teacher'])"
+        :class="{
+          showMenu: showSubMenuService,
+          'menu-active':
+            $route.fullPath.includes('exams') ||
+            $route.fullPath.includes('categories') ||
+            $route.fullPath.includes('questions'),
+        }"
+      >
+        <div class="iocn-link">
           <router-link
             class="w-100"
             :to="{ name: 'ExamsList' }"
-            :class="{ 'menu-active': $route.fullPath.includes( 'exams') }"
+            :class="{ 'menu-active': $route.fullPath.includes('exams') }"
           >
-            <!-- <i class="fa-solid fa-graduation-cap"></i> -->
             <i class=""> <font-awesome-icon icon="graduation-cap" /></i>
             <span class="link_name">Exams</span>
           </router-link>
-
-          <!-- <i
-            class="bx bxs-chevron-down arrow"
-            @click="showSubMenuService = !showSubMenuService"
-          ></i> -->
-          <i
-            class="arrow"
-            
-            @click="showSubMenuService = !showSubMenuService"
+          <i class="arrow" @click="showSubMenuService = !showSubMenuService"
             ><font-awesome-icon icon="angle-down"
           /></i>
         </div>
         <ul class="sub-menu">
           <li><router-link :to="{ name: 'ExamsList' }">Exams</router-link></li>
           <li>
-            <!-- <a href="#">Categories</a> -->
             <router-link :to="{ name: 'CategoriesList' }">
               Categories
             </router-link>
@@ -80,34 +70,40 @@
               Questions
             </router-link>
           </li>
-          <!-- <li><a href="#">Answers</a></li> -->
         </ul>
       </li>
-      <li>
-        <a href="#">
-          <!-- <i class="fa-solid fa-clipboard-list"></i> -->
+      <li v-if="isVisibleHandle(['Manager'])">
+        <!-- <a href="#">
           <i> <font-awesome-icon icon="clipboard-list" /></i>
           <span class="link_name">Report</span>
-        </a>
+        </a> -->
+        <router-link :to="{ name: 'ReportsList' }">
+          <i> <font-awesome-icon icon="clipboard-list" /></i>
+          <span class="link_name">Reports</span>
+        </router-link>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Report</a></li>
+          <li>
+            <router-link :to="{ name: 'ReportsList' }">
+              <span class="link_name">Reports</span>
+            </router-link>
+          </li>
         </ul>
       </li>
-      <li>
+      <li v-if="isVisibleHandle(['Manager', 'Admin', 'Teacher'])">
         <div class="profile-details">
           <div class="profile-content">
             <!-- <img src="image/profile.jpg" alt="profileImg" /> -->
           </div>
           <div class="name-job">
-            <div class="profile_name truncate-text">{{ authFullName }}</div>
-            <div class="job">{{ authEmail }}</div>
+            <div class="profile_name truncate-text">
+              {{ $store.state.user?.firstName }}
+              {{ $store.state.user?.lastName }}
+            </div>
+            <div class="job">{{ $store.state.user?.email }}</div>
           </div>
-          <!-- <i class="bx bx-log-out" @click="logout"></i> -->
-          <i  @click="logout"> <font-awesome-icon icon="arrow-right-from-bracket" /></i>
-          <!-- <i class="fa-solid fa-arrow-right-from-bracket" @click="logout"></i> -->
-          <!-- <div class="name-job">
-          <div class="profile_name truncate-text">Hello world asdj kajdl jaskl;dj klasdkl </div>
-        </div> -->
+          <i @click="logout">
+            <font-awesome-icon icon="arrow-right-from-bracket"
+          /></i>
         </div>
         <div class="logout" v-if="isClosedSideBar">
           <a @click="logout">
@@ -119,22 +115,13 @@
   </div>
   <section class="home-section body-background">
     <div class="home-content c-background sticky-top text-white">
-      <!-- <i
-        class="bx bx-menu text-white"
-        @click="isClosedSideBar = !isClosedSideBar"
-      ></i> -->
-      <!-- <i
-        class="fa-solid fa-bars mx-3 fs-4"
-        style="cursor: pointer"
-        @click="isClosedSideBar = !isClosedSideBar"
-      ></i> -->
       <i
         class="mx-3 fs-4"
         style="cursor: pointer"
         @click="isClosedSideBar = !isClosedSideBar"
       >
-        <font-awesome-icon icon="bars"
-      /></i>
+        <font-awesome-icon icon="bars" />
+      </i>
     </div>
     <div class="container">
       <router-view></router-view>
@@ -144,9 +131,11 @@
 
 <script>
 import authService from "@/_services/authService.js";
-import {  ref  } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { encryptData, decryptData } from "../_helpers/crypto";
+import { useStore } from "vuex";
+
 export default {
   name: "admin-layout",
   data() {
@@ -158,14 +147,14 @@ export default {
     const isClosedSideBar = ref(true);
     const authEmail = ref(null);
     const authFullName = ref(null);
-    const { logOut } = authService();
+    const { logOut, currentUser } = authService();
     const router = useRouter();
+    const store = useStore();
 
-    if (localStorage.auth) {
-      let user =  JSON.parse(decryptData(localStorage.auth));
-
-      authEmail.value = user.email;
-      authFullName.value = user.firstName + " " + user.lastName;
+    if (currentUser?.value) {
+      authEmail.value = currentUser.value.email;
+      authFullName.value =
+        currentUser.value.firstName + " " + currentUser.value.lastName;
     }
 
     const logout = () => {
@@ -175,7 +164,27 @@ export default {
       router.push({ name: "Login" });
     };
 
-    return { isClosedSideBar, authEmail, authFullName, logout };
+    const isVisibleHandle = (authRoles) => {
+      if (!currentUser.value) return false;
+
+      let userRoles = currentUser.value.roles.split(",");
+
+      for (let role of userRoles) {
+        if (authRoles.includes(role)) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    return {
+      isClosedSideBar,
+      authEmail,
+      authFullName,
+      logout,
+      isVisibleHandle,
+    };
   },
 };
 </script>
@@ -221,7 +230,7 @@ export default {
     0 0 80px #03bcf4, 0 0 160px #03bcf4, 0 0 400px #03bcf4; */
 
   /* background: darkcyan; */
-   background: #2b2b2b;
+  background: #2b2b2b;
 }
 /* Google Fonts Import Link */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");

@@ -33,8 +33,6 @@ const paginate = (
         endPage = 1;
     }
 
-    console.log("FROM: ", (endPage + 1) - startPage);
-
     let pages = Array.from(Array((endPage + 1) - startPage).keys()).map(i => startPage + i);
 
     // console.log("Total PAGES: ", totalPages);
@@ -43,11 +41,6 @@ const paginate = (
     // console.log("END PAGE: ", endPage);
 
     // console.log("CON:", Math.ceil(count / itemsCntOnPage) > currentPage + itemsCntOnPage);
-
-
-
-
-
 
     return {
         startPage: startPage,

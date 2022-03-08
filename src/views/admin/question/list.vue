@@ -58,7 +58,7 @@
           :totalPages="paggination.totalPages"
           @changePage="changePage"
         ></paggination>
-        <table class="table custom-table">
+        <table class="table custom-table ">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -70,7 +70,7 @@
           </thead>
           <tbody>
             <template v-for="question in sortedQuestions" :key="question.id">
-              <tr scope="row">
+              <tr class="c-table-hover" scope="row">
                 <td>{{ question.id }}</td>
                 <td>{{ question.context }}</td>
                 <td>
@@ -160,6 +160,9 @@ export default {
       await getData();
     });
 
+    /**
+     * Gets all questions from server
+     */
     const getData = async () => {
      
       let filter = {};
@@ -172,7 +175,7 @@ export default {
       }
 
       filterStorage();
-      let responseQ = await getAllQuestions(currentPage.value, 15, filter);
+      let responseQ = await getAllQuestions(currentPage.value, pageSize, filter);
 
       if (responseQ && responseQ.value) {
         if (responseQ.value.status === 200) {
@@ -194,23 +197,34 @@ export default {
       }
     };
 
+    /**
+     * Sort question by id
+     */
     const sortedQuestions = computed(() => {
       return questions.value
         ? questions.value.sort((x1, x2) => x1.id - x2.id)
         : null;
     });
 
+    /**
+     * Changes current page
+     * @param {number} pag New page
+     */
     const changePage = async (pag) => {
       currentPage.value = pag;
 
       await getData();
     };
 
+
     const filterHandle = async() => {
        currentPage.value = 1;
       await getData();
     }
-
+    
+    /**
+     * Resets all filters
+     */
     const resetFilterHandle = async() => {
       filterContext.value = null;
       filterCategory.value = "";
@@ -219,7 +233,9 @@ export default {
       await getData();
     }
 
-    //Save filter to storage
+    /**
+     * Save filters to storage
+     */
     const filterStorage = () => {
       let filterObj = {};
 
@@ -230,7 +246,9 @@ export default {
       sessionStorage.filterQuestions = JSON.stringify(filterObj);
     };
 
-    //Get filter fromstorage
+    /**
+     * /Get filters from storage
+     */
     const getFilterFromStorage = () => {
       let filter = sessionStorage.getItem("filterQuestions");
 

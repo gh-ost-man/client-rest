@@ -1,6 +1,8 @@
 <template>
   <div class="text-white">
-      <router-link :to="{name:'UsersList'}" class="btn btn-outline-info mb-3"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
+    <router-link :to="{ name: 'UsersList' }" class="btn btn-outline-info mb-3"
+      ><i><font-awesome-icon icon="circle-arrow-left" /></i
+    ></router-link>
 
     <form @submit.prevent="submitHandle">
       <div class="d-flex justify-content-between align-items-center mb-3">
@@ -12,11 +14,10 @@
       <hr class="bg-secondary" />
       <div class="row mt-2">
         <div class="col-md-6">
-         
           <label class="labels c-label">
-             <i class="m-2 fs-5 c-">
-            <font-awesome-icon icon="user" />
-          </i>
+            <i class="m-2 fs-5 c-">
+              <font-awesome-icon icon="user" />
+            </i>
             First name</label
           ><input
             type="text"
@@ -26,11 +27,10 @@
           />
         </div>
         <div class="col-md-6">
-          
           <label class="labels c-label">
             <i class="m-2 fs-5">
-            <font-awesome-icon icon="user" />
-          </i>
+              <font-awesome-icon icon="user" />
+            </i>
             Last name</label
           ><input
             type="text"
@@ -42,11 +42,10 @@
       </div>
       <div class="row mt-3">
         <div class="col-md-12">
-          
           <label class="labels c-label">
             <i class="m-2 fs-5">
-            <font-awesome-icon icon="at" />
-          </i>
+              <font-awesome-icon icon="at" />
+            </i>
             Email</label
           ><input
             type="email"
@@ -56,11 +55,10 @@
           />
         </div>
         <div class="col-md-12 mt-2">
-         
           <label class="labels c-label">
-             <i class="m-2 fs-5">
-            <font-awesome-icon icon="circle-info" />
-          </i>
+            <i class="m-2 fs-5">
+              <font-awesome-icon icon="circle-info" />
+            </i>
             Additional info</label
           ><textarea
             class="form-control c-input"
@@ -69,12 +67,12 @@
           />
         </div>
         <div class="col-md-12 mt-2">
-         
           <label class="labels c-label">
-             <i class="m-2 fs-5">
-            <font-awesome-icon icon="key" />
-          </i>
-            Role</label>
+            <i class="m-2 fs-5">
+              <font-awesome-icon icon="key" />
+            </i>
+            Role</label
+          >
           <select
             class="form-select c-select"
             v-model="role"
@@ -153,6 +151,7 @@ export default {
           };
           toast.success("User created successfully");
 
+          // Add roles to new user
           var res = await addRole({
             userId: response.value.data.id,
             role: role.value,
@@ -184,7 +183,7 @@ export default {
       }
     };
 
-    return { userObj,  loading, role, roles, submitHandle };
+    return { userObj, loading, role, roles, submitHandle };
   },
 };
 </script>

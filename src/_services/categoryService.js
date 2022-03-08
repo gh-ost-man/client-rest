@@ -16,6 +16,7 @@ const categoryService = () => {
         
         return await get(apiUrl + query);
     }
+   
     const getCategory = async (id) => {
         return await get(apiUrl + "/" + id);
     }

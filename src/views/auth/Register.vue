@@ -1,6 +1,6 @@
 <template>
   <div class="p-5">
-    <form @submit.prevent="sendMessage">
+    <form @submit.prevent="sendMessageHandle">
       <h3 class="text-info">Register</h3>
       <div class="form-group mt-1">
         <label class="c-label">
@@ -105,9 +105,9 @@ export default {
       code: -1,
     });
     const dialogVisible = ref(false);
-    const { register, accessCode } = authService();
+    const { register, sendMessage } = authService();
 
-    const sendMessage = async () => {
+    const sendMessageHandle = async () => {
 
       if(!newUser.value.firstName ||newUser.value.firstName==='') {
         toast.error("First name is required");
@@ -128,7 +128,7 @@ export default {
 
 
       loading.value = true;
-      let resAccessCode = await accessCode(newUser.value);
+      let resAccessCode = await sendMessage(newUser.value);
       loading.value = false;
       if (resAccessCode && resAccessCode.value) {
         if (resAccessCode.value.status === 204) {
@@ -190,7 +190,7 @@ export default {
       loading,
       dialogVisible,
       submitHandle,
-      sendMessage,
+      sendMessageHandle,
     };
   },
 };

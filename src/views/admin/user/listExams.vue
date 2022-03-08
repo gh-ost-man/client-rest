@@ -3,25 +3,27 @@
     <i><font-awesome-icon icon="circle-arrow-left" /></i>
   </router-link>
   <div class="p-3">
-    <h3 class="text-white">User Exams</h3>
-    <hr class="text-secondary" />
-    <div class="table-responsive custom-table-responsive" v-if="userExams">
-      <!-- <paggination
-        v-if="questionItems"
-        :pages="paggiAllQ.pages"
-        :currentPage="currentPageAllQ"
-        :totalPages="paggiAllQ.totalPages"
-        @changePage="changePageAllQ"
-      ></paggination> -->
-      <!-- <button
-        class="btn btn-outline-light"
-        @click="addQuestionToExamHandle"
-        v-if="selectedAddQuestions.length"
+    <div class="d-flex">
+      <h3 class="text-white">User Exams</h3>
+      <button
+        class="btn btn-outline-light mx-1"
+        @click="removeExamFromUserHandle"
+        v-if="selectedRemoveExams.length"
         :disabled="loading"
       >
-        <span v-if="!loading"> Add to exam</span>
-        <span v-else>Adding ...</span>
-      </button> -->
+        <span>Remove exam</span>
+      </button>
+    </div>
+    <hr class="text-secondary" />
+    <div class="table-responsive custom-table-responsive" v-if="userExams">
+      <paggination
+        v-if="userExams"
+        :pages="paggiUExams.pages"
+        :currentPage="currentPageUExams"
+        :totalPages="paggiUExams.totalPages"
+        @changePage="changePageUExams"
+      ></paggination>
+
       <table class="table custom-table">
         <thead>
           <tr>
@@ -30,8 +32,8 @@
                 <input
                   type="checkbox"
                   class="js-check-all"
-                  :checked="isSelectedAddAll"
-                  @change="changeAddHandle"
+                  :checked="isSelectedRemoveExams"
+                  @change="changeRemoveHandle"
                 />
                 <div class="control__indicator"></div>
               </label>
@@ -40,20 +42,20 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="ue in userExams" :key="ue.examId">
+          <template v-for="ue in userExamsItems" :key="ue.examId">
             <tr
               scope="row"
-              :class="{ 'checked-row': checkedAddHandle(ue.examId) }"
+              :class="{ 'checked-row': checkedRemoveHandle(ue.examId) }"
             >
               <th scope="row">
                 <label
                   class="control control--checkbox"
-                  :class="{ 'checked-row': checkedAddHandle(ue.examId) }"
+                  :class="{ 'checked-row': checkedRemoveHandle(ue.examId) }"
                 >
                   <input
                     type="checkbox"
                     :value="ue"
-                    v-model="isSelectedAllExams"
+                    v-model="selectedRemoveExams"
                   />
                   <div class="control__indicator"></div>
                 </label>
@@ -83,13 +85,13 @@
 
     <hr class="text-secondary" />
     <div class="table-responsive custom-table-responsive" v-if="exams">
-      <!-- <paggination
-        v-if="examQuestions"
-        :pages="paggiExamQ.pages"
-        :currentPage="currentPageExamQ"
-        :totalPages="paggiExamQ.totalPages"
-        @changePage="changePageExamQ"
-      ></paggination> -->
+      <paggination
+        v-if="examItems"
+        :pages="paggiExams.pages"
+        :currentPage="currentPageExam"
+        :totalPages="paggiExams.totalPages"
+        @changePage="changePageExam"
+      ></paggination>
       <table class="table custom-table">
         <thead>
           <tr>
@@ -134,36 +136,6 @@
         </tbody>
       </table>
     </div>
-
-    <!-- <div class="mt-3">
-      <div class="row">
-        <div class="col-md-6">
-          <h3 class="text-white">All questions</h3>
-        </div>
-        <div class="col-md-6">
-          <div class="d-flex text-center">
-            <select
-              class="form-select c-select"
-              aria-label="Default select example"
-              v-model="filterCategory"
-              v-if="questions"
-            >
-              <option value="" selected class="text-white">All</option>
-              <option
-                class="text-white"
-                v-for="cat in categories"
-                :key="cat.id"
-                :value="cat.id"
-                :v-model="filterCategory"
-              >
-                {{ cat.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
     <div class="d-flex justify-content-center" v-if="!userExams || !exams">
       <div
         class="spinner-border align-center text-primary text-center"
@@ -180,8 +152,11 @@ import handleResponse from "@/_helpers/handleResponse.js";
 import userService from "@/_services/userService.js";
 import examService from "@/_services/examService.js";
 import { onMounted, ref, getCurrentInstance, computed } from "vue";
+import paginate from "@/_helpers/paginate.js";
+import Paggination from "@/components/Paggination";
 export default {
   props: ["id"],
+  components: { Paggination },
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
@@ -190,9 +165,26 @@ export default {
     const { getAllExams, getExamById } = examService();
     const exams = ref(null);
     const userExams = ref(null);
-    const isSelectedAllExams = ref(false);
+    const isSelectedRemoveExams = ref(false);
     const isSelectedAddAll = ref(false);
+    const selectedRemoveExams = ref([]);
     const selectedAddExams = ref([]);
+    const paggiExams = ref({
+      pages: [1],
+      totalPages: 1,
+      startIndex: 0,
+      endIndex: 0,
+    });
+    const paggiUExams = ref({
+      pages: [1],
+      totalPages: 1,
+      startIndex: 0,
+      endIndex: 0,
+    });
+
+    const currentPageUExams = ref(1);
+    const currentPageExam = ref(1);
+    const pageSize = 5;
 
     onMounted(async () => {
       await fetchUserExams();
@@ -212,18 +204,17 @@ export default {
       }
     });
 
-    //UserExam
+    //UserExam ///////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Gets all exams of user
+     */
     const fetchUserExams = async () => {
       let response = await getUserExams(props.id);
 
-      console.log(props.id);
-
       if (response && response.value) {
         if (response.value.status === 200) {
-          console.log(response.value.data);
-          userExams.value = response.value.data;
-
+          userExams.value = response.value.data.items;
           await userExams.value.reduce(async (a, item) => {
             let res = await getExamById(item.examId);
 
@@ -250,14 +241,103 @@ export default {
         }
       }
     };
+    
+    /**
+     * Selects exams for delete from user
+     */
+    const changeRemoveHandle = () => {
+      isSelectedRemoveExams.value = !isSelectedRemoveExams.value;
 
-    const checkedRemoveHandle = (id) => {};
+      if (isSelectedRemoveExams.value) {
+        selectedRemoveExams.value = userExamsItems.value;
+      } else {
+        selectedRemoveExams.value = [];
+      }
+    };
 
-    //AllExam
+    /**
+     * Deletes exam from user
+     */
+    const removeExamFromUserHandle = async () => {
+      loading.value = true;
+      await selectedRemoveExams.value.reduce(async (a, item) => {
+        let res = await removeExamFromUser({
+          userId: props.id,
+          examId: item.examId,
+        });
 
+        if (res && res.value) {
+          if (res.value.status !== 200) {
+            handleResponse(res.value).forEach((element) => {
+              toast.error(element, {
+                position: "top",
+                duration: 5000,
+              });
+            });
+          }
+        }
+      }, Promise.resolve());
+
+      loading.value = false;
+
+      if(userExamsItems.value.length - selectedRemoveExams.value.length === 0) {
+        if(currentPageUExams.value === paggiUExams.value.endPage) {
+          currentPageUExams.value = currentPageUExams.value -1 < 1?1:currentPageUExams.value - 1;
+        }
+      }
+
+      isSelectedRemoveExams.value = false;
+      selectedRemoveExams.value = [];
+      isSelectedAddAll.value = false;
+      selectedAddExams.value = [];
+
+      await fetchUserExams();
+    };
+
+    /**
+     * Checks whether the exam is selected
+     */
+    const checkedRemoveHandle = (id) => {
+      return selectedRemoveExams.value.find((x) => x.examId == id);
+    };
+
+    /**
+     * Changes current page
+     * 
+     * @param {number} page New page
+     */
+    const changePageUExams = (page) => {
+      currentPageUExams.value = page;
+    };
+
+    /**
+     * Show exams of user by page
+     */
+    const userExamsItems = computed(() => {
+      let arr = userExams.value || [];
+
+      paggiUExams.value = paginate(arr.length, currentPageUExams.value, pageSize);
+
+      return arr.slice(
+        paggiUExams.value.startIndex,
+        paggiUExams.value.endIndex + 1
+      );
+    });
+
+    //AllExam ///////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Checks whether the exam is selected
+     * 
+     * @param {number} id Id Exam
+      */
     const checkedAddHandle = (id) => {
       return selectedAddExams.value.find((x) => x.id == id);
     };
+
+    /**
+     * Selects exams for add to user
+     */
     const changeAddHandle = () => {
       isSelectedAddAll.value = !isSelectedAddAll.value;
 
@@ -268,6 +348,9 @@ export default {
       }
     };
 
+    /**
+     * Add new exams to user
+     */
     const addExamToUserHandle = async () => {
       loading.value = true;
 
@@ -287,15 +370,24 @@ export default {
       }, Promise.resolve());
 
       loading.value = false;
-      
-      await fetchUserExams();
 
-      isSelectedAllExams.value = false;
+      if (examItems.value.length - selectedAddExams.value.length === 0) {
+        if (currentPageExam.value === paggiExams.value.endPage) {
+          currentPageExam.value =
+            currentPageExam.value - 1 < 1 ? 1 : currentPageExam.value - 1;
+        }
+      }
+      isSelectedRemoveExams.value = false;
+      selectedRemoveExams.value = [];
+      isSelectedAddAll.value = false;
       selectedAddExams.value = [];
-      
-      };
 
-    //вибираєм всі екзамени яких немає в user
+      await fetchUserExams();
+    };
+
+    /**
+     * select all exams that are not in the user
+     */
     const examItems = computed(() => {
       let arr = exams.value
         ? exams.value.filter((element) =>
@@ -305,20 +397,43 @@ export default {
           )
         : [];
 
-      return arr;
+      paggiExams.value = paginate(arr.length, currentPageExam.value, pageSize);
+
+      return arr.slice(
+        paggiExams.value.startIndex,
+        paggiExams.value.endIndex + 1
+      );
     });
 
+    /**
+     * Changes current page
+     * 
+     * @param {number} page New page
+     */
+    const changePageExam = (page) => {
+      currentPageExam.value = page;
+    };
     return {
       loading,
       userExams,
-      isSelectedAddAll,
+      userExamsItems,
+      isSelectedRemoveExams,
+      selectedRemoveExams,
+      paggiUExams,
+      currentPageUExams,
+      changePageUExams,
+      changeRemoveHandle,
+      removeExamFromUserHandle,
       exams,
       examItems,
-      checkedAddHandle,
-      checkedRemoveHandle,
-      isSelectedAllExams,
+      isSelectedAddAll,
       selectedAddExams,
+      paggiExams,
+      currentPageExam,
       changeAddHandle,
+      checkedAddHandle,
+      changePageExam,
+      checkedRemoveHandle,
       addExamToUserHandle,
     };
   },

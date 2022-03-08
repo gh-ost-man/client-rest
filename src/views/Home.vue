@@ -11,8 +11,9 @@
 
 <script>
 import useApi from "../composables/useApi";
-import { onMounted } from "@vue/runtime-core";
+import { ref, onMounted, watchEffect } from "vue";
 import CryptoJS from "crypto-js";
+import { useRouter } from "vue-router";
 // @ is an alias to /src
 export default {
   name: "Home",
@@ -20,13 +21,10 @@ export default {
     testHandle() {
       // let arr = ["Incorect passwrod"];
       // let arr1 = {alpha: 'Incorect alpha'};
-
       // console.log(arr[0].length);
-
       // var values = Object.keys(arr).map(function (key) {
       //   console.log(key);
       //   console.log(Number.isInteger(Number.parseInt(key)));
-
       //   if (!Number.isInteger(Number.parseInt(key))) {
       //     return arr[key].join(", ");
       //   }
@@ -34,44 +32,56 @@ export default {
       //     return arr[key];
       //   }
       // });
-
-      let pvtData = {
-        id:1,
-        fName: "John",
-        lName: "Smith",
-        roles: "Admin,Manager"
-      };
-      let secret = "123#$%";
-
+      // let pvtData = {
+      //   id:1,
+      //   fName: "John",
+      //   lName: "Smith",
+      //   roles: "Admin,Manager"
+      // };
+      // let secret = "123#$%";
       // const data = CryptoJS.AES.encrypt(JSON.stringify(pvtData).toString(), secret).toString();
       // localStorage.setItem("secretData", data);
-
-      const secretData = localStorage.getItem("secretData");
-
-      const decryptData = CryptoJS.AES.decrypt(
-        secretData,
-        secret
-      ).toString(CryptoJS.enc.Utf8);
-
-      console.log(decryptData);
-      console.log(JSON.parse(decryptData).id);
+      // const secretData = localStorage.getItem("secretData");
+      // const decryptData = CryptoJS.AES.decrypt(
+      //   secretData,
+      //   secret
+      // ).toString(CryptoJS.enc.Utf8);
+      // console.log(decryptData);
+      // console.log(JSON.parse(decryptData).id);
     },
   },
   setup() {
-    const { refreshToken } = useApi();
+    // const { refreshToken } = useApi();
 
-    const refreshHandle = async () => {
+    const refreshHandle = () => {
       // console.log("HERE");
       //  await refreshToken();
-      
-      let pvtData = localStorage.getItem('user');
-      let secret = "123#$%";
 
-      const data = CryptoJS.AES.encrypt(pvtData, secret).toString();
-      localStorage.setItem("secretData", data);
+      // let pvtData = localStorage.getItem('user');
+      // let secret = "123#$%";
+
+      // const data = CryptoJS.AES.encrypt(pvtData, secret).toString();
+      // localStorage.setItem("secretData", data);
+
+      // const router = useRouter();
+      stopTime();
     };
 
-    return { refreshHandle };
+    var timer = null;
+    const date = ref(new Date());
+
+    const startTimer = () => {
+      timer = setInterval(() => {
+        console.log("ALOHA");
+      }, 1000);
+    };
+
+    const stopTime = () => {
+      clearTimeout(timer);
+    };
+startTimer();
+
+    return { refreshHandle, date };
   },
 };
 </script>

@@ -1,5 +1,6 @@
 import useApi from "../composables/useApi"
 
+
 const answerService = () => {
     const apiUrl = 'https://localhost:9001/api/answers';
     const { post, get, put, remove } = useApi();
@@ -8,7 +9,7 @@ const answerService = () => {
         return await get(apiUrl);
     }
 
-    const getQuestionAnswers = async(idQuestion) => {
+    const getQuestionAnswers = async (idQuestion) => {
         return await get(apiUrl + "/q/" + idQuestion);
     }
 
@@ -17,10 +18,10 @@ const answerService = () => {
     }
 
     const updateAnswer = async (id, data) => {
-        return await put(apiUrl +"/"+ id, data);
+        return await put(apiUrl + "/" + id, data);
     }
 
-    const removeAnswer = async ( idAnswer) => {
+    const removeAnswer = async (idAnswer) => {
         return await remove(apiUrl + "/" + idAnswer);
     }
 

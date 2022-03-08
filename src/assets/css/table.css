@@ -118,8 +118,11 @@ h2 {
 }
 .custom-table tbody tr.active th,
 .custom-table tbody tr.active td,
-.custom-table tbody tr:hover th,
-.custom-table tbody tr:hover td {
+.custom-table tbody .c-table-hover:hover th,
+.custom-table tbody .c-table-hover:hover td
+/* .custom-table tbody tr:hover th, */
+/* .custom-table tbody tr:hover td */
+{
   color: #fff;
   background: #2e2e36;
 }

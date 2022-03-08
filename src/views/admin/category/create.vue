@@ -1,10 +1,12 @@
 <template>
-     <router-link :to="{name:'CategoriesList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
+  <router-link :to="{ name: 'CategoriesList' }" class="btn btn-outline-info">
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
+  </router-link>
   <div class="p-3 text-white">
     <form @submit.prevent="submitHandle">
       <div>
-        <label class="labels c-label">Name of category</label
-        ><input
+        <label class="labels c-label">Name of category</label>
+        <input
           type="text"
           class="form-control bg-transparent c-input"
           placeholder="enter name"
@@ -25,7 +27,7 @@
 import { ref, getCurrentInstance } from "vue";
 import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 export default {
   setup() {
     const name = ref(null);
@@ -34,8 +36,10 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
     const { createCategory } = categoryService();
 
+    /**
+     * Creates new category
+     */
     const submitHandle = async () => {
-
       loading.value = true;
       let response = await createCategory({ name: name.value });
       loading.value = false;
@@ -45,7 +49,7 @@ export default {
           toast.success("The category was added successfully");
           name.value = null;
 
-          router.push({name: "CategoriesList"});
+          router.push({ name: "CategoriesList" });
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

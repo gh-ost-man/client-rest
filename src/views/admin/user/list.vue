@@ -3,8 +3,8 @@
     <div class="container">
       <h2 class="mb-5 c-title">Users</h2>
       <div class="row" v-if="users">
-        <div class="col-md-4">
-          <router-link class="btn btn-outline-info" :to="{ name: 'CreateUser' }"
+        <div class="col-md-4" >
+          <router-link  v-if="isVisibleHandle(['Admin'])" class="btn btn-outline-info" :to="{ name: 'CreateUser' }"
             >Create</router-link
           >
         </div>
@@ -42,7 +42,9 @@
               </div>
             </div>
             <div class="col-md-3">
-              <button class="btn btn-outline-light" @click="resetFilter">Reset</button>
+              <button class="btn btn-outline-light" @click="resetFilter">
+                Reset
+              </button>
             </div>
           </div>
         </div>
@@ -67,7 +69,7 @@
           </thead>
           <tbody>
             <template v-for="user in users" :key="user.id">
-              <tr scope="row">
+              <tr class="c-table-hover" scope="row">
                 <td>{{ user.id }}</td>
                 <td>{{ user.email }}</td>
                 <td>
@@ -79,6 +81,7 @@
                 <td>{{ new Date(user.createdAt).toLocaleDateString() }}</td>
                 <td>
                   <router-link
+                   v-if="isVisibleHandle(['Admin'])"
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'EditUser', params: { id: user.id } }"
                   >
@@ -87,6 +90,10 @@
                     /></i>
                   </router-link>
                   <router-link
+                    v-if="
+                      user.roles.toLowerCase().includes('Student'.toLowerCase()) 
+                      && isVisibleHandle(['Manager']) 
+                    "
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'UserExams', params: { id: user.id } }"
                   >
@@ -119,6 +126,7 @@
 import { ref, onMounted, getCurrentInstance, computed } from "vue";
 import { useRouter } from "vue-router";
 import usersService from "@/_services/userService.js";
+import authService from "@/_services/authService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import paginate from "@/_helpers/paginate.js";
 import Paggination from "@/components/Paggination";
@@ -129,6 +137,7 @@ export default {
     const users = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
     const { getAllUsers } = usersService();
+    const { currentUser } = authService();
     const currentPage = ref(1);
     const paggination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
@@ -224,16 +233,30 @@ export default {
       }
     };
 
-    const resetFilter = async() => {
+    const resetFilter = async () => {
       currentPage.value = 1;
       filterRole.value = "";
       filterEFL.value = null;
 
       await getData();
-    }
+    };
     const filterHandle = async () => {
       currentPage.value = 1;
       await getData();
+    };
+
+    const isVisibleHandle = (authRoles) => {
+      if (!currentUser.value) return false;
+
+      let userRoles = currentUser.value.roles.split(",");
+
+      for (let role of userRoles) {
+        if (authRoles.includes(role)) {
+          return true;
+        }
+      }
+
+      return false;
     };
 
     return {
@@ -246,6 +269,7 @@ export default {
       changePage,
       filterHandle,
       resetFilter,
+      isVisibleHandle,
     };
   },
 };

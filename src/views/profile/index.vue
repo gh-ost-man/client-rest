@@ -65,7 +65,7 @@
         <button
           class="btn btn-outline-info mt-2"
           @click="sendMessageHandle"
-          :disabled="loading || userEmail === currentUser.email"
+          :disabled="loading || userEmail === currentUser.email || !userEmail"
         >
           Update
         </button>
@@ -75,7 +75,9 @@
         <div class="p-3 py-5">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="text-right text-info">
-              <i class="fa-solid fa-user-gear"></i>
+              <i class="fa-solid fa-user-gear">
+                <font-awesome-icon icon="user-gear" />
+              </i>
               Profile Settings
             </h4>
           </div>

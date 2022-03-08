@@ -24,11 +24,17 @@
               <li class="nav-item">
                  <router-link class="nav-link active" :to="{name: 'ProfileStudent'}">Profile</router-link>
               </li>
+              <li class="nav-item">
+                 <router-link class="nav-link active" :to="{name: 'HistoryStudent'}">History</router-link>
+              </li>
             </ul>
             <div class="d-flex">
               <div class="d-flex justify-content-center">
                 <div><i class="fa-solid fa-user-graduate fs-3"></i></div>
-                <div>student@google.com</div>
+                <div>
+                  <div> {{$store.state.user?.firstName}} {{$store.state.user?.lastName}}</div>
+                  <div> {{$store.state.user?.email}}</div>
+                </div>
               </div>
               <button class="btn btn-dark mx-1" @click="logoutHandle">Logout</button>
             </div>

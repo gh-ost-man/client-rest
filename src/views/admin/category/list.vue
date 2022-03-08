@@ -28,7 +28,7 @@
           </thead>
           <tbody>
             <template v-for="category in sortedCategories" :key="category.id">
-              <tr scope="row">
+              <tr class="c-table-hover" scope="row">
                 <td>{{ category.id }}</td>
                 <td>{{ category.name }}</td>
                 <td>
@@ -85,6 +85,9 @@ export default {
       await getData();
     });
 
+    /**
+     * Get all categories from server
+     */
     const getData = async () => {
       var response = await getAllCategories(currentPage.value, pageSize);
 
@@ -106,12 +109,21 @@ export default {
         }
       }
     };
+
+    /**
+     * Sort categories by id
+     */
     const sortedCategories = computed(() => {
       return categories.value
         ? categories.value.sort((x1, x2) => x1.id - x2.id)
         : null;
     });
 
+    /**
+     * Changes current page
+     * 
+     * @param {number} pag New page
+     */
     const changePage = async (pag) => {
       currentPage.value = pag;
 

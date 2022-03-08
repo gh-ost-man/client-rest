@@ -1,10 +1,12 @@
 <template>
- <router-link :to="{name:'ExamsList'}" class="btn btn-outline-info"><i><font-awesome-icon icon="circle-arrow-left" /></i></router-link>
+  <router-link :to="{ name: 'ExamsList' }" class="btn btn-outline-info">
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
+  </router-link>
   <div class="p-3 text-white">
     <form @submit.prevent="submitHandle">
       <div class="mb-3">
-        <label class="labels c-label">Title</label
-        ><input
+        <label class="labels c-label">Title</label>
+        <input
           type="test"
           class="form-control bg-transparent c-input"
           placeholder="enter title"
@@ -20,8 +22,8 @@
         ></textarea>
       </div>
       <div class="mb-3">
-        <label class="labels c-label">Duration time</label
-        ><input
+        <label class="labels c-label">Duration time</label>
+        <input
           type="number"
           step="5"
           min="30"
@@ -32,8 +34,8 @@
         />
       </div>
       <div class="mb-3">
-        <label class="labels c-label">Passing Score</label
-        ><input
+        <label class="labels c-label">Passing Score</label>
+        <input
           type="number"
           step="0.5"
           min="40"
@@ -72,7 +74,7 @@
 import { ref, getCurrentInstance } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
@@ -104,6 +106,9 @@ export default {
       status: 0,
     });
 
+    /**
+     * Creates new Exam
+     */
     const submitHandle = async () => {
       loading.value = true;
 
@@ -122,8 +127,10 @@ export default {
             status: 0,
           };
 
-        router.push({name: 'TestQuestions', params: {id: response.value.data.id}});
-
+          router.push({
+            name: "TestQuestions",
+            params: { id: response.value.data.id },
+          });
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

@@ -44,7 +44,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="eq in examQuestions" :key="eq.id">
+          <template v-for="eq in examQItems" :key="eq.id">
             <tr
               scope="row"
               :class="{ 'checked-row': checkedRemoveHandle(eq.id) }"
@@ -248,25 +248,15 @@ export default {
     ///////////////////////////////////////////////////////////////////////
     //ExamQuestions
 
+    /**
+     * Gets data of exam and load questions of exam
+     */
     const getDataExams = async () => {
-      let resExamQues = await getAllExamQuestions(
-        route.params.id,
-        currentPageExamQ.value,
-        pageSize
-      );
+      let resExamQues = await getAllExamQuestions(route.params.id);
 
       if (resExamQues && resExamQues.value) {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data.items;
-
-          paggiExamQ.value = {
-            pages: resExamQues.value.data.pages,
-            totalPages: resExamQues.value.data.totalPages,
-            startPage: resExamQues.value.data.startPage,
-            endPage: resExamQues.value.data.endPage
-          };
-
-          console.log( paggiExamQ.value);
 
           if (currentPageExamQ.value > paggiExamQ.value.endPage) {
             currentPageExamQ.value = 1;
@@ -282,26 +272,56 @@ export default {
       }
     };
 
+    /**
+     * Shows data by page
+     */
+    const examQItems = computed(() => {
+      let arr = examQuestions.value || [];
+
+      paggiExamQ.value = paginate(arr.length, currentPageExamQ.value, pageSize);
+
+      return arr.slice(
+        paggiExamQ.value.startIndex,
+        paggiExamQ.value.endIndex + 1
+      );
+    });
+
+    /**
+     * Selects question for remove
+     */
     const changeRemoveHandle = () => {
       selectedRemoveAll.value = !selectedRemoveAll.value;
 
       if (selectedRemoveAll.value) {
-        selectedRemoveQuestions.value = examQuestions.value;
+        selectedRemoveQuestions.value = examQItems.value;
       } else {
         selectedRemoveQuestions.value = [];
       }
     };
 
-    const checkedRemoveHandle = (value) => {
-      return selectedRemoveQuestions.value.find((x) => x.id == value);
+    /**
+     * Checks whether the question of exam is selected
+     * 
+     * @param {number} id Id Question
+     */
+    const checkedRemoveHandle = (id) => {
+      return selectedRemoveQuestions.value.find((x) => x.id == id);
     };
 
+    /**
+     * Changes current page of exam questions
+     * 
+     * @param {pag} New page
+     */
     const changePageExamQ = async (pag) => {
       currentPageExamQ.value = pag;
 
       await getDataExams();
     };
 
+    /**
+     * Deletes selected questions from exam
+     */
     const removeQuestionFromExamHandle = async () => {
       loading.value = true;
 
@@ -322,7 +342,7 @@ export default {
       loading.value = false;
 
       if (
-        examQuestions.value.length - selectedRemoveQuestions.value.length ===
+        examQItems.value.length - selectedRemoveQuestions.value.length ===
         0
       ) {
         if (currentPageExamQ.value === paggiExamQ.value.endPage) {
@@ -334,7 +354,7 @@ export default {
       console.log("Current page: ", currentPageExamQ.value);
 
       await getDataExams();
-     selectedAddQuestions.value = [];
+      selectedAddQuestions.value = [];
       selectedAddAll.value = false;
       selectedRemoveQuestions.value = [];
       selectedRemoveAll.value = false;
@@ -343,6 +363,9 @@ export default {
     ///////////////////////////////////////////////////////////////////////
     //AllQuestions
 
+    /**
+     * Gets all questions
+     */
     const getDataQuestions = async () => {
       let res = await getAllQuestions();
 
@@ -365,12 +388,18 @@ export default {
       }
     };
 
+    /**
+     * Sort questions by id
+     */
     const sortedQuestions = computed(() => {
       return questions.value
         ? questions.value.sort((x1, x2) => x1.id - x2.id)
         : null;
     });
 
+    /**
+     *  Selects question for add to exam
+     */
     const changeAddHandle = () => {
       selectedAddAll.value = !selectedAddAll.value;
 
@@ -381,10 +410,18 @@ export default {
       }
     };
 
-    const checkedAddHandle = (value) => {
-      return selectedAddQuestions.value.find((x) => x.id == value);
+    /**
+     * Checks whether the question is selected
+     * 
+     * @param {number} id Id question
+     */
+    const checkedAddHandle = (id) => {
+      return selectedAddQuestions.value.find((x) => x.id == id);
     };
 
+    /**
+     * Filter questions by category
+     */
     const filterByCategoryItems = computed(() => {
       currentPageAllQ.value = 1;
 
@@ -397,8 +434,9 @@ export default {
         : null;
     });
 
-    // питання який немає в тесті
-
+    /**
+     * Selects all questions that are not in the exam
+     */
     const questionItems = computed(() => {
       selectedAddAll.value = false;
       selectedAddQuestions.value = [];
@@ -421,10 +459,18 @@ export default {
       );
     });
 
+    /**
+     * Change current page of questions
+     * 
+     * @param {number} pag New page
+     */
     const changePageAllQ = (pag) => {
       currentPageAllQ.value = pag;
     };
 
+    /**
+     * Adds new questions to exam
+     */
     const addQuestionToExamHandle = async () => {
       loading.value = true;
 
@@ -469,29 +515,30 @@ export default {
 
     return {
       loading,
+      examQuestions,
+      examQItems,
+      paggiExamQ,
+      currentPageExamQ,
+      selectedRemoveAll,
+      selectedRemoveQuestions,
+      changeRemoveHandle,
+      checkedRemoveHandle,
+      removeQuestionFromExamHandle,
+      changePageExamQ,
       questions,
       categories,
-      examQuestions,
       currentPage,
       pageSize,
       paggiAllQ,
       currentPageAllQ,
-      paggiExamQ,
-      currentPageExamQ,
       selectedAddAll,
-      selectedRemoveAll,
-      selectedRemoveQuestions,
       filterCategory,
       questionItems,
       selectedAddQuestions,
       changeAddHandle,
       checkedAddHandle,
       addQuestionToExamHandle,
-      changeRemoveHandle,
-      checkedRemoveHandle,
-      removeQuestionFromExamHandle,
       changePageAllQ,
-      changePageExamQ,
     };
   },
 };

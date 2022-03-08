@@ -33,10 +33,14 @@ const handleResponse = (response) => {
                     return values;
                 }
 
-            } else {
-                console.clear();
-                console.log("BADDDDDDD: ********** : ", response.data);
             }
+
+            if(response.data.title) {
+                return [response.data.title];
+            }
+
+            console.clear();
+            console.log("BADDDDDDD: ********** : ", response.data);
         }
 
         if (response.status === 405) {
@@ -87,24 +91,19 @@ const handleResponse = (response) => {
             } else {
                 return ["Not found"];
             }
-
-
-
-
-
         }
 
-        if(response.status == 415) {
-        return [response.data.title];
+        if (response.status == 415) {
+            return [response.data.title];
         }
 
-        if(response.status === 502) {
+        if (response.status === 502) {
             return ["Bad Gateway"]
         }
-        
+
     }
 
-    return response;
+    return [JSON.stringify(response)]
 }
 
 export default handleResponse;

@@ -18,7 +18,6 @@ const userService = () => {
             if(filter.role) {
                 query+= "&role="+filter.role;
             }
-
         }
 
         if(limit) {
@@ -65,8 +64,15 @@ const userService = () => {
         return await post(apiUrl + "/UpdateEmail", data);
     }
 
-    const getUserExams = async(id) => {
-        return await get(apiUrl + "/exams/" +id);
+    const getUserExams = async(id, page, limit) => {
+        let query = "?";
+        if(page) {
+            query  += "page=" + page;
+        }
+        if(limit) {
+            query+= "&limit="+limit;
+        }
+        return await get(apiUrl + "/exams/" +id + query);
     }
 
     const addExamToUser = async(data) =>{
