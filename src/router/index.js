@@ -450,8 +450,8 @@ const routes = [
         },
       },
       {
-        path: '/d/reports/:idExam',
-        name: 'ReportDetails',
+        path: '/d/reports/details/:idReport',
+        name: 'ReportsDetails',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -460,18 +460,30 @@ const routes = [
         meta: {
           layout: 'admin', authorize: ['Manager'],
         },
-        props: true
+        props:true,
       },
       {
-        path: '/d/reports/exam/:idExam',
-        name: 'ReporDetails',
+        path: '/d/reports/e/',
+        name: 'ReportsByExamList',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/details.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/byExam/list.vue'),
         beforeEnter: requireAuth,
         meta: {
-          layout: 'admin', authorize: ['Teacher'],
+          layout: 'admin', authorize: ['Manager'],
+        },
+      },
+      {
+        path: '/d/reports/e/:idExam',
+        name: 'ReportByExamDetails',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/byExam/details.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ['Manager'],
         },
         props: true
       },

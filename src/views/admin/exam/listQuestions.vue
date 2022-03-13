@@ -63,7 +63,7 @@
                 </label>
               </td>
               <td>{{ eq.id }}</td>
-              <td style="max-width: 10%">{{ eq.question }}</td>
+              <td style="max-width: 10%">{{ eq.question?.context }}</td>
             </tr>
             <tr class="spacer">
               <td colspan="100"></td>
@@ -206,7 +206,7 @@ export default {
     const examQuestions = ref(null);
     const route = useRoute();
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { getAllQuestions } = questionService();
+    const { getAllQuestions, getQuestionById } = questionService();
     const { getAllCategories } = categoryService();
     const { getAllExamQuestions, addQuestionToExam, removeQuestionFromExam } =
       examService();
@@ -257,6 +257,24 @@ export default {
       if (resExamQues && resExamQues.value) {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data.items;
+
+          await examQuestions.value.reduce(async(a,item) => {
+           let res = await getQuestionById(item.questionItemId);
+
+           if(res && res.value) {
+             if(res.value.status === 200) {
+               item.question = res.value.data;
+             } else {
+                handleResponse(res.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+             }
+           }
+
+          }, Promise.resolve());
 
           if (currentPageExamQ.value > paggiExamQ.value.endPage) {
             currentPageExamQ.value = 1;

@@ -38,7 +38,7 @@
       <li
         v-if="isVisibleHandle(['Teacher'])"
         :class="{
-          showMenu: showSubMenuService,
+          showMenu: showSubExamMenu,
           'menu-active':
             $route.fullPath.includes('exams') ||
             $route.fullPath.includes('categories') ||
@@ -54,9 +54,9 @@
             <i class=""> <font-awesome-icon icon="graduation-cap" /></i>
             <span class="link_name">Exams</span>
           </router-link>
-          <i class="arrow" @click="showSubMenuService = !showSubMenuService"
-            ><font-awesome-icon icon="angle-down"
-          /></i>
+          <i class="arrow" @click="showSubExamMenu = !showSubExamMenu">
+            <font-awesome-icon icon="angle-down" />
+          </i>
         </div>
         <ul class="sub-menu">
           <li><router-link :to="{ name: 'ExamsList' }">Exams</router-link></li>
@@ -72,23 +72,57 @@
           </li>
         </ul>
       </li>
-      <li v-if="isVisibleHandle(['Manager'])">
-        <!-- <a href="#">
-          <i> <font-awesome-icon icon="clipboard-list" /></i>
-          <span class="link_name">Report</span>
-        </a> -->
-        <router-link :to="{ name: 'ReportsList' }">
-          <i> <font-awesome-icon icon="clipboard-list" /></i>
-          <span class="link_name">Reports</span>
-        </router-link>
-        <ul class="sub-menu blank">
+        <li
+        v-if="isVisibleHandle(['Manager'])"
+        :class="{
+          showMenu: showSubReportMenu,
+          'menu-active':
+            $route.fullPath.includes('reports') 
+        }"
+      >
+        <div class="iocn-link">
+          <router-link
+            class="w-100"
+            :to="{ name: 'ReportsList' }"
+            :class="{ 'menu-active': $route.fullPath.includes('reports') }"
+          >
+             <i> <font-awesome-icon icon="clipboard-list" /></i>
+            <span class="link_name">Reports</span>
+          </router-link>
+          <i class="arrow" @click="showSubReportMenu = !showSubReportMenu">
+            <font-awesome-icon icon="angle-down" />
+          </i>
+        </div>
+        <ul class="sub-menu">
           <li>
-            <router-link :to="{ name: 'ReportsList' }">
-              <span class="link_name">Reports</span>
+            <router-link :to="{ name: 'ReportsList' }"> Reports </router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'ReportsByExamList' }">
+              Reports by exam
             </router-link>
           </li>
         </ul>
       </li>
+      <!-- <li v-if="isVisibleHandle(['Manager'])">
+        <router-link :to="{ name: 'ReportsList' }">
+          <i> <font-awesome-icon icon="clipboard-list" /></i>
+          <span class="link_name">Reports</span>
+        </router-link>
+        <i class="arrow" @click="showSubReportMenu = !showSubReportMenu">
+          <font-awesome-icon icon="angle-down" />
+        </i>
+        <ul class="sub-menu blank">
+          <li>
+            <router-link :to="{ name: 'ReportsList' }"> Reports </router-link>
+          </li>
+          <li>
+            <router-link :to="{ name: 'ReportsByExamList' }">
+              Reports by exam
+            </router-link>
+          </li>
+        </ul>
+      </li> -->
       <li v-if="isVisibleHandle(['Manager', 'Admin', 'Teacher'])">
         <div class="profile-details">
           <div class="profile-content">
@@ -140,7 +174,8 @@ export default {
   name: "admin-layout",
   data() {
     return {
-      showSubMenuService: false,
+      showSubExamMenu: false,
+      showSubReportMenu: false,
     };
   },
   setup() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-3" v-if="exam">
+  <div class="p-3" v-if="exam && !isFinish">
     <div class="row">
       <div class="col-md-6">
         <h1 class="text-white">Exam: {{ exam.title }}</h1>
@@ -64,7 +64,7 @@
                   userAnswers?.filter((x) => x.idQuesiton === q.id).length > 0,
               }"
               @click="changeQuestion(index)"
-              v-for="(q, index) in questions"
+              v-for="(q, index) in questionsItems"
               :key="q.id"
             >
               <button
@@ -80,7 +80,9 @@
                 {{ q.id }}
               </button>
             </li>
-            <li class="page-item"><button class="page-link" @click="nextQuestion">Next</button></li>
+            <li class="page-item">
+              <button class="page-link" @click="nextQuestion">Next</button>
+            </li>
             <li class="page-item">
               <button class="page-link bg-info" @click="finishExam">
                 Finish
@@ -91,7 +93,7 @@
       </div>
       <div class="text-white">{{ userAnswers }}</div>
     </div>
-    <div class="d-flex justify-content-center" v-if="!exam || !question">
+    <div class="d-flex justify-content-center" v-if="!exam || !question || isFinish">
       <div
         class="spinner-border align-center text-primary text-center"
         role="status"
@@ -124,7 +126,7 @@ export default {
     const seconds = ref(0);
 
     const { currentUser } = authService();
-    const { createReport, reportAction } = reportService();
+    const { currentAnswer, openReport, closeReport } = reportService();
     const { getExamById, getAllExamQuestions } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
@@ -136,6 +138,7 @@ export default {
     const question = ref(null);
     const currentQuestion = ref(0);
     const answerInput = ref(null);
+    const idReport = ref(null);
 
     const userAnswers = ref([]);
 
@@ -166,9 +169,34 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           exam.value = response.value.data;
-          // minutes.value = response.value.data.passingScore;
-          minutes.value = 1;
-          seconds.value = 10;
+          minutes.value = response.value.data.passingScore;
+          seconds.value = 0;
+
+          //Create new report
+
+          if (!sessionStorage.idReport) {
+            let resReport = await openReport({
+              applicantId: currentUser.value.id,
+              examId: props.idExam,
+            });
+
+            if (resReport && resReport.value) {
+              if (resReport.value.status === 200) {
+                idReport.value = resReport.value.data;
+                sessionStorage.idReport = idReport.value;
+                console.log(idReport.value);
+              } else {
+                handleResponse(resReport.value).forEach((element) => {
+                  toast.error(element, {
+                    position: "top",
+                    duration: 5000,
+                  });
+                });
+              }
+            }
+          } else {
+            idReport.value = sessionStorage.idReport;
+          }
 
           //Get exam questions
           let res = await getAllExamQuestions(props.idExam);
@@ -176,6 +204,7 @@ export default {
           if (res && res.value) {
             if (res.value.status === 200) {
               examQuestions.value = res.value.data.items;
+             
               questions.value = [];
               //Get question data
               await examQuestions.value.reduce(async (a, el) => {
@@ -183,7 +212,7 @@ export default {
                 if (resQ && resQ.value) {
                   if (resQ.value.status === 200) {
                     let item = resQ.value.data;
-                    //Get answers of question
+                    //Gets answers of question
                     let resA = await getQuestionAnswers(item.id);
 
                     if (resA && resA.value) {
@@ -213,7 +242,7 @@ export default {
                 }
               }, Promise.resolve());
 
-              // startTimer();
+               startTimer();
             } else {
               handleResponse(res.value).forEach((element) => {
                 toast.error(element, {
@@ -224,7 +253,7 @@ export default {
             }
           }
 
-          question.value = questions.value[0];
+        question.value = questionsItems.value[currentQuestion.value];
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -246,7 +275,7 @@ export default {
       if (currentQuestion.value === index) return;
 
       if (question.value?.answerType === 0) {
-        if (answerInput.value||answerInput.value==='') {
+        if (answerInput.value || answerInput.value === "") {
           toggleAnswer(answerInput.value);
         }
       }
@@ -254,7 +283,7 @@ export default {
       await sendAnswer();
 
       currentQuestion.value = index;
-      question.value = questions.value[index];
+      question.value = questionsItems.value[index];
       answerInput.value = null;
 
       //Set answer in the inputAnswer
@@ -282,9 +311,8 @@ export default {
       );
 
       if (obj && (obj.status === "New" || obj.status === "Modify")) {
-        let response = await createReport({
-          examId: exam.value.id,
-          applicantId: currentUser.value.id,
+        let response = await currentAnswer({
+          reviewId: idReport.value,
           questionId: question.value.id,
           currentKeys: obj.answers.join(","),
         });
@@ -413,7 +441,8 @@ export default {
       answerInput.value = null;
       await sendAnswer();
 
-      let response = await reportAction({
+      let response = await closeReport({
+        reviewId: idReport.value,
         examid: exam.value.id,
         userId: currentUser.value.id,
       });
@@ -422,22 +451,23 @@ export default {
         if (response.value.status === 200) {
           console.log("END ***************************************");
 
-          let res = await removeExamFromUser({
-            userId: currentUser.value.id,
-            examId: props.idExam,
-          });
+          // let res = await removeExamFromUser({
+          //   userId: currentUser.value.id,
+          //   examId: props.idExam,
+          // });
 
-          if (res && res.value) {
-            if (res.value.status !== 200) {
-              handleResponse(res.value).forEach((element) => {
-                toast.error(element, {
-                  position: "top",
-                  duration: 5000,
-                });
-              });
-            }
-          }
+          // if (res && res.value) {
+          //   if (res.value.status !== 200) {
+          //     handleResponse(res.value).forEach((element) => {
+          //       toast.error(element, {
+          //         position: "top",
+          //         duration: 5000,
+          //       });
+          //     });
+          //   }
+          // }
 
+          sessionStorage.removeItem("idReport");
           router.push({ name: "ExamResult", params: { idReport: 1 } });
         } else {
           handleResponse(response.value).forEach((element) => {
@@ -470,22 +500,35 @@ export default {
     };
 
     const nextQuestion = () => {
-      if((currentQuestion.value + 1) < questions.value.length) {
-        changeQuestion(currentQuestion.value + 1)
+      if (currentQuestion.value + 1 < questions.value.length) {
+        changeQuestion(currentQuestion.value + 1);
       }
-    }
+    };
 
     const prevQuestion = () => {
-       if((currentQuestion.value - 1 )>= 0) {
-        changeQuestion(currentQuestion.value -1  )
+      if (currentQuestion.value - 1 >= 0) {
+        changeQuestion(currentQuestion.value - 1);
       }
-    }
+    };
+
+    const questionsItems = computed(() => { 
+     
+      if(questions.value) {
+         questions.value.sort((x1,x2) => x1?.id - x2?.id);
+         question.value = questions.value[currentQuestion.value];
+      }
+
+      console.log("HERE");
+
+      return questions.value;
+    });
 
     return {
       isFinish,
       exam,
       question,
       questions,
+      questionsItems,
       currentQuestion,
       changeQuestion,
       userAnswers,
@@ -495,7 +538,7 @@ export default {
       minutes,
       seconds,
       nextQuestion,
-      prevQuestion
+      prevQuestion,
     };
   },
 };

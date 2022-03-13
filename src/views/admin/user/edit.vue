@@ -232,7 +232,7 @@ export default {
             }
           });
 
-          let arr = user.value.roles.split(", ");
+          let arr = user.value.roles.split(",");
           arr.forEach((element) => {
             userRoles.value.push({ title: element, value: element });
           });

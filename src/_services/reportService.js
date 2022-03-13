@@ -4,10 +4,36 @@ const reportService = () => {
     const apiUrl = 'https://localhost:9001/api/report';
     const { post, get, put, remove } = useApi();
 
-    const getAllReports = async() => {
-        return await get(apiUrl + "/items");
+    const getAllReports = async (page, limit, filter) => {
+        let query = "?";
+
+        if (page) {
+            query += "page=" + page;
+        }
+        if (limit) {
+            query += "&limit=" + limit;
+        }
+
+        if (filter) {
+            if (filter.user) {
+                query += "&user=" + filter.user
+            }
+
+            if (filter.exam) {
+                query += "&exam=" + filter.exam
+            }
+
+            if (filter.date) {
+                query += "&date=" + filter.date
+            }
+
+        }
+        console.log(filter);
+        console.log(query);
+
+        return await get(apiUrl + "/items" + query);
     }
-    const getReportById = async(id) => {
+    const getReportById = async (id) => {
         return await get(apiUrl + "/" + id);
     }
     const getReportsByExamId = async (idExam) => {
@@ -18,19 +44,24 @@ const reportService = () => {
         return await get(apiUrl + "/items/e/" + idExam + "/a/" + idUser);
     }
 
-    const getReportsByUserId = async(idUser) => {
+    const getReportsByUserId = async (idUser) => {
         return await get(apiUrl + "/items/a/" + idUser);
     }
-    const createReport = async(data) => {
-        return await post(apiUrl + "/items", data);
+    const currentAnswer = async (data) => {
+        return await post(apiUrl + "/currentanswer", data);
     }
 
-    //In the exam id
-    const reportAction = async(data) => {
-        return await put(apiUrl + "/action",data)
+    //Begin Exam
+    const openReport = async (data) => {
+        return await post(apiUrl + "/openReport", data)
     }
 
-    return {getAllReports, getReportById,getReportsByUserId,getReportsByExamId, reportAction,getReportByExamIdAndUserId,createReport,}
+    //For end exam
+    const closeReport = async (data) => {
+        return await put(apiUrl + "/closeReport", data)
+    }
+
+    return { getAllReports, getReportById, getReportsByUserId, getReportsByExamId, openReport, closeReport, getReportByExamIdAndUserId, currentAnswer, }
 }
 
 

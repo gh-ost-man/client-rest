@@ -37,7 +37,8 @@ import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import { useRoute } from "vue-router";
 export default {
-  setup() {
+  props: ['id'],
+  setup(props) {
     const category = ref(null);
     const loading = ref(false);
     const loadingDelete = ref(false);
@@ -46,7 +47,7 @@ export default {
     const route = useRoute();
 
     onMounted(async () => {
-      let response = await getCategory(route.params.id);
+      let response = await getCategory(props.id);
       if (response && response.value) {
         if (response.value.status === 200) {
           category.value = response.value.data;

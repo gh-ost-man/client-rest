@@ -1,32 +1,22 @@
 <template>
   <div class="p-3">
     <div class="table-responsive custom-table-responsive" v-if="exams">
-      <!-- <paggination
-          :pages="paggination.pages"
-          :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
-          @changePage="changePage"
-        ></paggination> -->
       <table class="table custom-table">
         <thead>
           <tr>
-            <!-- <th scope="col">#</th> -->
             <th scope="col">Title</th>
             <th scope="col">DurationTime</th>
             <th scope="col">PassingScore</th>
-            <!-- <th scope="col">Status</th> -->
             <th scope="col">Qty of questions</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           <template v-for="exam in exams" :key="exam.id">
-            <tr scope="row">
-              <!-- <td>{{ exam.id }}</td> -->
+            <tr scope="row" class="c-table-hover">
               <td>{{ exam.title }}</td>
               <td>{{ exam.durationTime }}</td>
               <td>{{ exam.passingScore }}</td>
-              <!-- <td>{{ exam.status }}</td> -->
               <td>{{ exam.qtyOfQuestions }}</td>
               <td>
                 <router-link class="btn btn-outline-light btn-pass" :to="{name: 'PassExamStudent', params: {idExam: exam.id}}">Pass</router-link>
@@ -72,7 +62,6 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           userExams.value = response.value.data.items;
-          console.log(userExams.value);
           exams.value = [];
 
           await userExams.value.reduce(async (a, item) => {
