@@ -62,7 +62,9 @@
                   <div class="control__indicator"></div>
                 </label>
               </td>
-              <td>{{ eq.id }}</td>
+              <td>
+                {{ eq.id }}
+              </td>
               <td style="max-width: 10%">{{ eq.question?.context }}</td>
             </tr>
             <tr class="spacer">
@@ -258,24 +260,41 @@ export default {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data.items;
 
-          await examQuestions.value.reduce(async(a,item) => {
-           let res = await getQuestionById(item.questionItemId);
+          // await examQuestions.value.reduce(async (a, item) => {
+          //   let res = await getQuestionById(item.questionItemId);
 
-           if(res && res.value) {
-             if(res.value.status === 200) {
-               item.question = res.value.data;
-             } else {
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //       item.question = res.value.data;
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // }, Promise.resolve());
+
+          for (const iterator of examQuestions.value) {
+            let res = await getQuestionById(iterator.questionItemId);
+
+            if (res && res.value) {
+              if (res.value.status === 200) {
+                iterator.question = res.value.data;
+              } else {
                 handleResponse(res.value).forEach((element) => {
-            toast.error(element, {
-              position: "top",
-              duration: 5000,
-            });
-          });
-             }
-           }
+                  toast.error(element, {
+                    position: "top",
+                    duration: 5000,
+                  });
+                });
+              }
+            }
+          }
 
-          }, Promise.resolve());
-
+          console.log(examQuestions.value);
           if (currentPageExamQ.value > paggiExamQ.value.endPage) {
             currentPageExamQ.value = 1;
           }
@@ -319,7 +338,7 @@ export default {
 
     /**
      * Checks whether the question of exam is selected
-     * 
+     *
      * @param {number} id Id Question
      */
     const checkedRemoveHandle = (id) => {
@@ -328,7 +347,7 @@ export default {
 
     /**
      * Changes current page of exam questions
-     * 
+     *
      * @param {pag} New page
      */
     const changePageExamQ = async (pag) => {
@@ -342,9 +361,8 @@ export default {
      */
     const removeQuestionFromExamHandle = async () => {
       loading.value = true;
-
-      await selectedRemoveQuestions.value.reduce(async (a, element) => {
-        let res = await removeQuestionFromExam(route.params.id, element.id);
+      for (const el of selectedRemoveQuestions.value) {
+        let res = await removeQuestionFromExam(route.params.id, el.id);
         if (res && res.value) {
           if (res.value.status !== 204) {
             handleResponse(res.value).forEach((element) => {
@@ -355,7 +373,7 @@ export default {
             });
           }
         }
-      }, Promise.resolve());
+      }
 
       loading.value = false;
 
@@ -372,6 +390,7 @@ export default {
       console.log("Current page: ", currentPageExamQ.value);
 
       await getDataExams();
+
       selectedAddQuestions.value = [];
       selectedAddAll.value = false;
       selectedRemoveQuestions.value = [];
@@ -430,7 +449,7 @@ export default {
 
     /**
      * Checks whether the question is selected
-     * 
+     *
      * @param {number} id Id question
      */
     const checkedAddHandle = (id) => {
@@ -479,7 +498,7 @@ export default {
 
     /**
      * Change current page of questions
-     * 
+     *
      * @param {number} pag New page
      */
     const changePageAllQ = (pag) => {
@@ -492,10 +511,29 @@ export default {
     const addQuestionToExamHandle = async () => {
       loading.value = true;
 
-      await selectedAddQuestions.value.reduce(async (a, element) => {
+      // await selectedAddQuestions.value.reduce(async (a, element) => {
+      //   let res = await addQuestionToExam(route.params.id, {
+      //     question: element.context,
+      //     questionItemId: element.id,
+      //   });
+
+      //   if (res && res.value) {
+      //     if (res.value.status !== 201) {
+      //       currentPageAllQ.value = 1;
+      //       handleResponse(res.value).forEach((element) => {
+      //         toast.error(element, {
+      //           position: "top",
+      //           duration: 5000,
+      //         });
+      //       });
+      //     }
+      //   }
+      // }, Promise.resolve());
+
+      for (const el of selectedAddQuestions.value) {
         let res = await addQuestionToExam(route.params.id, {
-          question: element.context,
-          questionItemId: element.id,
+          question: el.context,
+          questionItemId: el.id,
         });
 
         if (res && res.value) {
@@ -509,7 +547,7 @@ export default {
             });
           }
         }
-      }, Promise.resolve());
+      }
 
       loading.value = false;
 

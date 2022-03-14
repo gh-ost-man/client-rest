@@ -128,7 +128,7 @@ export default {
           };
 
           router.push({
-            name: "TestQuestions",
+            name: "ExamQuestions",
             params: { id: response.value.data.id },
           });
         } else {

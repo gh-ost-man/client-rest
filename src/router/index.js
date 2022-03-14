@@ -420,7 +420,7 @@ const routes = [
           layout: 'admin', authorize: ["Teacher"],
         },
       },
-      
+
     ]
   },
 
@@ -431,7 +431,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/all/'),
     beforeEnter: requireAuth,
     meta: {
       layout: 'admin',
@@ -443,7 +443,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/list.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/all/list.vue'),
         beforeEnter: requireAuth,
         meta: {
           layout: 'admin', authorize: ['Manager'],
@@ -455,13 +455,28 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/details.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/all/details.vue'),
         beforeEnter: requireAuth,
         meta: {
           layout: 'admin', authorize: ['Manager'],
         },
-        props:true,
+        props: true,
       },
+
+    ]
+  },
+  {
+    path: '/d/reports/e/',
+    name: 'ReportsByExam',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/admin/report/byExam/'),
+    beforeEnter: requireAuth,
+    meta: {
+      layout: 'admin',
+    },
+    children: [
       {
         path: '/d/reports/e/',
         name: 'ReportsByExamList',

@@ -5,7 +5,7 @@ const answerService = () => {
     const apiUrl = 'https://localhost:9001/api/answers';
     const { post, get, put, remove } = useApi();
 
-    const getAnswerAll = async () => {
+    const getAllAnswer = async () => {
         return await get(apiUrl);
     }
 
@@ -25,7 +25,7 @@ const answerService = () => {
         return await remove(apiUrl + "/" + idAnswer);
     }
 
-    return { getAnswerAll, getQuestionAnswers, createAnswer, updateAnswer, removeAnswer }
+    return { getAllAnswer, getQuestionAnswers, createAnswer, updateAnswer, removeAnswer }
 }
 
 

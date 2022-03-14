@@ -1,6 +1,8 @@
 <template>
   <div class="p-3">
     <div v-if="reports">
+      <h3 class="text-white">Reports</h3>
+      <hr class="bg-info" />
       <div class="row">
         <!-- <div class="col-md-3">
           <input
@@ -20,19 +22,24 @@
             @keydown.enter="filterHandle"
           />
         </div> -->
+        <div class="col-md-6"></div>
         <div class="col-md-6">
-          <input
-            class="form-control c-input"
-            placeholder="filter by date"
-            type="date"
-            v-model="filterDate"
-            @keydown.enter="filterHandle"
-          />
-        </div>
-        <div class="col-md-6">
-          <button class="btn btn-outline-light w-100" @click="resetFilter">
-            Reset
-          </button>
+          <div class="row">
+            <div class="col-md-6">
+              <input
+                class="form-control c-input"
+                placeholder="filter by date"
+                type="date"
+                v-model="filterDate"
+                @keydown.enter="filterHandle"
+              />
+            </div>
+            <div class="col-md-6">
+              <button class="btn btn-outline-light w-100" @click="resetFilter">
+                Reset
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="table-responsive custom-table-responsive">
@@ -128,7 +135,7 @@ export default {
 
     const { getAllReports } = reportService();
     const { getExamById } = examService();
-    const { getById } = userService();
+    const { getUserById } = userService();
 
     const reports = ref(null);
     const users = ref([]);
@@ -143,6 +150,8 @@ export default {
     const filterDate = ref(null);
 
     onMounted(async () => {
+      getFilterFromStorage();
+
       await getData();
     });
 
@@ -159,6 +168,7 @@ export default {
         filter.date = filterDate.value;
       }
 
+      filterStorage();
       let response = await getAllReports(currentPage.value, pageSize, filter);
 
       if (response && response.value) {
@@ -188,11 +198,11 @@ export default {
             }
           }
 
-          await users.value.reduce(async (a, item) => {
-            let res = await getById(item.userId);
+          for (const iterator of users.value) {
+            let res = await getUserById(iterator.userId);
             if (res && res.value) {
               if (res.value.status === 200) {
-                item.user = res.value.data;
+                iterator.user = res.value.data;
               } else {
                 handleResponse(res.value).forEach((element) => {
                   toast.error(element, {
@@ -202,13 +212,29 @@ export default {
                 });
               }
             }
-          }, Promise.resolve());
+          }
 
-          await exams.value.reduce(async (a, item) => {
-            let res = await getExamById(item.examId);
+          // await users.value.reduce(async (a, item) => {
+          //   let res = await getById(item.userId);
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //       item.user = res.value.data;
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // }, Promise.resolve());
+
+          for (const iterator of exams.value) {
+            let res = await getExamById(iterator.examId);
             if (res && res.value) {
               if (res.value.status === 200) {
-                item.exam = res.value.data;
+                iterator.exam = res.value.data;
               } else {
                 handleResponse(res.value).forEach((element) => {
                   toast.error(element, {
@@ -218,7 +244,23 @@ export default {
                 });
               }
             }
-          }, Promise.resolve());
+          }
+          // await exams.value.reduce(async (a, item) => {
+          //   let res = await getExamById(item.examId);
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //       item.exam = res.value.data;
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // }, Promise.resolve());
+
           //Get Exam By id
         } else {
           handleResponse(response.value).forEach((element) => {
@@ -240,8 +282,6 @@ export default {
 
     const filterHandle = async () => {
       currentPage.value = 1;
-      console.log(filterDate.value);
-
       await getData();
     };
 
@@ -257,13 +297,43 @@ export default {
       await filterHandle();
     };
 
-    const resetFilter = async() => {
+    const resetFilter = async () => {
       filterUser.value = null;
       filterExam.value = null;
       filterDate.value = null;
       currentPage.value = 1;
 
-     await filterHandle();
+      await filterHandle();
+    };
+
+    /**
+     * Safe all filters to session storage
+     */
+    const filterStorage = () => {
+      let filterObj = {};
+
+      filterObj.user = filterUser.value;
+      filterObj.exam = filterExam.value;
+      filterObj.date = filterDate.value;
+      filterObj.page = currentPage.value;
+
+      sessionStorage.filterReports = JSON.stringify(filterObj);
+    };
+
+    /**
+     * Get all filters from session storage
+     */
+
+    const getFilterFromStorage = () => {
+      let filter = sessionStorage.getItem("filterReports");
+
+      if (filter) {
+        let filterObj = JSON.parse(filter);
+        filterUser.value = filterObj.user ? filterObj.user : "";
+        filterExam.value = filterObj.exam ? filterObj.exam : "";
+        filterDate.value = filterObj.date ? filterObj.date : "";
+        currentPage.value = filterObj.page ? filterObj.page : "";
+      }
     };
 
     return {
@@ -286,5 +356,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../../../assets/css/table.css";
+@import "../../../../assets/css/table.css";
 </style>

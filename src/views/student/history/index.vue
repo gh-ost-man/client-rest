@@ -65,12 +65,12 @@ export default {
           console.log(response.value);
           reports.value = response.value.data;
 
-          await reports.value.reduce(async (a, item) => {
-            let res = await getExamById(item.examId);
+          for (const iterator of reports.value) {
+              let res = await getExamById(iterator.examId);
 
             if (res && res.value) {
               if (res.value.status === 200) {
-                  item.exam = res.value.data;
+                  iterator.exam = res.value.data;
               } else {
                 handleResponse(res.value).forEach((element) => {
                   toast.error(element, {
@@ -80,7 +80,23 @@ export default {
                 });
               }
             }
-          }, Promise.resolve());
+          }
+          // await reports.value.reduce(async (a, item) => {
+          //   let res = await getExamById(item.examId);
+
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //         item.exam = res.value.data;
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

@@ -1,14 +1,9 @@
 <template>
   <div class="p-3">
-    <router-link :to="{ name: 'ReportsByExamList' }" class="btn btn-outline-info">
-      <i><font-awesome-icon icon="circle-arrow-left" /></i>
-    </router-link>
-    <h3 class="text-white">Results</h3>
-    <hr class="bg-info" />
-    <div
-      class="table-responsive custom-table-responsive"
-      v-if="exam && examQuestions"
-    >
+   <router-link :to="{ name: 'ReportsList' }" class="btn btn-outline-info">
+    <i><font-awesome-icon icon="circle-arrow-left" /></i>
+  </router-link>
+    <div class="table-responsive custom-table-responsive">
       <table class="table custom-table mt-5">
         <thead class="table-dark">
           <tr class="text-center">
@@ -26,16 +21,15 @@
         </thead>
         <tbody class="border border-dark">
           <tr class="text-center">
-            <th class="border border-dark" scope="col">Answer Key</th>
+            <th class="border border-dark c-content" scope="col">Answer Key</th>
             <template v-if="answerKeys">
               <th
-                class="border border-dark"
                 v-for="ak in sortedAnswerKeys"
                 :key="ak.idQ"
                 scope="col"
+                class="border border-dark" style="min-width: 70px;"
               >
                 {{ ak.charKey }}
-                {{ ak.context }}
               </th>
             </template>
             <th class="border border-dark" scope="col">100</th>
@@ -43,22 +37,21 @@
             <th class="border border-dark" scope="col"></th>
           </tr>
 
-          <template v-if="reports">
-            <tr class="text-center" v-for="r in reports" :key="r.id">
+          <template v-if="report">
+            <tr class="text-center">
               <th class="border border-dark c-content" scope="row">
-                {{ r.user }}
+                {{ report.user }}
               </th>
               <!-- <th class="border border-dark" v-for="qu in r.questionUnits" :key="qu.questionId" scope="row">{{qu.currentKeys}}</th> -->
               <!-- :class="r.questionUnits.find((x) => x.questionId === ak.idQ)
                     ?.currentKeys.includes(ak.charKey)? 'is-correct' : 'is-incorrect'" -->
               <th
                 class="border border-dark"
-                style="min-width: 50px"
                 v-for="ak in sortedAnswerKeys"
                 :key="ak.idQ"
                 scope="row"
                 :class="
-                  r.questionUnits
+                  report.questionUnits
                     .find((x) => x.questionId === ak.idQ)
                     ?.currentKeys.split(',')
                     .sort()
@@ -68,24 +61,31 @@
                 "
               >
                 {{
-                  r.questionUnits
+                  report.questionUnits
                     .find((x) => x.questionId === ak.idQ)
                     ?.currentKeys.replaceAll(",", "") || "-"
                 }}
               </th>
 
-              <td class="border border-dark">{{ r.persentScore }}</td>
-              <td class="border border-dark">{{ r.totalScore }}</td>
-              <td class="border border-dark">{{ r.grade || "-" }}</td>
+              <td class="border border-dark">{{ report.persentScore }}</td>
+              <td class="border border-dark">{{ report.totalScore }}</td>
+              <td class="border border-dark">{{ report.grade || "-" }}</td>
               <td class="border border-dark">
-                {{ new Date(r.reportDate).toLocaleDateString() }}
+                {{ new Date(report.reportDate).toLocaleDateString() }}
               </td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <div class="d-flex justify-content-center" v-if="!exam || !examQuestions">
+      <button
+        class="btn btn-outline-danger mt-3"
+        @click="deleteHandle"
+        :disabled="loading"
+      >
+        Delete
+      </button>
+    <div class="d-flex justify-content-center" v-if="!examQuestions">
       <div
         class="spinner-border align-center text-primary text-center"
         role="status"
@@ -105,62 +105,50 @@ import questionService from "@/_services/questionService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import { computed, onMounted, ref, getCurrentInstance } from "vue";
 export default {
-  props: ["idExam"],
+  props: ["idReport"],
   setup(props) {
+    const toast = getCurrentInstance().appContext.app.$toast;
+    const loading = ref(false);
+
     const { getReportsByExamId, getReportById } = reportService();
     const { getAllExamQuestions, getExamById } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
     const { getUserById } = userService();
-    const reports = ref(null);
+
+    const report = ref(null);
     const examQuestions = ref(null);
     const exam = ref(null);
+
     const questions = ref(null);
     const answerKeys = ref([]);
     const userAnswers = ref([]);
-    const toast = getCurrentInstance().appContext.app.$toast;
+
     onMounted(async () => {
       //Get data of Report by exam id
-      let response = await getReportsByExamId(props.idExam);
+      let response = await getReportById(props.idReport);
 
       if (response && response.value) {
         if (response.value.status === 200) {
-          reports.value = response.value.data;
-          console.log(reports.value);
+          report.value = response.value.data;
+          console.log(report.value);
 
-          for (const iterator of reports.value) {
-            let res = await getUserById(iterator.applicantId);
-            if (res && res.value) {
-              if (res.value.status === 200) {
-                iterator.user =
-                  res.value.data.firstName + " " + res.value.data.lastName;
-              } else {
-                handleResponse(res.value).forEach((element) => {
-                  toast.error(element, {
-                    position: "top",
-                    duration: 5000,
-                  });
+          let resUser = await getUserById(report.value.applicantId);
+          if (resUser && resUser.value) {
+            if (resUser.value.status === 200) {
+              report.value.user =
+                resUser.value.data.firstName +
+                " " +
+                resUser.value.data.lastName;
+            } else {
+              handleResponse(resUser.value).forEach((element) => {
+                toast.error(element, {
+                  position: "top",
+                  duration: 5000,
                 });
-              }
+              });
             }
           }
-          // await reports.value.reduce(async (a, el) => {
-          //   //   el.currentKeys = el.currentKeys.replace(",", "");
-          //   let res = await getById(el.applicantId);
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       el.user =
-          //         res.value.data.firstName + " " + res.value.data.lastName;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -171,9 +159,9 @@ export default {
         }
       }
 
-      if (reports.value) {
+      if (report.value) {
         // Get all exam questions
-        let responseEQ = await getAllExamQuestions(props.idExam);
+        let responseEQ = await getAllExamQuestions(report.value.examId);
 
         if (responseEQ && responseEQ.value) {
           if (responseEQ.value.status) {
@@ -229,6 +217,7 @@ export default {
                 }
               }
             }
+
             // await examQuestions.value.reduce(async (a, element) => {
             //   let res = await getQuestionById(element.questionItemId);
 
@@ -286,20 +275,20 @@ export default {
         }
 
         //Get Exam data
-        let responseE = await getExamById(props.idExam);
+        //   let responseE = await getExamById(report.value.examId);
 
-        if (responseE && responseE.value) {
-          if (responseE.value.status) {
-            exam.value = responseE.value.data;
-          } else {
-            handleResponse(responseE.value).forEach((element) => {
-              toast.error(element, {
-                position: "top",
-                duration: 5000,
-              });
-            });
-          }
-        }
+        //   if (responseE && responseE.value) {
+        //     if (responseE.value.status) {
+        //       exam.value = responseE.value.data;
+        //     } else {
+        //       handleResponse(responseE.value).forEach((element) => {
+        //         toast.error(element, {
+        //           position: "top",
+        //           duration: 5000,
+        //         });
+        //       });
+        //     }
+        //   }
       }
     });
 
@@ -307,13 +296,15 @@ export default {
       return answerKeys?.value.sort((x1, x2) => x1.idQ - x2.idQ);
     });
 
+    const deleteHandle = () => {};
     return {
       sortedAnswerKeys,
-      reports,
-      exam,
+      report,
+      loading,
       examQuestions,
       questions,
       answerKeys,
+      deleteHandle,
     };
   },
 };

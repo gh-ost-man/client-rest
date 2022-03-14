@@ -214,7 +214,7 @@ export default {
   components: { CodeDialog },
   setup() {
     const { currentUser, setAuth, setAuthUser } = authService();
-    const { update, changePassword, getById, sendMessage, updateEmail } =
+    const { update, changePassword, getUserById, sendMessage, updateEmail } =
       userService();
     const loading = ref(false);
     const error = ref(null);
@@ -228,7 +228,7 @@ export default {
     });
 
     const getUserData = async () => {
-      let res = await getById(currentUser.value.id);
+      let res = await getUserById(currentUser.value.id);
 
       if (res && res.value) {
         if (res.value.status === 200) {

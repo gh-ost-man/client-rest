@@ -215,12 +215,13 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           userExams.value = response.value.data.items;
-          await userExams.value.reduce(async (a, item) => {
-            let res = await getExamById(item.examId);
+
+          for (const iterator of  userExams.value) {
+             let res = await getExamById(iterator.examId);
 
             if (res && res.value) {
               if (res.value.status === 200) {
-                item.exam = res.value.data;
+                iterator.exam = res.value.data;
               } else {
                 handleResponse(res.value).forEach((element) => {
                   toast.error(element, {
@@ -230,7 +231,23 @@ export default {
                 });
               }
             }
-          }, Promise.resolve());
+          }
+          // await userExams.value.reduce(async (a, item) => {
+          //   let res = await getExamById(item.examId);
+
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //       item.exam = res.value.data;
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -260,10 +277,11 @@ export default {
      */
     const removeExamFromUserHandle = async () => {
       loading.value = true;
-      await selectedRemoveExams.value.reduce(async (a, item) => {
-        let res = await removeExamFromUser({
+
+      for (const iterator of selectedRemoveExams.value) {
+         let res = await removeExamFromUser({
           userId: props.id,
-          examId: item.examId,
+          examId: iterator.examId,
         });
 
         if (res && res.value) {
@@ -276,7 +294,25 @@ export default {
             });
           }
         }
-      }, Promise.resolve());
+      }
+
+      // await selectedRemoveExams.value.reduce(async (a, item) => {
+      //   let res = await removeExamFromUser({
+      //     userId: props.id,
+      //     examId: item.examId,
+      //   });
+
+      //   if (res && res.value) {
+      //     if (res.value.status !== 200) {
+      //       handleResponse(res.value).forEach((element) => {
+      //         toast.error(element, {
+      //           position: "top",
+      //           duration: 5000,
+      //         });
+      //       });
+      //     }
+      //   }
+      // }, Promise.resolve());
 
       loading.value = false;
 
@@ -308,6 +344,11 @@ export default {
      */
     const changePageUExams = (page) => {
       currentPageUExams.value = page;
+
+      isSelectedRemoveExams.value = false;
+      selectedRemoveExams.value = [];
+     
+
     };
 
     /**
@@ -353,9 +394,9 @@ export default {
      */
     const addExamToUserHandle = async () => {
       loading.value = true;
-
-      await selectedAddExams.value.reduce(async (a, item) => {
-        let res = await addExamToUser({ userId: props.id, examId: item.id });
+      
+      for (const iterator of selectedAddExams.value) {
+          let res = await addExamToUser({ userId: props.id, examId: iterator.id });
 
         if (res && res.value) {
           if (res.value.status !== 200) {
@@ -367,7 +408,21 @@ export default {
             });
           }
         }
-      }, Promise.resolve());
+      }
+      // await selectedAddExams.value.reduce(async (a, item) => {
+      //   let res = await addExamToUser({ userId: props.id, examId: item.id });
+
+      //   if (res && res.value) {
+      //     if (res.value.status !== 200) {
+      //       handleResponse(res.value).forEach((element) => {
+      //         toast.error(element, {
+      //           position: "top",
+      //           duration: 5000,
+      //         });
+      //       });
+      //     }
+      //   }
+      // }, Promise.resolve());
 
       loading.value = false;
 
@@ -412,6 +467,9 @@ export default {
      */
     const changePageExam = (page) => {
       currentPageExam.value = page;
+
+       isSelectedAddAll.value = false;
+      selectedAddExams.value = [];
     };
     return {
       loading,

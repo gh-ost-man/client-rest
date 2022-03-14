@@ -28,7 +28,7 @@ const userService = () => {
         return await get(apiUrl + query);
     }
 
-    const getById = async (id) => {
+    const getUserById = async (id) => {
         return await get(apiUrl + "/" + id);
     }
 
@@ -84,7 +84,7 @@ const userService = () => {
         return await post(apiUrl+"/removeExam", data);
     }
 
-    return { getAllUsers, getUserExams,addExamToUser, removeExamFromUser, getById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
+    return { getAllUsers, getUserExams,addExamToUser, removeExamFromUser, getUserById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
 }
 
 

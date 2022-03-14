@@ -12,7 +12,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="exam in exams" :key="exam.id">
+          <template v-for="exam in examsItems" :key="exam.id">
             <tr scope="row" class="c-table-hover">
               <td>{{ exam.title }}</td>
               <td>{{ exam.durationTime }}</td>
@@ -64,8 +64,8 @@ export default {
           userExams.value = response.value.data.items;
           exams.value = [];
 
-          await userExams.value.reduce(async (a, item) => {
-            let res = await getExamById(item.examId);
+          for (const iterator of userExams.value) {
+             let res = await getExamById(iterator.examId);
 
             if (res && res.value) {
               if (res.value.status === 200) {
@@ -95,7 +95,41 @@ export default {
                 });
               }
             }
-          }, Promise.resolve());
+          }
+          // await userExams.value.reduce(async (a, item) => {
+          //   let res = await getExamById(item.examId);
+
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //       let exam = res.value.data;
+          //       let resQ = await getAllExamQuestions(exam.id);
+
+          //       if (resQ && resQ.value) {
+          //         if (resQ.value.status === 200) {
+          //           exam.qtyOfQuestions = resQ.value.data.items.length;
+          //         } else {
+          //           handleResponse(resQ.value).forEach((element) => {
+          //             toast.error(element, {
+          //               position: "top",
+          //               duration: 5000,
+          //             });
+          //           });
+          //         }
+          //       }
+
+          //       exams.value.push(exam);
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // }, Promise.resolve());
+
+          console.log(exams.value);
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -107,7 +141,12 @@ export default {
       }
     });
 
-    return { exams };
+    const examsItems = computed(() => {
+      return exams.value && exams.value.length>0?
+      exams.value.sort((x1,x2) => x1.id-x2.id): null;
+    })
+
+    return { exams, examsItems };
   },
 };
 </script>

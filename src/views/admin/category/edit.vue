@@ -43,11 +43,11 @@ export default {
     const loading = ref(false);
     const loadingDelete = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { updateCategory, getCategory, deleteCategory } = categoryService();
+    const { updateCategory, getCategoryById, deleteCategory } = categoryService();
     const route = useRoute();
 
     onMounted(async () => {
-      let response = await getCategory(props.id);
+      let response = await getCategoryById(props.id);
       if (response && response.value) {
         if (response.value.status === 200) {
           category.value = response.value.data;

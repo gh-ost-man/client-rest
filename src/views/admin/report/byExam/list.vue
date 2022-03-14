@@ -1,5 +1,7 @@
 <template>
   <div class="p-3">
+     <h3 class="text-white">Reports by exam</h3>
+      <hr class="bg-info" />
     <div class="table-responsive custom-table-responsive" v-if="reports">
       <!-- <paggination
         :pages="paggination.pages"
@@ -72,11 +74,12 @@ export default {
           reports.value = response.value.data.items;
           reportsExam.value = [];
           console.log(reports.value);
-          await reports.value.reduce(async (a, item) => {
-            let res = await getExamById(item.examId);
-            if (
-              reportsExam.value.filter((x) => x.id === item.examId).length === 0
+
+          for (const iterator of reports.value) {
+             if (
+              reportsExam.value.filter((x) => x.id === iterator.examId).length === 0
             ) {
+               let res = await getExamById(iterator.examId);
               if (res && res.value) {
                 if (res.value.status === 200) {
                   reportsExam.value.push(res.value.data);
@@ -90,7 +93,26 @@ export default {
                 }
               }
             }
-          }, Promise.resolve());
+          }
+          // await reports.value.reduce(async (a, item) => {
+          //   let res = await getExamById(item.examId);
+          //   if (
+          //     reportsExam.value.filter((x) => x.id === item.examId).length === 0
+          //   ) {
+          //     if (res && res.value) {
+          //       if (res.value.status === 200) {
+          //         reportsExam.value.push(res.value.data);
+          //       } else {
+          //         handleResponse(res.value).forEach((element) => {
+          //           toast.error(element, {
+          //             position: "top",
+          //             duration: 5000,
+          //           });
+          //         });
+          //       }
+          //     }
+          //   }
+          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

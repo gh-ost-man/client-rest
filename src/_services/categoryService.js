@@ -17,7 +17,7 @@ const categoryService = () => {
         return await get(apiUrl + query);
     }
    
-    const getCategory = async (id) => {
+    const getCategoryById = async (id) => {
         return await get(apiUrl + "/" + id);
     }
 
@@ -34,7 +34,7 @@ const categoryService = () => {
         return await remove(apiUrl + "/"+ id);
     }
 
-    return {getAllCategories ,getCategory,  createCategory, updateCategory, deleteCategory}
+    return {getAllCategories ,getCategoryById,  createCategory, updateCategory, deleteCategory}
 }
 
 

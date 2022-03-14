@@ -4,7 +4,9 @@
 
 <script>
 export default {
- 
+ beforeUnmount() {
+    sessionStorage.removeItem("filterReports");
+  }
 };
 </script>
 

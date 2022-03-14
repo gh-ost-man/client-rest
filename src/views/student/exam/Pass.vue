@@ -21,6 +21,9 @@
         </h4>
       </div>
       <div>
+        <div v-if="question.answerType === 2">
+          <h5 class="text-white text-center">Multy answer !!</h5>
+        </div>
         <div v-if="question.answerType === 0">
           <input
             type="text"
@@ -77,7 +80,6 @@
                 }"
               >
                 {{ index + 1 }}
-                {{ q.id }}
               </button>
             </li>
             <li class="page-item">
@@ -93,7 +95,10 @@
       </div>
       <div class="text-white">{{ userAnswers }}</div>
     </div>
-    <div class="d-flex justify-content-center" v-if="!exam || !question || isFinish">
+    <div
+      class="d-flex justify-content-center"
+      v-if="!exam || !question || isFinish"
+    >
       <div
         class="spinner-border align-center text-primary text-center"
         role="status"
@@ -107,14 +112,17 @@
 <script>
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
+import reportService from "@/_services/reportService.js";
 import questionService from "@/_services/questionService.js";
 import answerService from "@/_services/answerService.js";
 import authService from "@/_services/authService.js";
 import userService from "@/_services/userService.js";
 import { onMounted, ref, computed, getCurrentInstance, onUnmounted } from "vue";
-import reportService from "@/_services/reportService.js";
 import { useRouter } from "vue-router";
+import paginate from "@/_helpers/paginate.js";
+import Pagi from "./pagi/Pagi.vue";
 export default {
+   components: { Pagi },
   props: ["idExam"],
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
@@ -144,6 +152,7 @@ export default {
 
     onMounted(async () => {
       let resUser = await getUserExams(currentUser.value.id);
+      console.log(resUser.value);
 
       if (resUser && resUser.value) {
         if (resUser.value.status === 200) {
@@ -164,39 +173,40 @@ export default {
         }
       }
 
+      //Create new report
+
+      if (!sessionStorage.idReport) {
+        let resReport = await openReport({
+          applicantId: currentUser.value.id,
+          examId: props.idExam,
+        });
+
+        if (resReport && resReport.value) {
+          if (resReport.value.status === 200) {
+            idReport.value = resReport.value.data;
+            sessionStorage.idReport = idReport.value;
+            console.log(idReport.value);
+          } else {
+            handleResponse(resReport.value).forEach((element) => {
+              toast.error(element, {
+                position: "top",
+                duration: 5000,
+              });
+            });
+            router.push({ name: "ExamsStudent" });
+          }
+        }
+      } else {
+        idReport.value = sessionStorage.idReport;
+      }
+
       //Get exam data
       let response = await getExamById(props.idExam);
       if (response && response.value) {
         if (response.value.status === 200) {
           exam.value = response.value.data;
-          minutes.value = response.value.data.passingScore;
+          minutes.value = response.value.data.durationTime;
           seconds.value = 0;
-
-          //Create new report
-
-          if (!sessionStorage.idReport) {
-            let resReport = await openReport({
-              applicantId: currentUser.value.id,
-              examId: props.idExam,
-            });
-
-            if (resReport && resReport.value) {
-              if (resReport.value.status === 200) {
-                idReport.value = resReport.value.data;
-                sessionStorage.idReport = idReport.value;
-                console.log(idReport.value);
-              } else {
-                handleResponse(resReport.value).forEach((element) => {
-                  toast.error(element, {
-                    position: "top",
-                    duration: 5000,
-                  });
-                });
-              }
-            }
-          } else {
-            idReport.value = sessionStorage.idReport;
-          }
 
           //Get exam questions
           let res = await getAllExamQuestions(props.idExam);
@@ -204,11 +214,12 @@ export default {
           if (res && res.value) {
             if (res.value.status === 200) {
               examQuestions.value = res.value.data.items;
-             
+
               questions.value = [];
+              
               //Get question data
-              await examQuestions.value.reduce(async (a, el) => {
-                let resQ = await getQuestionById(el.questionItemId);
+              for (const iterator of examQuestions.value) {
+                 let resQ = await getQuestionById(iterator.questionItemId);
                 if (resQ && resQ.value) {
                   if (resQ.value.status === 200) {
                     let item = resQ.value.data;
@@ -240,9 +251,8 @@ export default {
                     });
                   }
                 }
-              }, Promise.resolve());
-
-               startTimer();
+              }
+              startTimer();
             } else {
               handleResponse(res.value).forEach((element) => {
                 toast.error(element, {
@@ -253,7 +263,7 @@ export default {
             }
           }
 
-        question.value = questionsItems.value[currentQuestion.value];
+          question.value = questionsItems.value[currentQuestion.value];
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -306,6 +316,7 @@ export default {
      * Sends answer into db
      */
     const sendAnswer = async () => {
+
       let obj = userAnswers.value.find(
         (x) => x.idQuesiton === question.value.id
       );
@@ -344,7 +355,7 @@ export default {
 
           if (obj >= 0) {
             userAnswers.value[obj].status = "Modify";
-            userAnswers.value.splice(0, 1);
+            userAnswers.value.splice(obj, 1);
 
             let item = {};
             item.idQuesiton = question.value.id;
@@ -468,7 +479,7 @@ export default {
           // }
 
           sessionStorage.removeItem("idReport");
-          router.push({ name: "ExamResult", params: { idReport: 1 } });
+          router.push({ name: "ExamResult", params: { idReport: idReport.value } });
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -511,11 +522,10 @@ export default {
       }
     };
 
-    const questionsItems = computed(() => { 
-     
-      if(questions.value) {
-         questions.value.sort((x1,x2) => x1?.id - x2?.id);
-         question.value = questions.value[currentQuestion.value];
+    const questionsItems = computed(() => {
+      if (questions.value) {
+        questions.value.sort((x1, x2) => x1?.id - x2?.id);
+        question.value = questions.value[currentQuestion.value];
       }
 
       console.log("HERE");

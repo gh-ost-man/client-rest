@@ -108,7 +108,7 @@
         <div v-if="isKeysWords" class="text-info m-3">
           <span>
             <i class="fs-3">
-               <font-awesome-icon icon="circle-exclamation" />
+              <font-awesome-icon icon="circle-exclamation" />
             </i>
           </span>
           <span class="mx-3">Must be KeysWords</span>
@@ -223,7 +223,7 @@ export default {
       { title: "Multiple", value: 2 },
     ]);
 
-    const { getCategory } = categoryService();
+    const { getCategoryById } = categoryService();
     const { getQuestionById, updateQuestion } = questionService();
     const { getQuestionAnswers, updateAnswer, removeAnswer, createAnswer } =
       answerService();
@@ -248,7 +248,7 @@ export default {
       }
 
       if (question.value) {
-        let response = await getCategory(question.value.questionCategoryId);
+        let response = await getCategoryById(question.value.questionCategoryId);
 
         if (response && response.value) {
           if (response.value.status === 200) {
@@ -307,27 +307,24 @@ export default {
 
           console.log(answers.value);
           if (answers.value.length !== 0) {
-            await answers.value.reduce(
-              async (prev, currencEl, index, array) => {
-                currencEl.charKey = String.fromCharCode(code + index);
+           
+            for (const iterator of answers.value) {
+              iterator.charKey = String.fromCharCode(code + index);
 
-                let res = await updateAnswer(currencEl.id, currencEl);
+              let res = await updateAnswer(iterator.id, iterator);
 
-                if (res && res.value) {
-                  if (res.value.status === 204) {
-                   
-                  } else {
-                    handleResponse(res.value).forEach((element) => {
-                      toast.error(element, {
-                        position: "top",
-                        duration: 3000,
-                      });
+              if (res && res.value) {
+                if (res.value.status === 204) {
+                } else {
+                  handleResponse(res.value).forEach((element) => {
+                    toast.error(element, {
+                      position: "top",
+                      duration: 3000,
                     });
-                  }
+                  });
                 }
-              },
-              Promise.resolve()
-            );
+              }
+            }
 
             checkAnswers();
           }

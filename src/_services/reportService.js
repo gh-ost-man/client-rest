@@ -26,9 +26,8 @@ const reportService = () => {
             if (filter.date) {
                 query += "&date=" + filter.date
             }
-
         }
-        console.log(filter);
+       
         console.log(query);
 
         return await get(apiUrl + "/items" + query);
