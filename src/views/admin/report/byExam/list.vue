@@ -3,12 +3,12 @@
      <h3 class="text-white">Reports by exam</h3>
       <hr class="bg-info" />
     <div class="table-responsive custom-table-responsive" v-if="reports">
-      <!-- <paggination
-        :pages="paggination.pages"
+      <!-- <pagination
+        :pages="pagination.pages"
         :currentPage="currentPage"
-        :totalPages="paggination.totalPages"
+        :totalPages="pagination.totalPages"
         @changePage="changePage"
-      ></paggination> -->
+      ></pagination> -->
       <table class="table custom-table">
         <thead>
           <tr>
@@ -59,12 +59,10 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
 
     const { getAllReports } = reportService();
-    const { getAllExams, getExamById } = examService();
+    const { getExamById } = examService();
 
     const reports = ref(null);
     const reportsExam = ref(null);
-
-   
 
     onMounted(async () => {
       let response = await getAllReports();
@@ -94,25 +92,6 @@ export default {
               }
             }
           }
-          // await reports.value.reduce(async (a, item) => {
-          //   let res = await getExamById(item.examId);
-          //   if (
-          //     reportsExam.value.filter((x) => x.id === item.examId).length === 0
-          //   ) {
-          //     if (res && res.value) {
-          //       if (res.value.status === 200) {
-          //         reportsExam.value.push(res.value.data);
-          //       } else {
-          //         handleResponse(res.value).forEach((element) => {
-          //           toast.error(element, {
-          //             position: "top",
-          //             duration: 5000,
-          //           });
-          //         });
-          //       }
-          //     }
-          //   }
-          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

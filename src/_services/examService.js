@@ -23,7 +23,6 @@ const examService = () => {
             query+= "&limit="+limit;
         }
 
-        console.log(query);
         return await get(apiUrl + query);
     }
 
@@ -40,7 +39,6 @@ const examService = () => {
         if(limit) {
             query+= "&limit="+limit;
         }
-
 
         return await get(apiUrl + "/" + id + "/questions" + query);
     }

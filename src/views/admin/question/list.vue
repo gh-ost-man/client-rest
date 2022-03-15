@@ -45,20 +45,22 @@
               </select>
             </div>
             <div class="col-md-4 my-1">
-              <button class="btn btn-outline-light" @click="resetFilterHandle">Reset</button>
+              <button class="btn btn-outline-light" @click="resetFilterHandle">
+                Reset
+              </button>
             </div>
           </div>
         </div>
       </div>
       <hr class="bg-info" />
       <div class="table-responsive custom-table-responsive" v-if="questions">
-        <paggination
-          :pages="paggination.pages"
+        <pagination
+          :pages="pagination.pages"
           :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
+          :totalPages="pagination.totalPages"
           @changePage="changePage"
-        ></paggination>
-        <table class="table custom-table ">
+        ></pagination>
+        <table class="table custom-table">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -119,27 +121,26 @@ import questionService from "@/_services/questionService.js";
 import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import paginate from "@/_helpers/paginate.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 
 export default {
-  components: { Paggination },
+  components: { Pagination },
   setup() {
-    const error = ref(null);
+    const toast = getCurrentInstance().appContext.app.$toast;
+
     const questions = ref(null);
     const categories = ref(null);
-    const router = useRouter();
-    const toast = getCurrentInstance().appContext.app.$toast;
+
     const { getAllQuestions } = questionService();
     const { getAllCategories } = categoryService();
-    const currentPage = ref(1);
-    const pageSize = 15;
+
     const filterCategory = ref("");
     const filterContext = ref(null);
 
-    const paggination = ref({
-      pages: [1],
-      totalPages: 1,
-    });
+    const pagination = ref({ pages: [1], totalPages: 1 });
+
+    const pageSize = 15;
+    const currentPage = ref(1);
 
     onMounted(async () => {
       getFilterFromStorage();
@@ -164,18 +165,21 @@ export default {
      * Gets all questions from server
      */
     const getData = async () => {
-     
       let filter = {};
-      if(filterCategory.value) {
+      if (filterCategory.value) {
         filter.category = filterCategory.value;
       }
 
-      if(filterContext.value) {
+      if (filterContext.value) {
         filter.context = filterContext.value;
       }
 
       filterStorage();
-      let responseQ = await getAllQuestions(currentPage.value, pageSize, filter);
+      let responseQ = await getAllQuestions(
+        currentPage.value,
+        pageSize,
+        filter
+      );
 
       if (responseQ && responseQ.value) {
         if (responseQ.value.status === 200) {
@@ -188,11 +192,10 @@ export default {
             element.category = cat.name;
           });
 
-          paggination.value = {
+          pagination.value = {
             pages: responseQ.value.data.pages,
             totalPages: responseQ.value.data.totalPages,
           };
-
         }
       }
     };
@@ -216,22 +219,21 @@ export default {
       await getData();
     };
 
-
-    const filterHandle = async() => {
-       currentPage.value = 1;
+    const filterHandle = async () => {
+      currentPage.value = 1;
       await getData();
-    }
-    
+    };
+
     /**
      * Resets all filters
      */
-    const resetFilterHandle = async() => {
+    const resetFilterHandle = async () => {
       filterContext.value = null;
       filterCategory.value = "";
       currentPage.value = 1;
 
       await getData();
-    }
+    };
 
     /**
      * Save filters to storage
@@ -263,10 +265,9 @@ export default {
     return {
       categories,
       questions,
-      error,
       sortedQuestions,
       currentPage,
-      paggination,
+      pagination,
       filterCategory,
       filterContext,
       filterHandle,

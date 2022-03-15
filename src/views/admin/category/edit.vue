@@ -35,16 +35,16 @@
 import { ref, getCurrentInstance, onMounted } from "vue";
 import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRoute } from "vue-router";
 export default {
-  props: ['id'],
+  props: ["id"],
   setup(props) {
-    const category = ref(null);
+    const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
     const loadingDelete = ref(false);
-    const toast = getCurrentInstance().appContext.app.$toast;
-    const { updateCategory, getCategoryById, deleteCategory } = categoryService();
-    const route = useRoute();
+    const category = ref(null);
+
+    const { updateCategory, getCategoryById, deleteCategory } =
+      categoryService();
 
     onMounted(async () => {
       let response = await getCategoryById(props.id);
@@ -87,7 +87,7 @@ export default {
       }
     };
 
-     /**
+    /**
      * Deletes category
      */
 

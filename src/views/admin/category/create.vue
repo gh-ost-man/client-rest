@@ -34,6 +34,7 @@ export default {
     const loading = ref(false);
     const router = useRouter();
     const toast = getCurrentInstance().appContext.app.$toast;
+    
     const { createCategory } = categoryService();
 
     /**

@@ -12,12 +12,12 @@
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="categories">
-        <paggination
-          :pages="paggination.pages"
+        <pagination
+          :pages="pagination.pages"
           :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
+          :totalPages="pagination.totalPages"
           @changePage="changePage"
-        ></paggination>
+        ></pagination>
         <table class="table custom-table">
           <thead>
             <tr>
@@ -63,23 +63,21 @@
 
 <script>
 import { ref, onMounted, getCurrentInstance, computed } from "vue";
-import { useRouter } from "vue-router";
 import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import paginate from "@/_helpers/paginate.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 
 export default {
-  components: { Paggination },
+  components: { Pagination },
   setup() {
-    const error = ref(null);
-    const categories = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
+    const categories = ref(null);
+
     const { getAllCategories } = categoryService();
+
+    const pagination = ref(null);
     const currentPage = ref(1);
     const pageSize = 15;
-
-    const paggination = ref(null);
 
     onMounted(async () => {
       await getData();
@@ -95,7 +93,7 @@ export default {
         if (response.value.status === 200) {
           categories.value = response.value.data.items;
 
-          paggination.value = {
+          pagination.value = {
             pages: response.value.data.pages,
             totalPages: response.value.data.totalPages,
           };
@@ -121,7 +119,7 @@ export default {
 
     /**
      * Changes current page
-     * 
+     *
      * @param {number} pag New page
      */
     const changePage = async (pag) => {
@@ -132,9 +130,8 @@ export default {
     return {
       categories,
       sortedCategories,
-      error,
       currentPage,
-      paggination,
+      pagination,
       changePage,
     };
   },

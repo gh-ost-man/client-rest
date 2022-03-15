@@ -18,13 +18,13 @@
     <hr class="text-white" />
 
     <div class="table-responsive custom-table-responsive" v-if="examQuestions">
-      <paggination
+      <pagination
         v-if="examQuestions"
         :pages="paggiExamQ.pages"
         :currentPage="currentPageExamQ"
         :totalPages="paggiExamQ.totalPages"
         @changePage="changePageExamQ"
-      ></paggination>
+      ></pagination>
       <table class="table custom-table">
         <thead>
           <tr>
@@ -107,13 +107,13 @@
 
     <hr class="text-white" />
     <div class="table-responsive custom-table-responsive" v-if="questions">
-      <paggination
+      <pagination
         v-if="questionItems"
         :pages="paggiAllQ.pages"
         :currentPage="currentPageAllQ"
         :totalPages="paggiAllQ.totalPages"
         @changePage="changePageAllQ"
-      ></paggination>
+      ></pagination>
       <button
         class="btn btn-outline-light"
         @click="addQuestionToExamHandle"
@@ -198,27 +198,32 @@ import categoryService from "@/_services/categoryService.js";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import paginate from "@/_helpers/paginate.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 export default {
-  components: { Paggination },
+  components: { Pagination },
   setup() {
+    const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(null);
+
     const questions = ref(null);
     const categories = ref(null);
     const examQuestions = ref(null);
+
     const route = useRoute();
-    const toast = getCurrentInstance().appContext.app.$toast;
+
     const { getAllQuestions, getQuestionById } = questionService();
     const { getAllCategories } = categoryService();
     const { getAllExamQuestions, addQuestionToExam, removeQuestionFromExam } =
       examService();
-    const currentPage = ref(1);
-    const pageSize = 15;
+
     const selectedAddAll = ref(false);
     const selectedRemoveAll = ref(false);
     const selectedAddQuestions = ref([]);
     const selectedRemoveQuestions = ref([]);
     const filterCategory = ref("");
+
+    const currentPage = ref(1);
+    const pageSize = 15;
 
     const paggiAllQ = ref(null);
     const currentPageAllQ = ref(1);
@@ -259,23 +264,6 @@ export default {
       if (resExamQues && resExamQues.value) {
         if (resExamQues.value.status === 200) {
           examQuestions.value = resExamQues.value.data.items;
-
-          // await examQuestions.value.reduce(async (a, item) => {
-          //   let res = await getQuestionById(item.questionItemId);
-
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       item.question = res.value.data;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
 
           for (const iterator of examQuestions.value) {
             let res = await getQuestionById(iterator.questionItemId);
@@ -510,25 +498,6 @@ export default {
      */
     const addQuestionToExamHandle = async () => {
       loading.value = true;
-
-      // await selectedAddQuestions.value.reduce(async (a, element) => {
-      //   let res = await addQuestionToExam(route.params.id, {
-      //     question: element.context,
-      //     questionItemId: element.id,
-      //   });
-
-      //   if (res && res.value) {
-      //     if (res.value.status !== 201) {
-      //       currentPageAllQ.value = 1;
-      //       handleResponse(res.value).forEach((element) => {
-      //         toast.error(element, {
-      //           position: "top",
-      //           duration: 5000,
-      //         });
-      //       });
-      //     }
-      //   }
-      // }, Promise.resolve());
 
       for (const el of selectedAddQuestions.value) {
         let res = await addQuestionToExam(route.params.id, {

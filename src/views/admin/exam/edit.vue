@@ -79,10 +79,11 @@ import { useRoute } from "vue-router";
 export default {
   props: ["id"],
   setup(props) {
-    const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
+    const loading = ref(false);
+
     const { getExamById, updateExam } = examService();
-    const route = useRoute();
+
     const examObj = ref(null);
     const statuses = ref([
       {

@@ -79,7 +79,7 @@ export default {
     const stopTime = () => {
       clearTimeout(timer);
     };
-startTimer();
+    startTimer();
 
     return { refreshHandle, date };
   },

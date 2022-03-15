@@ -78,11 +78,11 @@ import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const error = ref(null);
-    const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { createExam } = examService();
+    const loading = ref(false);
     const router = useRouter();
+
+    const { createExam } = examService();
 
     const statuses = ref([
       {

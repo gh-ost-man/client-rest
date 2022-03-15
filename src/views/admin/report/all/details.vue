@@ -110,19 +110,17 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
 
-    const { getReportsByExamId, getReportById } = reportService();
-    const { getAllExamQuestions, getExamById } = examService();
+    const {  getReportById } = reportService();
+    const { getAllExamQuestions } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
     const { getUserById } = userService();
 
     const report = ref(null);
     const examQuestions = ref(null);
-    const exam = ref(null);
 
     const questions = ref(null);
     const answerKeys = ref([]);
-    const userAnswers = ref([]);
 
     onMounted(async () => {
       //Get data of Report by exam id
@@ -217,53 +215,6 @@ export default {
                 }
               }
             }
-
-            // await examQuestions.value.reduce(async (a, element) => {
-            //   let res = await getQuestionById(element.questionItemId);
-
-            //   if (res && res.value) {
-            //     if (res.value.status === 200) {
-            //       let q = res.value.data;
-
-            //       //Get answers of question
-            //       let resQ = await getQuestionAnswers(q.id);
-
-            //       if (resQ && resQ.value) {
-            //         if (resQ.value.status === 200) {
-            //           q.questionAnswers = resQ.value.data;
-
-            //           let arr1 = resQ.value.data.filter(
-            //             (x) => x.isCorrectAnswer
-            //           );
-            //           let arr2 = [];
-            //           arr1.forEach((element) => {
-            //             arr2.push(element.charKey);
-            //           });
-
-            //           let arr3 = arr2.join("");
-
-            //           answerKeys.value.push({ idQ: q.id, charKey: arr3 });
-            //         } else {
-            //           handleResponse(resQ.value).forEach((element) => {
-            //             toast.error(element, {
-            //               position: "top",
-            //               duration: 5000,
-            //             });
-            //           });
-            //         }
-            //       }
-
-            //       questions.value.push(q);
-            //     } else {
-            //       handleResponse(res.value).forEach((element) => {
-            //         toast.error(element, {
-            //           position: "top",
-            //           duration: 5000,
-            //         });
-            //       });
-            //     }
-            //   }
-            // }, Promise.resolve());
           } else {
             handleResponse(responseEQ.value).forEach((element) => {
               toast.error(element, {
@@ -273,22 +224,6 @@ export default {
             });
           }
         }
-
-        //Get Exam data
-        //   let responseE = await getExamById(report.value.examId);
-
-        //   if (responseE && responseE.value) {
-        //     if (responseE.value.status) {
-        //       exam.value = responseE.value.data;
-        //     } else {
-        //       handleResponse(responseE.value).forEach((element) => {
-        //         toast.error(element, {
-        //           position: "top",
-        //           duration: 5000,
-        //         });
-        //       });
-        //     }
-        //   }
       }
     });
 

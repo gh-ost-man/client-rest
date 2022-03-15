@@ -73,11 +73,12 @@ import handleResponse from "@/_helpers/handleResponse.js";
 import { useRouter } from "vue-router";
 export default {
   setup() {
+    const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
+
     const categoryId = ref(null);
     const categories = ref(null);
     const context = ref(null);
-    const toast = getCurrentInstance().appContext.app.$toast;
     const router = useRouter();
     const typeAnswer = ref(null);
     const answerTypes = ref([

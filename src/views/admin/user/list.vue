@@ -51,12 +51,13 @@
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive">
-        <paggination
-          :pages="paggination.pages"
+        <pagination
+          :middleVal="middleVal"
+          :pages="pagination.pages"
           :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
+          :totalPages="pagination.totalPages"
           @changePage="changePage"
-        ></paggination>
+        ></pagination>
         <table class="table custom-table" v-if="users">
           <thead>
             <tr>
@@ -123,28 +124,33 @@
 </template>
 
 <script>
-import { ref, onMounted, getCurrentInstance, computed } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
 import usersService from "@/_services/userService.js";
 import authService from "@/_services/authService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import paginate from "@/_helpers/paginate.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 import Roles from "@/_helpers/_role.js";
 export default {
-  components: { Paggination },
+  components: { Pagination },
   setup() {
-    const users = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
+
+    const users = ref(null);
+    const roles = ref([]);
+    
     const { getAllUsers } = usersService();
     const { currentUser } = authService();
+    
     const currentPage = ref(1);
-    const paggination = ref({ pages: [1], totalPages: 1 });
-    const pageSize = 15;
+    const pagination = ref({ pages: [1], totalPages: 1 });
+    const pageSize = 20;
+    const middleVal = ref(10);
+    const cntBetween = ref(5);
 
     const filterEFL = ref(null); // by email or firstname or lastname
     const filterRole = ref("");
-    const roles = ref([]);
 
     onMounted(async () => {
       Roles.forEach((element) => {
@@ -170,12 +176,12 @@ export default {
 
       filterStorage();
 
-      var response = await getAllUsers(currentPage.value, pageSize, filter);
+      var response = await getAllUsers(currentPage.value, pageSize, filter, middleVal.value,cntBetween.value );
 
       if (response && response.value) {
         if (response.value.status === 200) {
           users.value = response.value.data.items;
-          paggination.value = {
+          pagination.value = {
             pages: response.value.data.pages,
             totalPages: response.value.data.totalPages,
           };
@@ -206,7 +212,7 @@ export default {
     };
 
     /**
-     * Safe all filters to session storage
+     * Save all filters to session storage
      */
     const filterStorage = () => {
       let filterObj = {};
@@ -260,10 +266,11 @@ export default {
     };
 
     return {
+      middleVal,
       users,
       filterEFL,
       currentPage,
-      paggination,
+      pagination,
       filterRole,
       roles,
       changePage,

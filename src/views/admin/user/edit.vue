@@ -194,13 +194,15 @@ import userService from "@/_services/userService.js";
 import Role from "@/_helpers/_role.js";
 export default {
   setup() {
+    const toast = getCurrentInstance().appContext.app.$toast;
+    const loading = ref(false);
+
     const { update, changePassword, getById, addRole, removeRole, removeUser } =
       userService();
-    const loading = ref(false);
-    const error = ref(null);
-    const toast = getCurrentInstance().appContext.app.$toast;
+
     const route = useRoute();
     const router = useRouter();
+    
     const user = ref(null);
     const userUpdateObj = ref(null);
     const changePasswordObj = ref(null);
@@ -213,7 +215,6 @@ export default {
      * Gets data of user
      */
     const fetchData = async () => {
-      
       userRoles.value = [];
       roles.value = [];
       newRole.value = null;
@@ -296,8 +297,6 @@ export default {
      * Changes password of user
      */
     const changePasswordHandle = async () => {
-    
-
       if (
         changePasswordObj.value.currentPassword &&
         changePasswordObj.value.newPassword &&
@@ -343,7 +342,6 @@ export default {
      * Add new role to user
      */
     const addRoleHandle = async () => {
-     
       loading.value = true;
 
       let response = await addRole({

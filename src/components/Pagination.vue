@@ -15,8 +15,10 @@
   <div class="pagination w-auto d-flex justify-content-center">
     <ul>
       <li class="btn prev" @click="prevHanlde">Prev</li>
-      <li class="numb" @click="firstHandle" v-if="currentPage >= 10">1</li>
-      <li class="dots" v-if="currentPage >= 10">...</li>
+      <li class="numb" @click="firstHandle" v-if="currentPage >= middleVal">
+        1
+      </li>
+      <li class="dots" v-if="currentPage >= middleVal">...</li>
       <li
         style="cursor: pointer"
         class="numb"
@@ -40,14 +42,29 @@
       <li class="btn next" @click="nextHandle">Next</li>
     </ul>
   </div>
-
-
 </template>
 
 <script>
 export default {
-  name: "Paggination",
-  props: ["pages", "currentPage", "totalPages"],
+  name: "Pagination",
+  props: {
+    pages: {
+      type: Array,
+      default: 1,
+    },
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 1,
+    },
+    middleVal: {
+      type: Number,
+      default: 10,
+    },
+  },
   emits: ["changePage"],
   methods: {
     changePagi(page) {

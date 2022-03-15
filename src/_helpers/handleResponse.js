@@ -1,20 +1,14 @@
 const handleResponse = (response) => {
-
     if (response) {
-
         if (response.status === 0) {
             return ["Request error"];
         }
-
         if (response.status == 200) {
             return response.data;
         }
-
         if (response.status == 400) {
-
             if (response.data.error || response.data.errors) {
                 if (response.data.error) {
-
                     return [response.data.error];
                 }
 
@@ -29,10 +23,8 @@ const handleResponse = (response) => {
                         }
                     });
 
-
                     return values;
                 }
-
             }
 
             if(response.data.title) {
@@ -42,12 +34,9 @@ const handleResponse = (response) => {
             console.clear();
             console.log("BADDDDDDD: ********** : ", response.data);
         }
-
         if (response.status === 405) {
-
             return ["Method Not Allowed"];
         }
-
         if (response.status == 500) {
             return response.data.error ? [response.data.error] : ["500 Server Error"];
         }
@@ -59,7 +48,6 @@ const handleResponse = (response) => {
             console.log("403 Forbidden");
             return ['403 Forbidden'];
         }
-
         if (response.status == 404) {
             console.log("404 Not found");
 
@@ -92,15 +80,12 @@ const handleResponse = (response) => {
                 return ["Not found"];
             }
         }
-
         if (response.status == 415) {
             return [response.data.title];
         }
-
         if (response.status === 502) {
             return ["Bad Gateway"]
         }
-
     }
 
     return [JSON.stringify(response)]

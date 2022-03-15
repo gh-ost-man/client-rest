@@ -96,7 +96,7 @@
             </div>
             <div class="col-md-6">
               <label class="labels c-label">
-                <i class=" m-2 fs-5"><font-awesome-icon icon="user" /></i>
+                <i class="m-2 fs-5"><font-awesome-icon icon="user" /></i>
                 Last name</label
               ><input
                 type="text"
@@ -110,7 +110,7 @@
           <div class="row mt-3">
             <div class="col-md-12 mt-2">
               <label class="labels c-label">
-                <i class=" m-2 fs-5"><font-awesome-icon icon="circle-info" /></i>
+                <i class="m-2 fs-5"><font-awesome-icon icon="circle-info" /></i>
                 Additional info</label
               ><textarea
                 class="form-control bg-transparent text-white c-input"
@@ -213,30 +213,16 @@ import CodeDialog from "@/components/AccessCodeDialog.vue";
 export default {
   components: { CodeDialog },
   setup() {
-    const { currentUser, setAuth, setAuthUser } = authService();
+    const toast = getCurrentInstance().appContext.app.$toast;
+    const loading = ref(false);
+
+    const { currentUser, setAuthUser } = authService();
     const { update, changePassword, getUserById, sendMessage, updateEmail } =
       userService();
-    const loading = ref(false);
-    const error = ref(null);
-    const toast = getCurrentInstance().appContext.app.$toast;
+
     const dialogVisible = ref(false);
+
     const userEmail = ref(null);
-
-    onMounted(async () => {
-      await getUserData();
-     
-    });
-
-    const getUserData = async () => {
-      let res = await getUserById(currentUser.value.id);
-
-      if (res && res.value) {
-        if (res.value.status === 200) {
-          setAuthUser(res.value.data);
-           userEmail.value = currentUser.value.email;
-        }
-      }
-    };
 
     const userUpdateObj = ref({
       id: currentUser.value.id,
@@ -251,10 +237,24 @@ export default {
       confirmPassword: null,
     });
 
+    onMounted(async () => {
+      await getUserData();
+    });
+
+    const getUserData = async () => {
+      let res = await getUserById(currentUser.value.id);
+
+      if (res && res.value) {
+        if (res.value.status === 200) {
+          setAuthUser(res.value.data);
+          userEmail.value = currentUser.value.email;
+        }
+      }
+    };
+
     const saveProfileHandle = async () => {
       loading.value = true;
 
-      // console.log(userUpdateObj.value);
       let response = await update(userUpdateObj.value);
       loading.value = false;
 
@@ -370,7 +370,6 @@ export default {
 
     return {
       loading,
-      // error,
       userEmail,
       currentUser,
       dialogVisible,
@@ -391,26 +390,6 @@ export default {
   letter-spacing: 2px;
   font-weight: 500;
 }
-
-/* .c-logo span {
-  animation:  animate 5s linear infinite;
-}
-
-@keyframes animate {
-    0%, 18%, 50.1%, 60%, 65.1%, 80%, 90.1%, 92%{
-        color: #0e3742;
-        text-shadow: none;
-    }
-    18.1%, 20.1%,30%,50%, 60.1%, 65%,80.1%, 90%, 92.1%, 100% {
-        color:#fff;
-        text-shadow:  0 0 10px #03bcf4,
-        0 0 20px #03bcf4,
-        0 0 40px #03bcf4,
-        0 0 80px #03bcf4,
-        0 0 160px #03bcf4,
-        0 0 400px #03bcf4;
-    }
-} */
 
 .c-label {
   color: cyan;

@@ -54,16 +54,20 @@ import Role from "@/_helpers/_role.js";
 
 export default {
   setup() {
+    const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(null);
+
     const email = ref("user1@google.com");
     const password = ref("User1!");
+    
     const router = useRouter();
-    const toast = getCurrentInstance().appContext.app.$toast;
+    
     const { login } = authService();
 
     const submit = async () => {
       loading.value = true;
 
+      //Send data
       var response = await login({
         email: email.value,
         password: password.value,
@@ -93,6 +97,7 @@ export default {
             return;
           }
 
+          //If roles is staff
           if (isStaff) {
             router.push({ name: "ProfileAdmin" });
           } else if (user_roles.includes("Student")) {

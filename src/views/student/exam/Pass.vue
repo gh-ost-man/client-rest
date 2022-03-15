@@ -53,8 +53,8 @@
           </ul>
         </div>
       </div>
-      <div class="d-flex justify-content-center fixed-bottom">
-        <nav aria-label="Page navigation example">
+      <div class="d-flex justify-content-center">
+        <!-- <nav aria-label="Page navigation example">
           <ul class="pagination">
             <li class="page-item">
               <button class="page-link" @click="prevQuestion">Previous</button>
@@ -91,7 +91,61 @@
               </button>
             </li>
           </ul>
-        </nav>
+        </nav> -->
+        <div class="pagination w-auto d-flex justify-content-center">
+          <ul>
+            <li class="btn prev" @click="prevQuestion">Prev</li>
+            <li class="numb"  :class="{
+                'bg-warning text-black': userAnswers?.find(
+                  (x) => x.idQuesiton === questionsItems[0].id
+                ),
+              }" @click="firstHandle" v-if="currentQuestion >= 10">
+              1
+            </li>
+            <li class="dots" v-if="currentQuestion >= 10">...</li>
+            <li
+              style="cursor: pointer"
+              class="numb"
+              :class="{
+                'bg-warning text-black': userAnswers?.find(
+                  (x) => x.idQuesiton === questionsItems[page - 1].id
+                ),
+                active: page === currentQuestion,
+              }"
+              v-for="page in pagination.pages"
+              :key="page"
+              @click="changeQuestion(page)"
+            >
+              {{ page }}
+            </li>
+            <li
+              class="dots"
+              v-if="
+                !pagination.pages.includes(pagination.totalPages) &&
+                pagination.totalPages > 0
+              "
+            >
+              ...
+            </li>
+            <li
+              class="numb"
+              @click="lastHandle"
+              v-if="
+                !pagination.pages.includes(pagination.totalPages) &&
+                pagination.totalPages > 0
+              "
+               :class="{
+                'bg-warning text-black': userAnswers?.find(
+                  (x) => x.idQuesiton === questionsItems[pagination.totalPages - 1].id
+                ),
+              }"
+            >
+              {{ pagination.totalPages }}
+            </li>
+            <li class="btn next" @click="nextQuestion">Next</li>
+            <li class="btn next" @click="finishExam">Finish</li>
+          </ul>
+        </div>
       </div>
       <div class="text-white">{{ userAnswers }}</div>
     </div>
@@ -120,9 +174,7 @@ import userService from "@/_services/userService.js";
 import { onMounted, ref, computed, getCurrentInstance, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import paginate from "@/_helpers/paginate.js";
-import Pagi from "./pagi/Pagi.vue";
 export default {
-   components: { Pagi },
   props: ["idExam"],
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
@@ -144,11 +196,13 @@ export default {
     const examQuestions = ref(null);
     const questions = ref(null);
     const question = ref(null);
-    const currentQuestion = ref(0);
+    const currentQuestion = ref(1);
     const answerInput = ref(null);
     const idReport = ref(null);
 
     const userAnswers = ref([]);
+
+    const pagination = ref({ pages: [1], totalPages: 1 });
 
     onMounted(async () => {
       let resUser = await getUserExams(currentUser.value.id);
@@ -194,6 +248,7 @@ export default {
               });
             });
             router.push({ name: "ExamsStudent" });
+            return;
           }
         }
       } else {
@@ -205,8 +260,15 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           exam.value = response.value.data;
-          minutes.value = response.value.data.durationTime;
-          seconds.value = 0;
+
+          if (sessionStorage.time) {
+            let time = JSON.parse(sessionStorage.time);
+            minutes.value = time.minutes;
+            seconds.value = time.seconds;
+          } else {
+            minutes.value = response.value.data.durationTime;
+            seconds.value = 0;
+          }
 
           //Get exam questions
           let res = await getAllExamQuestions(props.idExam);
@@ -216,10 +278,10 @@ export default {
               examQuestions.value = res.value.data.items;
 
               questions.value = [];
-              
+
               //Get question data
               for (const iterator of examQuestions.value) {
-                 let resQ = await getQuestionById(iterator.questionItemId);
+                let resQ = await getQuestionById(iterator.questionItemId);
                 if (resQ && resQ.value) {
                   if (resQ.value.status === 200) {
                     let item = resQ.value.data;
@@ -263,7 +325,12 @@ export default {
             }
           }
 
-          question.value = questionsItems.value[currentQuestion.value];
+          question.value = questionsItems.value[0];
+
+          if (sessionStorage.answers) {
+            userAnswers.value = JSON.parse(sessionStorage.answers);
+            changeQuestion(currentQuestion.value);
+          }
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -276,24 +343,30 @@ export default {
     });
 
     onUnmounted(() => {
-      clearTimeout(timer);
+      console.log("ONMOUNTED******************");
+      clearInterval(timer);
+      sessionStorage.removeItem("idReport");
+      sessionStorage.removeItem("time");
+      sessionStorage.removeItem("answers");
     });
+
     /**
      * Changes question
      */
     const changeQuestion = async (index) => {
-      if (currentQuestion.value === index) return;
+      console.log("INDEX 1: ", index);
+      // if(currentQuestion.value === index) return;
 
       if (question.value?.answerType === 0) {
         if (answerInput.value || answerInput.value === "") {
-          toggleAnswer(answerInput.value);
+           toggleAnswer(answerInput.value);
         }
       }
 
       await sendAnswer();
 
       currentQuestion.value = index;
-      question.value = questionsItems.value[index];
+      question.value = questionsItems.value[index - 1];
       answerInput.value = null;
 
       //Set answer in the inputAnswer
@@ -316,7 +389,6 @@ export default {
      * Sends answer into db
      */
     const sendAnswer = async () => {
-
       let obj = userAnswers.value.find(
         (x) => x.idQuesiton === question.value.id
       );
@@ -331,6 +403,7 @@ export default {
         if (response && response.value) {
           if (response.value.status === 200) {
             obj.status = "Added";
+            sessionStorage.answers = JSON.stringify(userAnswers.value);
           } else {
             handleResponse(response.value).forEach((element) => {
               toast.error(element, {
@@ -355,12 +428,13 @@ export default {
 
           if (obj >= 0) {
             userAnswers.value[obj].status = "Modify";
-            userAnswers.value.splice(obj, 1);
+            //userAnswers.value.splice(obj, 1);
+            userAnswers.value[obj].answers = [answerInput.value];
 
-            let item = {};
-            item.idQuesiton = question.value.id;
-            item.answers = [answerInput.value];
-            userAnswers.value.push(item);
+            // let item = {};
+            // item.idQuesiton = question.value.id;
+            // item.answers = [answerInput.value];
+            // userAnswers.value.push(item);
 
             return;
           }
@@ -479,7 +553,10 @@ export default {
           // }
 
           sessionStorage.removeItem("idReport");
-          router.push({ name: "ExamResult", params: { idReport: idReport.value } });
+          router.push({
+            name: "ExamResult",
+            params: { idReport: idReport.value },
+          });
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -491,9 +568,13 @@ export default {
       }
     };
 
+    /**
+     * Start time for exam
+     */
     const startTimer = () => {
       timer = setInterval(() => {
         seconds.value--;
+
         if (seconds.value <= 0 && minutes.value <= 0) {
           clearTimeout(timer);
           isFinish.value = true;
@@ -507,15 +588,26 @@ export default {
             seconds.value = 59;
           }
         }
+
+        sessionStorage.time = JSON.stringify({
+          minutes: minutes.value,
+          seconds: seconds.value,
+        });
       }, 1000);
     };
 
+    /**
+     * Next quesiton
+     */
     const nextQuestion = () => {
       if (currentQuestion.value + 1 < questions.value.length) {
         changeQuestion(currentQuestion.value + 1);
       }
     };
 
+    /**
+     * Prev question
+     */
     const prevQuestion = () => {
       if (currentQuestion.value - 1 >= 0) {
         changeQuestion(currentQuestion.value - 1);
@@ -525,7 +617,13 @@ export default {
     const questionsItems = computed(() => {
       if (questions.value) {
         questions.value.sort((x1, x2) => x1?.id - x2?.id);
-        question.value = questions.value[currentQuestion.value];
+        question.value = questions.value[currentQuestion.value - 1];
+
+        pagination.value = paginate(
+          questions.value.length,
+          currentQuestion.value,
+          1
+        );
       }
 
       console.log("HERE");
@@ -533,8 +631,23 @@ export default {
       return questions.value;
     });
 
+    /**
+     * First Question
+     */
+    const firstHandle = () => {
+      changeQuestion(1);
+    };
+
+    /**
+     * Last questin
+     */
+    const lastHandle = () => {
+      changeQuestion(pagination.value.totalPages);
+    };
+
     return {
       isFinish,
+      pagination,
       exam,
       question,
       questions,
@@ -549,10 +662,72 @@ export default {
       seconds,
       nextQuestion,
       prevQuestion,
+      firstHandle,
+      lastHandle,
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 100px;
+}
+
+.pagination ul {
+  /* width: 100%; */
+  display: flex;
+  flex-wrap: wrap;
+  /* background: #fff; */
+  padding: 8px;
+  border-radius: 50px;
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+}
+.pagination ul li {
+  color: #20b2aa;
+  list-style: none;
+  line-height: 45px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+.pagination ul li.numb {
+  list-style: none;
+  height: 45px;
+  width: 45px;
+  margin: 0 3px;
+  line-height: 45px;
+  border-radius: 50%;
+}
+.pagination ul li.numb.first {
+  margin: 0px 3px 0 -5px;
+}
+.pagination ul li.numb.last {
+  margin: 0px -5px 0 3px;
+}
+.pagination ul li.dots {
+  font-size: 22px;
+  cursor: default;
+}
+.pagination ul li.btn {
+  padding: 0 20px;
+  border-radius: 50px;
+}
+.pagination li.active,
+.pagination ul li.numb:hover,
+.pagination ul li:first-child:hover,
+.pagination ul li:last-child:hover {
+  color: #fff !important;
+  background: #20b2aa !important;
+}
 </style>

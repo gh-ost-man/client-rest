@@ -43,12 +43,12 @@
         </div>
       </div>
       <div class="table-responsive custom-table-responsive">
-        <paggination
-          :pages="paggination.pages"
+        <pagination
+          :pages="pagination.pages"
           :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
+          :totalPages="pagination.totalPages"
           @changePage="changePage"
-        ></paggination>
+        ></pagination>
         <table class="table custom-table">
           <thead>
             <tr>
@@ -122,14 +122,14 @@
 </template>
 
 <script>
-import { ref, onMounted, getCurrentInstance, computed } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import reportService from "@/_services/reportService.js";
 import examService from "@/_services/examService.js";
 import userService from "@/_services/userService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 export default {
-  components: { Paggination },
+  components: { Pagination },
   setup() {
     const toast = getCurrentInstance().appContext.app.$toast;
 
@@ -142,7 +142,7 @@ export default {
     const exams = ref([]);
 
     const currentPage = ref(1);
-    const paggination = ref({ pages: [1], totalPages: 1 });
+    const pagination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
 
     const filterUser = ref(null);
@@ -175,7 +175,7 @@ export default {
         if (response.value.status === 200) {
           reports.value = response.value.data.items;
 
-          paggination.value = {
+          pagination.value = {
             pages: response.value.data.pages,
             totalPages: response.value.data.totalPages,
           };
@@ -214,22 +214,6 @@ export default {
             }
           }
 
-          // await users.value.reduce(async (a, item) => {
-          //   let res = await getById(item.userId);
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       item.user = res.value.data;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
-
           for (const iterator of exams.value) {
             let res = await getExamById(iterator.examId);
             if (res && res.value) {
@@ -245,23 +229,6 @@ export default {
               }
             }
           }
-          // await exams.value.reduce(async (a, item) => {
-          //   let res = await getExamById(item.examId);
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       item.exam = res.value.data;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
-
-          //Get Exam By id
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -341,7 +308,7 @@ export default {
       users,
       exams,
       currentPage,
-      paggination,
+      pagination,
       filterUser,
       filterExam,
       filterDate,

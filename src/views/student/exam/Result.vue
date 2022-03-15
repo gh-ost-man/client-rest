@@ -1,6 +1,20 @@
 <template>
   <div class="p-3">
-    <h1 class="text-white">Result</h1>
+    <h3 class="text-white">Result</h3>
+    <hr class="bg-info">
+    <div class="text-white" v-if="report">
+      <p>! {{ report.applicantId }}</p>
+      <p>@ {{ report.examId }}</p>
+      <p># {{ report.grade }}</p>
+    </div>
+    <div class="d-flex justify-content-center" v-if="!report">
+      <div
+        class="spinner-border align-center text-primary text-center"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -12,7 +26,7 @@ import { onMounted, ref, computed, getCurrentInstance, onUnmounted } from "vue";
 export default {
   props: ["idReport"],
   setup(props) {
-      const toast = getCurrentInstance().appContext.app.$toast;
+    const toast = getCurrentInstance().appContext.app.$toast;
     const report = ref(null);
 
     const { getReportById } = reportService();
@@ -35,7 +49,7 @@ export default {
       }
     });
 
-    return {};
+    return { report };
   },
 };
 </script>

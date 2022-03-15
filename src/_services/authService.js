@@ -33,7 +33,7 @@ const authService = () => {
         currentUser.value = JSON.parse(decryptData(localStorage.auth));
         store.commit('setUser', currentUser.value);
     }
-
+    
     const setAuthUser = (user) => {
         localStorage.auth = encryptData(JSON.stringify(user).toString());
         currentUser.value = user;

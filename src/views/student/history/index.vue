@@ -1,12 +1,12 @@
 <template>
   <div class="p-3">
     <div class="table-responsive custom-table-responsive" v-if="reports">
-      <!-- <paggination
-          :pages="paggination.pages"
+      <!-- <pagination
+          :pages="pagination.pages"
           :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
+          :totalPages="pagination.totalPages"
           @changePage="changePage"
-        ></paggination> -->
+        ></pagination> -->
       <table class="table custom-table">
         <thead>
           <tr>

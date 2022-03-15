@@ -53,12 +53,12 @@
       </div>
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="exams">
-        <paggination
-          :pages="paggination.pages"
+        <pagination
+          :pages="pagination.pages"
           :currentPage="currentPage"
-          :totalPages="paggination.totalPages"
+          :totalPages="pagination.totalPages"
           @changePage="changePage"
-        ></paggination>
+        ></pagination>
         <table class="table custom-table">
           <thead>
             <tr>
@@ -120,19 +120,23 @@
 import { ref, onMounted, getCurrentInstance, computed } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 
 export default {
-  components: { Paggination },
+  components: { Pagination },
   setup() {
-    const exams = ref(null);
     const toast = getCurrentInstance().appContext.app.$toast;
-    const { getAllExams, getAllExamQuestions } = examService();
-    const currentPage = ref(1);
-    const pageSize = 15;
-    const paggination = ref(null);
+    const exams = ref(null);
+
     const filterTitle = ref("");
     const filterStatus = ref("");
+
+    const { getAllExams, getAllExamQuestions } = examService();
+
+    const pagination = ref({pages: [1], totalPages: 1});
+    const pageSize = 15;
+    const currentPage = ref(1);
+
     const statuses = ref([
       {
         title: "NotAvailable",
@@ -176,7 +180,7 @@ export default {
         if (response.value.status === 200) {
           exams.value = response.value.data.items;
 
-          exams.value.forEach(async (element) => {
+          for (const element of exams.value) {
             element.status = statuses.value.find(
               (x) => x.key === element.status
             ).title;
@@ -195,9 +199,29 @@ export default {
                 });
               }
             }
-          });
+          }
+          // exams.value.forEach(async (element) => {
+          //   element.status = statuses.value.find(
+          //     (x) => x.key === element.status
+          //   ).title;
 
-          paggination.value = {
+          //   let res = await getAllExamQuestions(element.id);
+
+          //   if (res && res.value) {
+          //     if (res.value.status === 200) {
+          //       element.qtyOfQuestions = res.value.data.items.length;
+          //     } else {
+          //       handleResponse(res.value).forEach((element) => {
+          //         toast.error(element, {
+          //           position: "top",
+          //           duration: 5000,
+          //         });
+          //       });
+          //     }
+          //   }
+          // });
+
+          pagination.value = {
             pages: response.value.data.pages,
             totalPages: response.value.data.totalPages,
           };
@@ -220,7 +244,7 @@ export default {
       await getData();
     };
 
-     /**
+    /**
      * Filters exams by status exam
      */
     const filterByStatus = async () => {
@@ -230,7 +254,7 @@ export default {
 
     /**
      * Changes current page
-     * 
+     *
      * @param {number} pag New page
      */
     const changePage = async (pag) => {
@@ -294,7 +318,7 @@ export default {
       statuses,
       filterTitle,
       filterStatus,
-      paggination,
+      pagination,
       changePage,
       filterByTitle,
       resetFilterHandle,

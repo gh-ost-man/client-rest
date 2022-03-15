@@ -202,21 +202,25 @@ export default {
 
   setup(props) {
     const loading = ref(false);
+    const toast = getCurrentInstance().appContext.app.$toast;
+
     const category = ref(null);
     const question = ref(null);
     const answer = ref(null);
     const answers = ref([]);
     const updateAnswerStatus = ref(false);
+    
     const indexUpdate = ref(null);
     const isCorrectAnswer = ref(false);
-    var code = 65;
-    const toast = getCurrentInstance().appContext.app.$toast;
     const typeAnswer = ref(null);
+    
     const isMultyAnswers = ref(false);
     const isOneAnswer = ref(false);
     const isTextAnswer = ref(false);
     const isMaxAnswers = ref(false);
     const isKeysWords = ref(false);
+    
+    var code = 65;
     const answerTypes = ref([
       { title: "Text", value: 0 },
       { title: "Single", value: 1 },

@@ -7,7 +7,7 @@
     <hr class="bg-info" />
     <div
       class="table-responsive custom-table-responsive"
-      v-if="exam && examQuestions"
+      v-if="examQuestions"
     >
       <table class="table custom-table mt-5">
         <thead class="table-dark">
@@ -85,7 +85,7 @@
         </tbody>
       </table>
     </div>
-    <div class="d-flex justify-content-center" v-if="!exam || !examQuestions">
+    <div class="d-flex justify-content-center" v-if="!examQuestions">
       <div
         class="spinner-border align-center text-primary text-center"
         role="status"
@@ -107,18 +107,19 @@ import { computed, onMounted, ref, getCurrentInstance } from "vue";
 export default {
   props: ["idExam"],
   setup(props) {
-    const { getReportsByExamId, getReportById } = reportService();
+    const toast = getCurrentInstance().appContext.app.$toast;
+    
+    const examQuestions = ref(null);
+    const reports = ref(null);
+    const questions = ref(null);
+    const answerKeys = ref([]);
+
+    const { getReportsByExamId } = reportService();
     const { getAllExamQuestions, getExamById } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
     const { getUserById } = userService();
-    const reports = ref(null);
-    const examQuestions = ref(null);
-    const exam = ref(null);
-    const questions = ref(null);
-    const answerKeys = ref([]);
-    const userAnswers = ref([]);
-    const toast = getCurrentInstance().appContext.app.$toast;
+
     onMounted(async () => {
       //Get data of Report by exam id
       let response = await getReportsByExamId(props.idExam);
@@ -144,23 +145,6 @@ export default {
               }
             }
           }
-          // await reports.value.reduce(async (a, el) => {
-          //   //   el.currentKeys = el.currentKeys.replace(",", "");
-          //   let res = await getById(el.applicantId);
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       el.user =
-          //         res.value.data.firstName + " " + res.value.data.lastName;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -229,70 +213,8 @@ export default {
                 }
               }
             }
-            // await examQuestions.value.reduce(async (a, element) => {
-            //   let res = await getQuestionById(element.questionItemId);
-
-            //   if (res && res.value) {
-            //     if (res.value.status === 200) {
-            //       let q = res.value.data;
-
-            //       //Get answers of question
-            //       let resQ = await getQuestionAnswers(q.id);
-
-            //       if (resQ && resQ.value) {
-            //         if (resQ.value.status === 200) {
-            //           q.questionAnswers = resQ.value.data;
-
-            //           let arr1 = resQ.value.data.filter(
-            //             (x) => x.isCorrectAnswer
-            //           );
-            //           let arr2 = [];
-            //           arr1.forEach((element) => {
-            //             arr2.push(element.charKey);
-            //           });
-
-            //           let arr3 = arr2.join("");
-
-            //           answerKeys.value.push({ idQ: q.id, charKey: arr3 });
-            //         } else {
-            //           handleResponse(resQ.value).forEach((element) => {
-            //             toast.error(element, {
-            //               position: "top",
-            //               duration: 5000,
-            //             });
-            //           });
-            //         }
-            //       }
-
-            //       questions.value.push(q);
-            //     } else {
-            //       handleResponse(res.value).forEach((element) => {
-            //         toast.error(element, {
-            //           position: "top",
-            //           duration: 5000,
-            //         });
-            //       });
-            //     }
-            //   }
-            // }, Promise.resolve());
           } else {
             handleResponse(responseEQ.value).forEach((element) => {
-              toast.error(element, {
-                position: "top",
-                duration: 5000,
-              });
-            });
-          }
-        }
-
-        //Get Exam data
-        let responseE = await getExamById(props.idExam);
-
-        if (responseE && responseE.value) {
-          if (responseE.value.status) {
-            exam.value = responseE.value.data;
-          } else {
-            handleResponse(responseE.value).forEach((element) => {
               toast.error(element, {
                 position: "top",
                 duration: 5000,
@@ -310,7 +232,6 @@ export default {
     return {
       sortedAnswerKeys,
       reports,
-      exam,
       examQuestions,
       questions,
       answerKeys,

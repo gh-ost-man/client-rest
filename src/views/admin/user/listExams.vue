@@ -16,13 +16,13 @@
     </div>
     <hr class="text-secondary" />
     <div class="table-responsive custom-table-responsive" v-if="userExams">
-      <paggination
+      <pagination
         v-if="userExams"
         :pages="paggiUExams.pages"
         :currentPage="currentPageUExams"
         :totalPages="paggiUExams.totalPages"
         @changePage="changePageUExams"
-      ></paggination>
+      ></pagination>
 
       <table class="table custom-table">
         <thead>
@@ -85,13 +85,13 @@
 
     <hr class="text-secondary" />
     <div class="table-responsive custom-table-responsive" v-if="exams">
-      <paggination
+      <pagination
         v-if="examItems"
         :pages="paggiExams.pages"
         :currentPage="currentPageExam"
         :totalPages="paggiExams.totalPages"
         @changePage="changePageExam"
-      ></paggination>
+      ></pagination>
       <table class="table custom-table">
         <thead>
           <tr>
@@ -153,22 +153,25 @@ import userService from "@/_services/userService.js";
 import examService from "@/_services/examService.js";
 import { onMounted, ref, getCurrentInstance, computed } from "vue";
 import paginate from "@/_helpers/paginate.js";
-import Paggination from "@/components/Paggination";
+import Pagination from "@/components/Pagination";
 export default {
   props: ["id"],
-  components: { Paggination },
+  components: { Pagination },
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
-    const { getUserExams, addExamToUser, removeExamFromUser, getById } =
-      userService();
+
+    const { getUserExams, addExamToUser, removeExamFromUser } = userService();
     const { getAllExams, getExamById } = examService();
+
     const exams = ref(null);
     const userExams = ref(null);
+
     const isSelectedRemoveExams = ref(false);
     const isSelectedAddAll = ref(false);
     const selectedRemoveExams = ref([]);
     const selectedAddExams = ref([]);
+
     const paggiExams = ref({
       pages: [1],
       totalPages: 1,
@@ -216,8 +219,8 @@ export default {
         if (response.value.status === 200) {
           userExams.value = response.value.data.items;
 
-          for (const iterator of  userExams.value) {
-             let res = await getExamById(iterator.examId);
+          for (const iterator of userExams.value) {
+            let res = await getExamById(iterator.examId);
 
             if (res && res.value) {
               if (res.value.status === 200) {
@@ -232,22 +235,6 @@ export default {
               }
             }
           }
-          // await userExams.value.reduce(async (a, item) => {
-          //   let res = await getExamById(item.examId);
-
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       item.exam = res.value.data;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -258,7 +245,7 @@ export default {
         }
       }
     };
-    
+
     /**
      * Selects exams for delete from user
      */
@@ -279,7 +266,7 @@ export default {
       loading.value = true;
 
       for (const iterator of selectedRemoveExams.value) {
-         let res = await removeExamFromUser({
+        let res = await removeExamFromUser({
           userId: props.id,
           examId: iterator.examId,
         });
@@ -296,29 +283,15 @@ export default {
         }
       }
 
-      // await selectedRemoveExams.value.reduce(async (a, item) => {
-      //   let res = await removeExamFromUser({
-      //     userId: props.id,
-      //     examId: item.examId,
-      //   });
-
-      //   if (res && res.value) {
-      //     if (res.value.status !== 200) {
-      //       handleResponse(res.value).forEach((element) => {
-      //         toast.error(element, {
-      //           position: "top",
-      //           duration: 5000,
-      //         });
-      //       });
-      //     }
-      //   }
-      // }, Promise.resolve());
-
       loading.value = false;
 
-      if(userExamsItems.value.length - selectedRemoveExams.value.length === 0) {
-        if(currentPageUExams.value === paggiUExams.value.endPage) {
-          currentPageUExams.value = currentPageUExams.value -1 < 1?1:currentPageUExams.value - 1;
+      if (
+        userExamsItems.value.length - selectedRemoveExams.value.length ===
+        0
+      ) {
+        if (currentPageUExams.value === paggiUExams.value.endPage) {
+          currentPageUExams.value =
+            currentPageUExams.value - 1 < 1 ? 1 : currentPageUExams.value - 1;
         }
       }
 
@@ -339,7 +312,7 @@ export default {
 
     /**
      * Changes current page
-     * 
+     *
      * @param {number} page New page
      */
     const changePageUExams = (page) => {
@@ -347,8 +320,6 @@ export default {
 
       isSelectedRemoveExams.value = false;
       selectedRemoveExams.value = [];
-     
-
     };
 
     /**
@@ -357,7 +328,11 @@ export default {
     const userExamsItems = computed(() => {
       let arr = userExams.value || [];
 
-      paggiUExams.value = paginate(arr.length, currentPageUExams.value, pageSize);
+      paggiUExams.value = paginate(
+        arr.length,
+        currentPageUExams.value,
+        pageSize
+      );
 
       return arr.slice(
         paggiUExams.value.startIndex,
@@ -369,9 +344,9 @@ export default {
 
     /**
      * Checks whether the exam is selected
-     * 
+     *
      * @param {number} id Id Exam
-      */
+     */
     const checkedAddHandle = (id) => {
       return selectedAddExams.value.find((x) => x.id == id);
     };
@@ -394,9 +369,12 @@ export default {
      */
     const addExamToUserHandle = async () => {
       loading.value = true;
-      
+
       for (const iterator of selectedAddExams.value) {
-          let res = await addExamToUser({ userId: props.id, examId: iterator.id });
+        let res = await addExamToUser({
+          userId: props.id,
+          examId: iterator.id,
+        });
 
         if (res && res.value) {
           if (res.value.status !== 200) {
@@ -409,20 +387,6 @@ export default {
           }
         }
       }
-      // await selectedAddExams.value.reduce(async (a, item) => {
-      //   let res = await addExamToUser({ userId: props.id, examId: item.id });
-
-      //   if (res && res.value) {
-      //     if (res.value.status !== 200) {
-      //       handleResponse(res.value).forEach((element) => {
-      //         toast.error(element, {
-      //           position: "top",
-      //           duration: 5000,
-      //         });
-      //       });
-      //     }
-      //   }
-      // }, Promise.resolve());
 
       loading.value = false;
 
@@ -462,13 +426,13 @@ export default {
 
     /**
      * Changes current page
-     * 
+     *
      * @param {number} page New page
      */
     const changePageExam = (page) => {
       currentPageExam.value = page;
 
-       isSelectedAddAll.value = false;
+      isSelectedAddAll.value = false;
       selectedAddExams.value = [];
     };
     return {

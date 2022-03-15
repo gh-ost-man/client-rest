@@ -119,9 +119,11 @@ import Role from "@/_helpers/_role.js";
 
 export default {
   setup() {
-    const { createUser, addRole } = usersService();
-    const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
+    const loading = ref(false);
+
+    const { createUser, addRole } = usersService();
+    
     const roles = ref(
       Role.map((e) => {
         return { title: e, value: e };

@@ -4,7 +4,7 @@ const userService = () => {
     const apiUrl = 'https://localhost:9001/api/users';
     const { post, get, put, remove } = useApi();
 
-    const getAllUsers = async (page, limit, filter,) => {
+    const getAllUsers = async (page, limit, filter, middleVal, qtyBetween) => {
         let query = "?";
         if(page) {
             query  += "page=" + page;
@@ -24,7 +24,14 @@ const userService = () => {
             query+= "&limit="+limit;
         }
 
-        console.log(query);
+        if(middleVal) {
+            query+= "&middleVal="+middleVal;
+        }
+
+        if(qtyBetween) {
+            query+= "&cntBetween="+qtyBetween;
+        }
+
         return await get(apiUrl + query);
     }
 
@@ -79,7 +86,6 @@ const userService = () => {
         return await post(apiUrl+"/addExam", data);
     }
     
-
     const removeExamFromUser = async(data) =>{
         return await post(apiUrl+"/removeExam", data);
     }

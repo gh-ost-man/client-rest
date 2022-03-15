@@ -4,7 +4,6 @@
       <h3 class="text-info">Register</h3>
       <div class="form-group mt-1">
         <label class="c-label">
-          
           <font-awesome-icon icon="user-graduate" />
           First name
         </label>
@@ -13,7 +12,6 @@
           class="form-control c-input"
           v-model.trim="newUser.firstName"
           :disabled="loading"
-
         />
       </div>
       <div class="form-group mt-1">
@@ -30,7 +28,7 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-           <font-awesome-icon icon="at" />
+          <font-awesome-icon icon="at" />
           Email address</label
         >
         <input
@@ -42,7 +40,7 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-           <font-awesome-icon icon="lock" />
+          <font-awesome-icon icon="lock" />
           Password</label
         >
         <input
@@ -55,7 +53,7 @@
       </div>
       <div class="form-group mt-1">
         <label class="c-label">
-           <font-awesome-icon icon="circle-info" />
+          <font-awesome-icon icon="circle-info" />
 
           Additional Info</label
         >
@@ -77,8 +75,10 @@
         >Login</router-link
       >
     </form>
-    <code-dialog v-model:show="dialogVisible" @submit="submitHandle"></code-dialog>
-    
+    <code-dialog
+      v-model:show="dialogVisible"
+      @submit="submitHandle"
+    ></code-dialog>
   </div>
 </template>
 
@@ -93,9 +93,11 @@ export default {
   components: { CodeDialog },
 
   setup() {
-    const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
+    const loading = ref(false);
+
     const router = useRouter();
+
     const newUser = ref({
       firstName: null,
       lastName: null,
@@ -104,28 +106,28 @@ export default {
       additionalInfo: null,
       code: -1,
     });
+
     const dialogVisible = ref(false);
+
     const { register, sendMessage } = authService();
 
     const sendMessageHandle = async () => {
-
-      if(!newUser.value.firstName ||newUser.value.firstName==='') {
+      if (!newUser.value.firstName || newUser.value.firstName === "") {
         toast.error("First name is required");
-        return
+        return;
       }
-       if(!newUser.value.lastName ||newUser.value.lastName==='') {
+      if (!newUser.value.lastName || newUser.value.lastName === "") {
         toast.error("Last name is required");
-        return
+        return;
       }
-       if(!newUser.value.email ||newUser.value.email==='') {
+      if (!newUser.value.email || newUser.value.email === "") {
         toast.error("Email is required");
-        return
+        return;
       }
-       if(!newUser.value.password ||newUser.value.password==='') {
+      if (!newUser.value.password || newUser.value.password === "") {
         toast.error("Password is required");
-        return
+        return;
       }
-
 
       loading.value = true;
       let resAccessCode = await sendMessage(newUser.value);
