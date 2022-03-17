@@ -4,7 +4,7 @@ const categoryService = () => {
     const apiUrl = 'https://localhost:9001/api/categories';
     const { post, get, put, remove } = useApi();
     
-    const getAllCategories = async (page, limit) => {
+    const getAllCategories = async (page, limit, middleVal, qtyBetween) => {
         let query = "?";
         if(page) {
             query  += "page=" + page;
@@ -12,6 +12,14 @@ const categoryService = () => {
 
         if(limit) {
             query+= "&limit="+limit;
+        }
+
+        if (middleVal) {
+            query += "&middleVal=" + middleVal;
+        }
+
+        if (qtyBetween) {
+            query += "&cntBetween=" + qtyBetween;
         }
         
         return await get(apiUrl + query);

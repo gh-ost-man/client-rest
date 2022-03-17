@@ -4,10 +4,17 @@ const examService = () => {
     const apiUrl = 'https://localhost:9001/api/exams';
     const { post, get, put, remove } = useApi();
 
-    const getAllExams = async (page,  limit, filter,) => {
+    const getAllExams = async (page,  limit, filter, middleVal, qtyBetween) => {
         let query = "?";
         if(page) {
             query  += "page=" + page;
+        }
+        if (middleVal) {
+            query += "&middleVal=" + middleVal;
+        }
+
+        if (qtyBetween) {
+            query += "&cntBetween=" + qtyBetween;
         }
 
         if(filter) {
@@ -22,7 +29,8 @@ const examService = () => {
         if(limit) {
             query+= "&limit="+limit;
         }
-
+        
+        console.log(query);
         return await get(apiUrl + query);
     }
 

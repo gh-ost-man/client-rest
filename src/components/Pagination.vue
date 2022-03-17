@@ -1,24 +1,13 @@
 <template>
-  <!-- <nav aria-label="Page navigation example" class="">
-    <ul class="pagination d-flex bg-danger justify-content-center">
-      <li
-        style="cursor: pointer"
-        class="page-item d-block"
-        :class="{ active: page === currentPage }"
-        v-for="page in pages"
-        :key="page"
-      >
-        <div class="page-link" @click="changePagi(page)">{{ page }}</div>
-      </li>
-    </ul>
-  </nav> -->
   <div class="pagination w-auto d-flex justify-content-center">
     <ul>
       <li class="btn prev" @click="prevHanlde">Prev</li>
-      <li class="numb" @click="firstHandle" v-if="currentPage >= middleVal">
-        1
-      </li>
-      <li class="dots" v-if="currentPage >= middleVal">...</li>
+      <template  v-if="currentPage >= middleVal && !pages.includes(1)">
+        <li class="numb" @click="firstHandle" v-if="currentPage >= middleVal && !pages.includes(1)">
+          1
+        </li>
+        <li class="dots" v-if="currentPage >= middleVal">...</li>
+      </template>
       <li
         style="cursor: pointer"
         class="numb"

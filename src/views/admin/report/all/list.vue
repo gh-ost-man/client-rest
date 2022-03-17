@@ -35,7 +35,7 @@
               />
             </div>
             <div class="col-md-6">
-              <button class="btn btn-outline-light w-100" @click="resetFilter">
+              <button class="btn btn-outline-light w-100" @click="resetFilter" v-if="filterUser || filterExam || filterDate">
                 Reset
               </button>
             </div>
@@ -44,6 +44,7 @@
       </div>
       <div class="table-responsive custom-table-responsive">
         <pagination
+          :middleVal="middleVal"
           :pages="pagination.pages"
           :currentPage="currentPage"
           :totalPages="pagination.totalPages"
@@ -144,6 +145,8 @@ export default {
     const currentPage = ref(1);
     const pagination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
+    const middleVal = ref(10);
+    const cntBetween = ref(5);
 
     const filterUser = ref(null);
     const filterExam = ref(null);
@@ -169,7 +172,7 @@ export default {
       }
 
       filterStorage();
-      let response = await getAllReports(currentPage.value, pageSize, filter);
+      let response = await getAllReports(currentPage.value, pageSize, filter, middleVal.value, cntBetween.value);
 
       if (response && response.value) {
         if (response.value.status === 200) {
@@ -274,7 +277,7 @@ export default {
     };
 
     /**
-     * Safe all filters to session storage
+     * Save all filters to session storage
      */
     const filterStorage = () => {
       let filterObj = {};
@@ -309,6 +312,7 @@ export default {
       exams,
       currentPage,
       pagination,
+      middleVal,
       filterUser,
       filterExam,
       filterDate,

@@ -145,7 +145,7 @@ export default {
     
     const currentPage = ref(1);
     const pagination = ref({ pages: [1], totalPages: 1 });
-    const pageSize = 20;
+    const pageSize = 15;
     const middleVal = ref(10);
     const cntBetween = ref(5);
 

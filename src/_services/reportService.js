@@ -4,7 +4,7 @@ const reportService = () => {
     const apiUrl = 'https://localhost:9001/api/report';
     const { post, get, put, remove } = useApi();
 
-    const getAllReports = async (page, limit, filter) => {
+    const getAllReports = async (page, limit, filter, middleVal, qtyBetween) => {
         let query = "?";
 
         if (page) {
@@ -12,6 +12,13 @@ const reportService = () => {
         }
         if (limit) {
             query += "&limit=" + limit;
+        }
+        if(middleVal) {
+            query+= "&middleVal="+middleVal;
+        }
+
+        if(qtyBetween) {
+            query+= "&cntBetween="+qtyBetween;
         }
 
         if (filter) {

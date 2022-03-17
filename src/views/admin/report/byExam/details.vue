@@ -22,6 +22,7 @@
             <th class="border border-dark" scope="col">Total Score</th>
             <th class="border border-dark" scope="col">Grade</th>
             <th class="border border-dark" scope="col">Date</th>
+            <th class="border border-dark" scope="col">Report</th>
           </tr>
         </thead>
         <tbody class="border border-dark">
@@ -41,10 +42,12 @@
             <th class="border border-dark" scope="col">100</th>
             <th class="border border-dark" scope="col"></th>
             <th class="border border-dark" scope="col"></th>
+            <th class="border border-dark" scope="col"></th>
+            <th class="border border-dark" scope="col"></th>
           </tr>
 
           <template v-if="reports">
-            <tr class="text-center" v-for="r in reports" :key="r.id">
+            <tr class="text-center" v-for="(r, index) in reports" :key="r.id">
               <th class="border border-dark c-content" scope="row">
                 {{ r.user }}
               </th>
@@ -79,6 +82,9 @@
               <td class="border border-dark">{{ r.grade || "-" }}</td>
               <td class="border border-dark">
                 {{ new Date(r.reportDate).toLocaleDateString() }}
+              </td>
+              <td class="border border-dark">
+                <button class="btn btn-outline-info" @click="reports.splice(index,1)">GO</button>
               </td>
             </tr>
           </template>

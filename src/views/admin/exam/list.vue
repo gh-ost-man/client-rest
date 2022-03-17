@@ -54,6 +54,7 @@
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="exams">
         <pagination
+          :middleVal="middleVal"
           :pages="pagination.pages"
           :currentPage="currentPage"
           :totalPages="pagination.totalPages"
@@ -133,9 +134,11 @@ export default {
 
     const { getAllExams, getAllExamQuestions } = examService();
 
-    const pagination = ref({pages: [1], totalPages: 1});
+    const pagination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
     const currentPage = ref(1);
+    const middleVal = ref(10);
+    const cntBetween = ref(5);
 
     const statuses = ref([
       {
@@ -175,11 +178,21 @@ export default {
 
       filterStorage();
 
-      let response = await getAllExams(currentPage.value, pageSize, filter);
+      let response = await getAllExams(
+        currentPage.value,
+        pageSize,
+        filter,
+        middleVal.value,
+        cntBetween.value
+      );
       if (response && response.value) {
         if (response.value.status === 200) {
           exams.value = response.value.data.items;
-
+          pagination.value = {
+            pages: response.value.data.pages,
+            totalPages: response.value.data.totalPages,
+          };
+          console.log(response.value);
           for (const element of exams.value) {
             element.status = statuses.value.find(
               (x) => x.key === element.status
@@ -200,31 +213,6 @@ export default {
               }
             }
           }
-          // exams.value.forEach(async (element) => {
-          //   element.status = statuses.value.find(
-          //     (x) => x.key === element.status
-          //   ).title;
-
-          //   let res = await getAllExamQuestions(element.id);
-
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       element.qtyOfQuestions = res.value.data.items.length;
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // });
-
-          pagination.value = {
-            pages: response.value.data.pages,
-            totalPages: response.value.data.totalPages,
-          };
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -319,6 +307,7 @@ export default {
       filterTitle,
       filterStatus,
       pagination,
+      middleVal,
       changePage,
       filterByTitle,
       resetFilterHandle,

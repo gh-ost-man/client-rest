@@ -197,7 +197,7 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
 
-    const { update, changePassword, getById, addRole, removeRole, removeUser } =
+    const { update, changePassword, getUserById, addRole, removeRole, removeUser } =
       userService();
 
     const route = useRoute();
@@ -220,7 +220,7 @@ export default {
       newRole.value = null;
       roleRemove.value = null;
       loading.value = true;
-      let response = await getById(route.params.id);
+      let response = await getUserById(route.params.id);
       loading.value = false;
 
       if (response && response.value) {

@@ -55,6 +55,7 @@
       <hr class="bg-info" />
       <div class="table-responsive custom-table-responsive" v-if="questions">
         <pagination
+          :middleVal="middleVal"
           :pages="pagination.pages"
           :currentPage="currentPage"
           :totalPages="pagination.totalPages"
@@ -138,9 +139,10 @@ export default {
     const filterContext = ref(null);
 
     const pagination = ref({ pages: [1], totalPages: 1 });
-
     const pageSize = 15;
     const currentPage = ref(1);
+    const middleVal = ref(10);
+    const cntBetween = ref(5);
 
     onMounted(async () => {
       getFilterFromStorage();
@@ -178,7 +180,9 @@ export default {
       let responseQ = await getAllQuestions(
         currentPage.value,
         pageSize,
-        filter
+        filter,
+        middleVal.value,
+        cntBetween.value
       );
 
       if (responseQ && responseQ.value) {
@@ -268,6 +272,7 @@ export default {
       sortedQuestions,
       currentPage,
       pagination,
+      middleVal,
       filterCategory,
       filterContext,
       filterHandle,

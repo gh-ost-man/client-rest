@@ -13,6 +13,7 @@
       <hr class="bg-secondary" />
       <div class="table-responsive custom-table-responsive" v-if="categories">
         <pagination
+          :middleVal="middleVal"
           :pages="pagination.pages"
           :currentPage="currentPage"
           :totalPages="pagination.totalPages"
@@ -78,6 +79,8 @@ export default {
     const pagination = ref(null);
     const currentPage = ref(1);
     const pageSize = 15;
+    const middleVal = ref(10);
+    const cntBetween = ref(5);
 
     onMounted(async () => {
       await getData();
@@ -87,7 +90,12 @@ export default {
      * Get all categories from server
      */
     const getData = async () => {
-      var response = await getAllCategories(currentPage.value, pageSize);
+      var response = await getAllCategories(
+        currentPage.value,
+        pageSize,
+        middleVal.value,
+        cntBetween.value
+      );
 
       if (response && response.value) {
         if (response.value.status === 200) {
@@ -132,6 +140,7 @@ export default {
       sortedCategories,
       currentPage,
       pagination,
+      middleVal,
       changePage,
     };
   },
