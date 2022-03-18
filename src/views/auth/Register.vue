@@ -70,7 +70,7 @@
       </button>
       <router-link
         class="btn btn-outline-light mt-3 mx-1"
-        :disabled="loading"
+        v-if="!loading"
         :to="{ name: 'Login' }"
         >Login</router-link
       >

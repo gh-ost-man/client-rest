@@ -3,9 +3,10 @@
     <h3 class="text-white">Result</h3>
     <hr class="bg-info">
     <div class="text-white" v-if="report">
-      <p>! {{ report.applicantId }}</p>
-      <p>@ {{ report.examId }}</p>
-      <p># {{ report.grade }}</p>
+      <p>User: {{ report.applicantId }}</p>
+      <p>Exam: {{ report.examId }}</p>
+      <p>GRADE: {{ report.grade }}</p>
+      <p>Date: {{ report.reportDate }}</p>
     </div>
     <div class="d-flex justify-content-center" v-if="!report">
       <div

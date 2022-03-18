@@ -41,7 +41,7 @@
                 />
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" v-if="filterEFL || filterRole">
               <button class="btn btn-outline-light" @click="resetFilter">
                 Reset
               </button>

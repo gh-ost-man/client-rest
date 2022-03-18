@@ -21,6 +21,7 @@ components: {AppLayoutDefault, AppLayoutHome , AppLayoutAdmin},
 </script>
 
 <style>
+
 body {
   background: #191919;
 }

@@ -41,6 +41,7 @@
             </th>
             <th scope="col">#</th>
             <th scope="col">Question</th>
+            <th scope="col">IdQuestion</th>
           </tr>
         </thead>
         <tbody>
@@ -66,6 +67,7 @@
                 {{ eq.id }}
               </td>
               <td style="max-width: 10%">{{ eq.question?.context }}</td>
+              <td style="max-width: 10%">{{ eq.question?.id }}</td>
             </tr>
             <tr class="spacer">
               <td colspan="100"></td>

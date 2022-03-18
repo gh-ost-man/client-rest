@@ -35,7 +35,7 @@
               />
             </div>
             <div class="col-md-6">
-              <button class="btn btn-outline-light w-100" @click="resetFilter" v-if="filterUser || filterExam || filterDate">
+              <button class="btn btn-outline-light w-100" @click="resetFilter" >
                 Reset
               </button>
             </div>

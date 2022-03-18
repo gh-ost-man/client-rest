@@ -38,8 +38,9 @@
       <router-link
         class="btn btn-outline-light mt-2 mx-1"
         :to="{ name: 'Register' }"
-        :disabled="loading"
-        >Register</router-link
+        v-if="!loading">
+          Register
+        </router-link
       >
     </form>
   </div>
@@ -99,10 +100,10 @@ export default {
 
           //If roles is staff
           if (isStaff) {
-            router.push({ name: "ProfileAdmin" });
+            router.push({ name: "HomeAdmin" });
           } else if (user_roles.includes("Student")) {
             console.log("HERE STUDENT");
-            router.push({ name: "Home" });
+            router.push({ name: "HomeStudent" });
           } else {
             router.push({ name: "Login" });
           }

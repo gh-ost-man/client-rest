@@ -3,6 +3,13 @@
     <i><font-awesome-icon icon="circle-arrow-left" /></i>
   </router-link>
   <div class="p-3">
+    <div v-if="user">
+      <h3 class="text-white">
+        {{user.firstName}} {{ user.lastName }}
+      </h3>
+      <h5 class="text-white"> ({{ user.email }})</h5>
+      <hr class="bg-info" />
+    </div>
     <div class="d-flex">
       <h3 class="text-white">User Exams</h3>
       <button
@@ -161,11 +168,13 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
 
-    const { getUserExams, addExamToUser, removeExamFromUser } = userService();
+    const { getUserById, getUserExams, addExamToUser, removeExamFromUser } =
+      userService();
     const { getAllExams, getExamById } = examService();
 
     const exams = ref(null);
     const userExams = ref(null);
+    const user = ref(null);
 
     const isSelectedRemoveExams = ref(false);
     const isSelectedAddAll = ref(false);
@@ -190,6 +199,20 @@ export default {
     const pageSize = 5;
 
     onMounted(async () => {
+      let response = await getUserById(props.id);
+      if (response && response.value) {
+        if (response.value.status === 200) {
+          user.value = response.value.data;
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+
       await fetchUserExams();
 
       let resExam = await getAllExams();
@@ -437,6 +460,7 @@ export default {
     };
     return {
       loading,
+      user,
       userExams,
       userExamsItems,
       isSelectedRemoveExams,

@@ -151,7 +151,7 @@
     </div>
     <div
       class="d-flex justify-content-center"
-      v-if="!exam || !question || isFinish"
+      v-if="!exam || !question || isFinish || !idReport"
     >
       <div
         class="spinner-border align-center text-primary text-center"
@@ -647,6 +647,7 @@ export default {
 
     return {
       isFinish,
+      idReport,
       pagination,
       exam,
       question,

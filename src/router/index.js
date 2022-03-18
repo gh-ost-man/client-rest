@@ -71,7 +71,7 @@ const routes = [
     }
   },
   {
-    path: '/home',
+    path: '/home1',
     name: 'HomePage',
     component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue'),
     beforeEnter: requireAuth,
@@ -122,6 +122,31 @@ const routes = [
       layout: 'admin', authorize: ["Admin", "Manager", "Teacher"],
     }
   },
+  {
+    path: '/home',
+    name: 'HomeStudent',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/student/'),
+    beforeEnter: requireAuth,
+    meta: {
+      layout: 'home', authorize: ["Student"],
+    }
+  },
+  {
+    path: '/d/home',
+    name: 'HomeAdmin',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/admin/'),
+    beforeEnter: requireAuth,
+    meta: {
+      layout: 'admin', authorize: ["Admin", "Manager", "Teacher"],
+    }
+  },
+  
   {
     path: '/profile',
     name: 'ProfileStudent',

@@ -42,8 +42,22 @@ const reportService = () => {
     const getReportById = async (id) => {
         return await get(apiUrl + "/" + id);
     }
-    const getReportsByExamId = async (idExam) => {
-        return await get(apiUrl + "/items/e/" + idExam);
+    const getReportsByExamId = async (idExam, page, limit, filter) => {
+        let query = "?";
+        if (page) {
+            query += "page=" + page;
+        }
+        if (limit) {
+            query += "&limit=" + limit;
+        }
+        if(filter) {
+           
+            if(filter.date) {
+                query +="&date=" + filter.date;
+            }
+        }
+        console.log(query);
+        return await get(apiUrl + "/items/e/" + idExam + query);
     }
 
     const getReportByExamIdAndUserId = async (idExam, idUser) => {
