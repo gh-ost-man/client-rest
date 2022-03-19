@@ -1,9 +1,12 @@
 <template>
   <div class="sidebar" :class="{ close: isClosedSideBar }">
     <div class="logo-details c-logo text-center">
-      <i> <font-awesome-icon icon="user-secret" class="fs-1" /></i>
-
-      <span class="logo_name fs-3">IT STEP</span>
+      <i @click="$router.push({ name: 'HomeAdmin' })">
+        <font-awesome-icon icon="user-secret" class="fs-1"
+      /></i>
+      <span @click="$router.push({ name: 'HomeAdmin' })" class="logo_name fs-3"
+        >IT STEP</span
+      >
     </div>
     <ul class="nav-links">
       <li
@@ -36,7 +39,7 @@
         </ul>
       </li>
       <li
-        v-if="isVisibleHandle(['Teacher'])"
+        v-if="isVisibleHandle(['Teacher', 'Manager'])"
         :class="{
           showMenu: showSubExamMenu,
           'menu-active':
@@ -54,30 +57,31 @@
             <i class=""> <font-awesome-icon icon="graduation-cap" /></i>
             <span class="link_name">Exams</span>
           </router-link>
-          <i class="arrow" @click="showSubExamMenu = !showSubExamMenu">
+          <i class="arrow" @click="showSubExamMenu = !showSubExamMenu" v-if="isVisibleHandle(['Teacher'])">
             <font-awesome-icon icon="angle-down" />
           </i>
         </div>
         <ul class="sub-menu">
-          <li><router-link :to="{ name: 'ExamsList' }">Exams</router-link></li>
-          <li>
+          <li v-if="isVisibleHandle(['Teacher', 'Manager'])">
+            <router-link :to="{ name: 'ExamsList' }">Exams</router-link>
+          </li>
+          <li v-if="isVisibleHandle(['Teacher'])">
             <router-link :to="{ name: 'CategoriesList' }">
               Categories
             </router-link>
           </li>
-          <li>
+          <li v-if="isVisibleHandle(['Teacher'])">
             <router-link :to="{ name: 'QuestionsList' }">
               Questions
             </router-link>
           </li>
         </ul>
       </li>
-        <li
+      <li
         v-if="isVisibleHandle(['Manager'])"
         :class="{
           showMenu: showSubReportMenu,
-          'menu-active':
-            $route.fullPath.includes('reports') 
+          'menu-active': $route.fullPath.includes('reports'),
         }"
       >
         <div class="iocn-link">
@@ -86,7 +90,7 @@
             :to="{ name: 'ReportsList' }"
             :class="{ 'menu-active': $route.fullPath.includes('reports') }"
           >
-             <i> <font-awesome-icon icon="clipboard-list" /></i>
+            <i> <font-awesome-icon icon="clipboard-list" /></i>
             <span class="link_name">Reports</span>
           </router-link>
           <i class="arrow" @click="showSubReportMenu = !showSubReportMenu">

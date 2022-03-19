@@ -39,6 +39,7 @@
       <div class="col-md-4" v-if="exams">
         <div class="card border-secondary bg-transparent">
           <div class="card-header border-secondary h-100">
+            Exams
             <router-link
               :to="{ name: 'ExamsStudent' }"
               class="btn text-white"

@@ -405,7 +405,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/admin/exam/list.vue'),
         beforeEnter: requireAuth,
         meta: {
-          layout: 'admin', authorize: ['Teacher'],
+          layout: 'admin', authorize: ['Teacher', 'Manager'],
         },
       },
       {

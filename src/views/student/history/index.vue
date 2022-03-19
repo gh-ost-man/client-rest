@@ -22,6 +22,10 @@
               <td>{{ r.exam?.title }}</td>
               <td class="text-center">{{ r.grade }}</td>
               <td class="text-center">{{ new Date(r.reportDate).toLocaleDateString() }}</td>
+              <td class="text-center">
+                <router-link class="btn btn-outline-light btn-hover" :to="{name: 'ExamResult', params: {idReport: r.id}}">View</router-link>
+              </td>
+
             </tr>
             <tr class="spacer">
               <td colspan="100"></td>
@@ -115,4 +119,8 @@ export default {
 
 <style scoped>
 @import "../../../assets/css/table.css";
+
+.btn-hover:hover {
+  color:black;
+}
 </style>

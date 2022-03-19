@@ -21,13 +21,14 @@ import {
     faCircleArrowLeft,
     faAngleDown,
     faCircleExclamation,
-    faTrashCan
+    faTrashCan,
+    faRectangleList,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faUserGraduate, faAt, faLock, faCircleInfo, faKey,
     faUserSecret, faCircleUser, faUsers, faGraduationCap, faClipboardList,
     faArrowRightFromBracket, faBars, faUserGear, faUser, faPenToSquare, faListUl, faCircleArrowLeft, faAngleDown, faCircleExclamation,
-    faTrashCan, faCircleExclamation, faClipboardList);
+    faTrashCan, faCircleExclamation, faClipboardList, faRectangleList);
 
 const app = createApp(App);
 app.use(store)

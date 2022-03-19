@@ -9,6 +9,7 @@
           <router-link
             class="btn btn-outline-light"
             :to="{ name: 'CreateExam' }"
+            v-if="isVisibleHandle(['Teacher'])"
             >Create</router-link
           >
         </div>
@@ -85,12 +86,14 @@
                   <router-link
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'ExamQuestions', params: { id: exam.id } }"
+                    v-if="isVisibleHandle(['Teacher'])"
                   >
                     <i class="icon"> <font-awesome-icon icon="list-ul" /></i>
                   </router-link>
                   <router-link
                     class="btn btn-outline-light mx-1"
                     :to="{ name: 'EditExam', params: { id: exam.id } }"
+                    v-if="isVisibleHandle(['Teacher'])"
                   >
                     <i class="icon">
                       <font-awesome-icon icon="pen-to-square"
@@ -120,6 +123,7 @@
 <script>
 import { ref, onMounted, getCurrentInstance, computed } from "vue";
 import examService from "@/_services/examService.js";
+import authService from "@/_services/authService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import Pagination from "@/components/Pagination";
 
@@ -133,6 +137,7 @@ export default {
     const filterStatus = ref("");
 
     const { getAllExams, getAllExamQuestions } = examService();
+    const {currentUser} = authService();
 
     const pagination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
@@ -299,6 +304,19 @@ export default {
       }
     };
 
+     const isVisibleHandle = (authRoles) => {
+      if (!currentUser.value) return false;
+
+      let userRoles = currentUser.value.roles.split(",");
+
+      for (let role of userRoles) {
+        if (authRoles.includes(role)) {
+          return true;
+        }
+      }
+
+      return false;
+    };
     return {
       exams,
       sortedExams,
@@ -312,6 +330,7 @@ export default {
       filterByTitle,
       resetFilterHandle,
       filterByStatus,
+      isVisibleHandle,
     };
   },
 };
@@ -319,4 +338,5 @@ export default {
 
 <style scoped>
 @import "../../../assets/css/table.css";
+
 </style>
