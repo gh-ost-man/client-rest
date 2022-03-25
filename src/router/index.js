@@ -20,9 +20,9 @@ const requireAuth = (to, from, next) => {
 
       if (to.path === "/") {
         if (!userRoles.includes("Student")) {
-          next({ name: 'ProfileAdmin' });
+          next({ name: 'HomeAdmin' });
         } else {
-          next({ name: 'ProfileStudent' });
+          next({ name: 'HomeStudent' });
         }
       } else {
         if (userRoles && userRoles !== '') {

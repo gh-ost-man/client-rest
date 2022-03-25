@@ -43,11 +43,14 @@ const useApi = () => {
                 refreshToken: localStorage.refreshToken
             }
 
-            toast.info("Wait for refreshing token...")
+            toast.info("Wait for refreshing token...");
 
-            let res = await post("https://localhost:7001/api/Auth/RefreshToken", data);
-            console.log(res.value);
+            axios.defaults.headers.common = {
+                'Authorization': localStorage.accessToken ? `Bearer ${localStorage.accessToken}` : '',
+            }
 
+            let res = await post("http://localhost:9000/api/auth/refreshToken", data);
+            
             if (res.value.status === 200) {
                 console.log("RERFESH TOKEN SUCCESS");
                 toast.info("The token is refreshed")
@@ -58,11 +61,14 @@ const useApi = () => {
                 toast.info(res.value.data);
             }
             else {
-                console.log("RERFESH TOKEN FAILDE");
+                console.log("RERFESH TOKEN FAILED");
                 toast.error("Refresh token is Failed");
-                localStorage.removeItem("user");
+                localStorage.removeItem("auth");
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
+
+                router.push({ name: "Login" });
+                return null;
             }
 
             return res;
@@ -83,14 +89,17 @@ const useApi = () => {
                 response.value = res;
             })
             .catch(error => {
+                console.log("ERROE: ", error.message);
                 catchError(error);
             });
 
         if (response && response.value) {
             if (response.value.status === 401) {
+                console.log("RERFESH TOKEN GET");
 
                 let res = await refreshToken();
-                console.log("RERFESH TOKEN");
+
+                console.log("DATA: ", res.value);
 
                 if (res && res.value) {
                     if (res.value.status === 200) {
@@ -121,13 +130,13 @@ const useApi = () => {
 
         if (response && response.value) {
             if (response.value.status === 401) {
+                console.log("LOG 2: ", response.value);
 
                 let res = await refreshToken();
-                console.log("RERFESH TOKEN");
+                console.log("RERFESH TOKEN POST");
 
                 if (res && res.value) {
                     if (res.value.status === 200) {
-
                         return await post(url, data)
                     } else {
 

@@ -142,7 +142,7 @@ export default {
       }
     };
 
-    return { error, loading, examObj, statuses, submitHandle };
+    return {  loading, examObj, statuses, submitHandle };
   },
 };
 </script>

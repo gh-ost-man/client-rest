@@ -1,7 +1,7 @@
 import useApi from "../composables/useApi"
 
 const examService = () => {
-    const apiUrl = 'https://localhost:9001/api/exams';
+    const apiUrl = 'http://localhost:9000/api/exams';
     const { post, get, put, remove } = useApi();
 
     const getAllExams = async (page,  limit, filter, middleVal, qtyBetween) => {

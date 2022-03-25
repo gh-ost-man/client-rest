@@ -1,7 +1,7 @@
 import useApi from "../composables/useApi"
 
 const userService = () => {
-    const apiUrl = 'https://localhost:9001/api/users';
+    const apiUrl = 'http://localhost:9000/api/users';
     const { post, get, put, remove } = useApi();
 
     const getAllUsers = async (page, limit, filter, middleVal, qtyBetween) => {

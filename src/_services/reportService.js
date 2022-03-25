@@ -1,7 +1,7 @@
 import useApi from "../composables/useApi"
 
 const reportService = () => {
-    const apiUrl = 'https://localhost:9001/api/report';
+    const apiUrl = 'http://localhost:9000/api/report';
     const { post, get, put, remove } = useApi();
 
     const getAllReports = async (page, limit, filter, middleVal, qtyBetween) => {
@@ -37,7 +37,7 @@ const reportService = () => {
        
         console.log(query);
 
-        return await get(apiUrl + "/items" + query);
+        return await get(apiUrl  + query);
     }
     const getReportById = async (id) => {
         return await get(apiUrl + "/" + id);
@@ -57,15 +57,15 @@ const reportService = () => {
             }
         }
         console.log(query);
-        return await get(apiUrl + "/items/e/" + idExam + query);
+        return await get(apiUrl + "/e/" + idExam + query);
     }
 
     const getReportByExamIdAndUserId = async (idExam, idUser) => {
-        return await get(apiUrl + "/items/e/" + idExam + "/a/" + idUser);
+        return await get(apiUrl + "/e/" + idExam + "/a/" + idUser);
     }
 
     const getReportsByUserId = async (idUser) => {
-        return await get(apiUrl + "/items/a/" + idUser);
+        return await get(apiUrl + "/a/" + idUser);
     }
     const currentAnswer = async (data) => {
         return await post(apiUrl + "/currentanswer", data);
@@ -83,6 +83,5 @@ const reportService = () => {
 
     return { getAllReports, getReportById, getReportsByUserId, getReportsByExamId, openReport, closeReport, getReportByExamIdAndUserId, currentAnswer, }
 }
-
 
 export default reportService

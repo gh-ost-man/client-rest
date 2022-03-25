@@ -5,7 +5,7 @@ import { encryptData, decryptData } from "../_helpers/crypto";
 import { useStore } from "vuex";
 
 const authService = () => {
-    const apiUrl = 'https://localhost:9001/api/auth';
+    const apiUrl = 'http://localhost:9000/api/auth';
     const { post } = useApi();
     const currentUser = ref(localStorage.auth ? JSON.parse(decryptData(localStorage.auth)) : null);
     const store = useStore();
@@ -58,7 +58,7 @@ const authService = () => {
     }
 
     const logOut = () => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("auth");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
 
