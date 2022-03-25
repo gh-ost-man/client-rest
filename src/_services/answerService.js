@@ -2,7 +2,7 @@ import useApi from "../composables/useApi"
 
 
 const answerService = () => {
-    const apiUrl = 'https://localhost:9001/api/answers';
+    const apiUrl = 'http://localhost:9000/api/answers';
     const { post, get, put, remove } = useApi();
 
     const getAllAnswer = async () => {
