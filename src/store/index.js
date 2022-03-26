@@ -1,16 +1,8 @@
 import { createStore } from 'vuex'
+import { authModule } from './authModule'
 
 export default createStore({
-  state: {
-    user: null
-  },
-  mutations: {
-    setUser(state, currentUser) {
-      state.user = currentUser;
-    }
-  },
-  actions: {
-  },
-  modules: {
+  modules:{
+    auth:authModule
   }
 })

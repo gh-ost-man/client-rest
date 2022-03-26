@@ -210,7 +210,7 @@ export default {
           if (resExams.value && resExams.value.status === 200) {
             exams.value = resExams.value.data.items;
           } else {
-            handleResponse(resUsers.value).forEach((element) => {
+            handleResponse(resExams.value).forEach((element) => {
               toast.error(element, {
                 position: "top",
                 duration: 5000,

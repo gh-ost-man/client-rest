@@ -6,11 +6,14 @@ import { useStore } from "vuex";
 
 const authService = () => {
     const apiUrl = 'http://localhost:9000/api/auth';
+    //if we changing apiUrl we must change in function refreshToken (useApi.js) !!!!
+    
+
     const { post } = useApi();
     const currentUser = ref(localStorage.auth ? JSON.parse(decryptData(localStorage.auth)) : null);
     const store = useStore();
 
-    store.commit('setUser', currentUser.value); // for update data of user in layouts
+    store.commit('auth/setUser', currentUser.value); // for update data of user in layouts
     
     const login = async (data) => {
         var response = await post(apiUrl + "/Login", data);
@@ -31,13 +34,13 @@ const authService = () => {
         localStorage.refreshToken = data.refreshToken;
 
         currentUser.value = JSON.parse(decryptData(localStorage.auth));
-        store.commit('setUser', currentUser.value);
+        store.commit('auth/setUser', currentUser.value);
     }
     
     const setAuthUser = (user) => {
         localStorage.auth = encryptData(JSON.stringify(user).toString());
         currentUser.value = user;
-        store.commit('setUser', currentUser.value);
+        store.commit('auth/setUser', currentUser.value);
     }
 
     const register = async (data) => {
@@ -63,9 +66,9 @@ const authService = () => {
         localStorage.removeItem("refreshToken");
 
         currentUser.value = null;
-        store.commit('setUser', currentUser.value);
+        store.commit('auth/setUser', currentUser.value);
     }
-    return { currentUser,encryptData, decryptData, setAuth, setAuthUser, login, register, sendMessage, logOut }
+    return { currentUser, apiUrl,encryptData, decryptData, setAuth, setAuthUser, login, register, sendMessage, logOut }
 }
 
 export default authService

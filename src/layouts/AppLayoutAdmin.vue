@@ -134,10 +134,10 @@
           </div>
           <div class="name-job">
             <div class="profile_name truncate-text">
-              {{ $store.state.user?.firstName }}
-              {{ $store.state.user?.lastName }}
+              {{ $store.state.auth.user?.firstName }}
+              {{ $store.state.auth.user?.lastName }}
             </div>
-            <div class="job">{{ $store.state.user?.email }}</div>
+            <div class="job">{{ $store.state.auth.user?.email }}</div>
           </div>
           <i @click="logout">
             <font-awesome-icon icon="arrow-right-from-bracket"

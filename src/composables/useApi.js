@@ -89,7 +89,7 @@ const useApi = () => {
                 response.value = res;
             })
             .catch(error => {
-                console.log("ERROE: ", error.message);
+                 toast.error(error.message);
                 catchError(error);
             });
 
