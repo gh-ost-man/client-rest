@@ -5,13 +5,16 @@ import { encryptData, decryptData } from "../_helpers/crypto";
 import { useStore } from "vuex";
 
 const authService = () => {
-    const apiUrl = 'http://localhost:9000/api/auth';
+    // const apiUrl = 'http://localhost:9000/api/auth';
+    const store = useStore();
+
+    const apiUrl = store.state.apigw.host + '/api/auth';
     //if we changing apiUrl we must change in function refreshToken (useApi.js) !!!!
     
 
     const { post } = useApi();
     const currentUser = ref(localStorage.auth ? JSON.parse(decryptData(localStorage.auth)) : null);
-    const store = useStore();
+ 
 
     store.commit('auth/setUser', currentUser.value); // for update data of user in layouts
     

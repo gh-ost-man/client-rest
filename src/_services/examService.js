@@ -1,7 +1,10 @@
+import { useStore } from "vuex";
 import useApi from "../composables/useApi"
 
 const examService = () => {
-    const apiUrl = 'http://localhost:9000/api/exams';
+    const store=useStore();
+    // const apiUrl = 'http://localhost:9000/api/exams';
+    const apiUrl = store.state.apigw.host+'/api/exams';
     const { post, get, put, remove } = useApi();
 
     const getAllExams = async (page,  limit, filter, middleVal, qtyBetween) => {

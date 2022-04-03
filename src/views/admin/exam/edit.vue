@@ -37,7 +37,7 @@
         <label class="labels c-label">Passing Score</label>
         <input
           type="number"
-          step="1"
+          step="0.5"
           min="40"
           max="100"
           class="form-control bg-transparent c-input"

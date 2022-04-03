@@ -309,6 +309,10 @@ export default {
 
           answers.value.splice(index, 1);
 
+          if(answers.value.length === 0) {
+           isMaxAnswers.value = false;
+          }
+
           console.log(answers.value);
           if (answers.value.length !== 0) {
            

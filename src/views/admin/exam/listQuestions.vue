@@ -11,8 +11,7 @@
         v-if="selectedRemoveQuestions.length"
         :disabled="loading"
       >
-        <span v-if="!loading">Remove from exam</span>
-        <span v-else>Removing ...</span>
+        <span>Remove from exam</span>
       </button>
     </div>
     <hr class="text-white" />
@@ -122,8 +121,7 @@
         v-if="selectedAddQuestions.length"
         :disabled="loading"
       >
-        <span v-if="!loading"> Add to exam</span>
-        <span v-else>Adding ...</span>
+        <span> Add to exam</span>
       </button>
       <table class="table custom-table">
         <thead>

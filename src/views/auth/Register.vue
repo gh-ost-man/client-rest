@@ -130,7 +130,7 @@ export default {
       }
 
       loading.value = true;
-      let resAccessCode = await sendMessage(newUser.value);
+      let resAccessCode = await register(newUser.value);
       loading.value = false;
       if (resAccessCode && resAccessCode.value) {
         if (resAccessCode.value.status === 204) {

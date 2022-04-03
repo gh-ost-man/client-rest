@@ -1,7 +1,10 @@
+import { useStore } from "vuex";
 import useApi from "../composables/useApi"
 
 const categoryService = () => {
-    const apiUrl = 'http://localhost:9000/api/categories';
+    const store = useStore();
+    // const apiUrl = 'http://localhost:9000/api/categories';
+    const apiUrl = store.state.apigw.host+'/api/categories';
     const { post, get, put, remove } = useApi();
     
     const getAllCategories = async (page, limit, middleVal, qtyBetween) => {
