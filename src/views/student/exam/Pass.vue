@@ -149,6 +149,7 @@
       </div>
       <div class="text-white">{{ userAnswers }}</div>
     </div>
+  </div>
     <div
       class="d-flex justify-content-center"
       v-if="!exam || !question || isFinish || !idReport"
@@ -160,7 +161,6 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-  </div>
 </template>
 
 <script>

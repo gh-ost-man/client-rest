@@ -34,7 +34,7 @@ export default {
           }
 
           if (isStaff) {
-            this.$router.push({ name: "ProfileAdmin" });
+            this.$router.push({ name: "HomeAdmin" });
           } else if (user_roles.includes("Student")) {
             this.$router.push({ name: "Home" });
           } else {

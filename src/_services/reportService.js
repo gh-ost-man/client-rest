@@ -4,7 +4,7 @@ import useApi from "../composables/useApi"
 const reportService = () => {
     const store = useStore();
     // const apiUrl = 'http://localhost:9000/api/report';
-    const apiUrl = store.state.apigw.host+'/api/report';
+    const apiUrl = store.state.apigw.host+'/api/reports';
     const { post, get, put, remove } = useApi();
 
     const getAllReports = async (page, limit, filter, middleVal, qtyBetween) => {
@@ -84,7 +84,15 @@ const reportService = () => {
         return await put(apiUrl + "/closeReport", data)
     }
 
-    return { getAllReports, getReportById, getReportsByUserId, getReportsByExamId, openReport, closeReport, getReportByExamIdAndUserId, currentAnswer, }
+    const removeReport = async(id) => {
+        return await remove(apiUrl +"/"+id)
+    }
+
+    const removeReportsByExamId = async(id) => {
+        return await remove(apiUrl+ "/e/"+id);
+    }
+
+    return { getAllReports, getReportById, getReportsByUserId, getReportsByExamId, openReport, closeReport, getReportByExamIdAndUserId, currentAnswer,removeReport,removeReportsByExamId, }
 }
 
 export default reportService

@@ -7,7 +7,7 @@
       <div class="mb-3">
         <label class="labels c-label">Title</label>
         <input
-          type="test"
+          type="name"
           class="form-control bg-transparent c-input"
           placeholder="enter title"
           v-model.trim="examObj.title"
@@ -45,7 +45,7 @@
           v-model="examObj.passingScore"
         />
       </div>
-      <div class="mb-3">
+      <!-- <div class="mb-3">
         <label class="labels c-label">Status</label>
         <select
           class="form-select bg-transparent c-input"
@@ -61,11 +61,12 @@
             {{ s.title }}
           </option>
         </select>
-      </div>
+      </div> -->
       <button class="btn btn-outline-info" :disabled="loading">
         <span v-if="!loading">Update</span>
         <span v-else>Updating...</span>
       </button>
+      <button class="btn btn-outline-danger mx-1" :disabled="loading" @click.prevent="deleteHanlde">Delete</button>
     </form>
   </div>
 </template>
@@ -74,31 +75,32 @@
 import { ref, getCurrentInstance, onMounted } from "vue";
 import examService from "@/_services/examService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 export default {
   props: ["id"],
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
+    const router = useRouter();
 
-    const { getExamById, updateExam } = examService();
+    const { getExamById, updateExam, removeExam } = examService();
 
     const examObj = ref(null);
-    const statuses = ref([
-      {
-        title: "NotAvailable",
-        value: 0,
-      },
-      {
-        title: "Available",
-        value: 1,
-      },
-      {
-        title: "Finished",
-        value: 2,
-      },
-    ]);
+    // const statuses = ref([
+    //   {
+    //     title: "NotAvailable",
+    //     value: 0,
+    //   },
+    //   {
+    //     title: "Available",
+    //     value: 1,
+    //   },
+    //   {
+    //     title: "Finished",
+    //     value: 2,
+    //   },
+    // ]);
 
     onMounted(async () => {
       let response = await getExamById(props.id);
@@ -129,7 +131,7 @@ export default {
 
       if (response && response.value) {
         if (response.value.status === 204) {
-          toast.success("The test updated successfully");
+          toast.success("The exam updated successfully");
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -141,7 +143,30 @@ export default {
       }
     };
 
-    return { loading, examObj, statuses, submitHandle };
+    const deleteHanlde =async() => {
+      loading.value = true;
+      let response = await removeExam(props.id);
+
+      if(response && response.value) {
+        if(response.value.status === 204) {
+          toast.success('The exam removed successfully');
+
+          router.push({name: 'ExamsList'});
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+
+          });
+        }
+      }
+
+      loading.value = false;
+    }
+
+    return { loading, examObj, submitHandle, deleteHanlde };
   },
 };
 </script>

@@ -196,7 +196,7 @@ export default {
 
     const currentPageUExams = ref(1);
     const currentPageExam = ref(1);
-    const pageSize = 5;
+    const pageSize = 15;
 
     onMounted(async () => {
       let response = await getUserById(props.id);

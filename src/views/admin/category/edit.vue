@@ -18,14 +18,13 @@
           <span v-if="!loading">Edit</span>
           <span v-else>Editing...</span>
         </button>
-        <!-- <button
+        <button
           class="btn btn-outline-danger mx-2"
           @click="deleteCategoryHandle"
           :disabled="loadingDelete"
         >
-          <span v-if="!loadingDelete">Delete</span>
-          <span v-else>Deleting...</span>
-        </button> -->
+          <span>Delete</span>
+        </button>
       </div>
     </form>
   </div>
@@ -35,12 +34,15 @@
 import { ref, getCurrentInstance, onMounted } from "vue";
 import categoryService from "@/_services/categoryService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
+import { useRouter } from 'vue-router';
 export default {
   props: ["id"],
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
     const loadingDelete = ref(false);
+    const router = useRouter(); 
+
     const category = ref(null);
 
     const { updateCategory, getCategoryById, deleteCategory } =
@@ -101,6 +103,7 @@ export default {
       if (response && response.value) {
         if (response.value.status === 204) {
           toast.success("The category removed successfully");
+          router.push({name: 'CategoriesList'});
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

@@ -62,6 +62,10 @@ const examService = () => {
         return await put(apiUrl + "/" + id, data);
     }
 
+    const removeExam = async(id) => {
+        return await remove(apiUrl + "/" + id);
+    }
+
     const addQuestionToExam = async(id, data) =>  {
         return await post(apiUrl + "/" + id + "/questions", data)
     }
@@ -70,7 +74,7 @@ const examService = () => {
         return await remove(apiUrl + "/" + idExam + "/questions/" + idQuestion);
     }
 
-    return { getAllExams, getExamById, getAllExamQuestions, createExam, updateExam , addQuestionToExam, removeQuestionFromExam }
+    return { getAllExams, getExamById, getAllExamQuestions, createExam, updateExam , addQuestionToExam, removeQuestionFromExam,removeExam,  }
 }
 
 

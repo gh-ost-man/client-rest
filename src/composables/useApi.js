@@ -47,6 +47,7 @@ const useApi = () => {
 
             axios.defaults.headers.common = {
                 'Authorization': localStorage.accessToken ? `Bearer ${localStorage.accessToken}` : '',
+                'Content-type': 'application/json'
             }
 
             let res = await post("http://localhost:9000/api/auth/refreshToken", data);
@@ -89,7 +90,7 @@ const useApi = () => {
                 response.value = res;
             })
             .catch(error => {
-                 toast.error(error.message);
+                 console.log(error.message);
                 catchError(error);
             });
 
@@ -188,6 +189,7 @@ const useApi = () => {
 
     const remove = async (url) => {
         axios.defaults.headers.common = {
+            'Content-Type': 'application/json; charset=utf-8',
             'Authorization': localStorage.accessToken ? `Bearer ${localStorage.accessToken}` : '',
         }
 

@@ -81,7 +81,7 @@ const userService = () => {
         if(limit) {
             query+= "&limit="+limit;
         }
-        return await get(apiUrl + "/exams/" +id + query);
+        return await get(apiUrl + "/"+id +"/exams"  + query);
     }
 
     const addExamToUser = async(data) =>{

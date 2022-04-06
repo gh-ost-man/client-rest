@@ -1,8 +1,8 @@
 <template>
   <div class="p-3">
-   <router-link :to="{ name: 'ReportsList' }" class="btn btn-outline-info">
-    <i><font-awesome-icon icon="circle-arrow-left" /></i>
-  </router-link>
+    <router-link :to="{ name: 'ReportsList' }" class="btn btn-outline-info">
+      <i><font-awesome-icon icon="circle-arrow-left" /></i>
+    </router-link>
     <div class="table-responsive custom-table-responsive">
       <table class="table custom-table mt-5">
         <thead class="table-dark">
@@ -27,7 +27,8 @@
                 v-for="ak in sortedAnswerKeys"
                 :key="ak.idQ"
                 scope="col"
-                class="border border-dark" style="min-width: 70px;"
+                class="border border-dark"
+                style="min-width: 70px"
               >
                 {{ ak.charKey }}
               </th>
@@ -78,13 +79,13 @@
         </tbody>
       </table>
     </div>
-      <button
-        class="btn btn-outline-danger mt-3"
-        @click="deleteHandle"
-        :disabled="loading"
-      >
-        Delete
-      </button>
+    <button
+      class="btn btn-outline-danger mt-3"
+      @click="deleteHandle"
+      :disabled="loading"
+    >
+      Delete
+    </button>
     <div class="d-flex justify-content-center" v-if="!examQuestions">
       <div
         class="spinner-border align-center text-primary text-center"
@@ -104,13 +105,15 @@ import answerService from "@/_services/answerService.js";
 import questionService from "@/_services/questionService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import { computed, onMounted, ref, getCurrentInstance } from "vue";
+import { useRouter } from "vue-router";
 export default {
   props: ["idReport"],
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(false);
+    const router = useRouter();
 
-    const {  getReportById } = reportService();
+    const { getReportById, removeReport } = reportService();
     const { getAllExamQuestions } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
@@ -231,7 +234,26 @@ export default {
       return answerKeys?.value.sort((x1, x2) => x1.idQ - x2.idQ);
     });
 
-    const deleteHandle = () => {};
+    const deleteHandle = async () => {
+      loading.value = true;
+      let response = await removeReport(props.idReport);
+
+      if (response && response.value) {
+        if (response.value.status === 204) {
+          toast.success("Report removed successfully");
+          router.push({ name: "ReportsList" });
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+
+      loading.value = false;
+    };
     return {
       sortedAnswerKeys,
       report,

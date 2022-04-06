@@ -52,7 +52,10 @@ const questionService = () => {
         return await put(apiUrl + "/" + id, data);
     }
 
-    return { getAllQuestions, getQuestionById, createQuesiton, updateQuestion }
+    const removeQuestion = async(id) => {
+        return await remove(apiUrl + "/"+ id);
+    }
+    return { getAllQuestions, getQuestionById, createQuesiton, updateQuestion, removeQuestion }
 }
 
 

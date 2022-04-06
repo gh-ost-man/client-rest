@@ -31,12 +31,12 @@ const handleResponse = (response) => {
             console.clear();
             console.log("BADDDDDDD: ********** : ", response.data);
         }
-        // if (response.status === 405) {
-        //     return ["Method Not Allowed"];
-        // }
-        // if (response.status == 500) {
-        //     return response.data.error ? [response.data.error] : ["500 Server Error"];
-        // }
+        if (response.status === 405) {
+            return ["Method Not Allowed"];
+        }
+        if (response.status == 500) {
+            return response.data.error ? [response.data.error] : ["500 Server Error"];
+        }
         if (response.status == 401) {
             return ["401 Unauthorized"]
         }
@@ -71,13 +71,8 @@ const handleResponse = (response) => {
                 }
 
             } 
-            // else {
-            //     return ["Not found"];
-            // }
+           
         }
-        // if (response.status == 415) {
-        //     return [response.data.title];
-        // }
     }
 
      return []

@@ -45,7 +45,7 @@
           v-model="examObj.passingScore"
         />
       </div>
-      <div class="mb-3">
+      <!-- <div class="mb-3">
         <label class="labels c-label">Status</label>
         <select
           class="form-select bg-transparent c-input"
@@ -61,7 +61,7 @@
             {{ s.title }}
           </option>
         </select>
-      </div>
+      </div> -->
       <button class="btn btn-outline-info" :disabled="loading">
         <span v-if="!loading">Create</span>
         <span v-else>Creating...</span>
@@ -84,26 +84,26 @@ export default {
 
     const { createExam } = examService();
 
-    const statuses = ref([
-      {
-        title: "NotAvailable",
-        value: 0,
-      },
-      {
-        title: "Available",
-        value: 1,
-      },
-      {
-        title: "Finished",
-        value: 2,
-      },
-    ]);
+    // const statuses = ref([
+    //   {
+    //     title: "NotAvailable",
+    //     value: 0,
+    //   },
+    //   {
+    //     title: "Available",
+    //     value: 1,
+    //   },
+    //   {
+    //     title: "Finished",
+    //     value: 2,
+    //   },
+    // ]);
     const examObj = ref({
       title: null,
       description: null,
       durationTime: 30,
       passingScore: 40,
-      status: 0,
+      // status: 0,
     });
 
     /**
@@ -142,7 +142,7 @@ export default {
       }
     };
 
-    return {  loading, examObj, statuses, submitHandle };
+    return {  loading, examObj, submitHandle };
   },
 };
 </script>

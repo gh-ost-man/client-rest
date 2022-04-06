@@ -53,6 +53,7 @@
         <button class="btn btn-outline-light" :disabled="loading" type="submit">
           Update
         </button>
+        <button class="btn btn-outline-danger mx-2" :disabled="loading" @click.prevent="deleteHandle">Delete</button>
       </form>
       <hr class="text-info" />
       <div class="col-md-12 mt-5">
@@ -197,12 +198,14 @@ import questionService from "@/_services/questionService.js";
 import categoryService from "@/_services/categoryService.js";
 import answerService from "@/_services/answerService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
+import { useRouter } from 'vue-router';
 export default {
   props: ["id"],
 
   setup(props) {
     const loading = ref(false);
     const toast = getCurrentInstance().appContext.app.$toast;
+    const router = useRouter();
 
     const category = ref(null);
     const question = ref(null);
@@ -228,7 +231,7 @@ export default {
     ]);
 
     const { getCategoryById } = categoryService();
-    const { getQuestionById, updateQuestion } = questionService();
+    const { getQuestionById, updateQuestion, removeQuestion } = questionService();
     const { getQuestionAnswers, updateAnswer, removeAnswer, createAnswer } =
       answerService();
 
@@ -315,10 +318,12 @@ export default {
 
           console.log(answers.value);
           if (answers.value.length !== 0) {
-           
+           let i = 0;
             for (const iterator of answers.value) {
-              iterator.charKey = String.fromCharCode(code + index);
+              iterator.charKey = String.fromCharCode(code + i);
 
+                console.log(iterator.charKey );
+                ++i;
               let res = await updateAnswer(iterator.id, iterator);
 
               if (res && res.value) {
@@ -549,6 +554,27 @@ export default {
       }
     };
 
+    const deleteHandle = async() => {
+      loading.value = true;
+      let response = await removeQuestion(props.id);
+
+      if(response && response.value ){
+        if(response.value.status === 204) {
+          toast.success("The question removed successfully!");
+          router.push({name: 'QuestionsList'});
+        } else {
+           handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+           loading.value = false;
+
+    }
+
     return {
       loading,
       category,
@@ -569,6 +595,7 @@ export default {
       editAnswerHandle,
       updateAnswerHandle,
       submitHandle,
+      deleteHandle
     };
   },
 };
