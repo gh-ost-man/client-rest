@@ -8,7 +8,7 @@
     </router-link>
     <h3 class="text-white mt-5">Results</h3>
     <div>
-      <button class="btn btn-outline-danger" @click="removeAllHandle">
+      <button class="btn btn-outline-danger" :disabled="loading" @click="removeAllHandle">
         Remove all
       </button>
     </div>
@@ -146,6 +146,7 @@ export default {
   setup(props) {
     const toast = getCurrentInstance().appContext.app.$toast;
     const router = useRouter();
+    const loading = ref(false);
 
     const examQuestions = ref(null);
     const reports = ref(null);
@@ -315,6 +316,7 @@ export default {
     };
 
     const removeAllHandle = async () => {
+      loading.value = true;
       let response = await removeReportsByExamId(props.idExam);
 
       if (response && response.value) {
@@ -330,9 +332,12 @@ export default {
           });
         }
       }
+
+      loading.value = false;
     };
 
     return {
+      loading,
       sortedAnswerKeys,
       filterDate,
       reports,
