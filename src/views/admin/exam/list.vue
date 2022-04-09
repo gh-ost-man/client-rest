@@ -99,6 +99,14 @@
                       <font-awesome-icon icon="pen-to-square"
                     /></i>
                   </router-link>
+                  <router-link
+                    :to="{ name: 'ExamUsers', params: { id: exam.id } }"
+                    class="btn btn-outline-light mx-1"
+                  >
+                    <i class="icon">
+                      <font-awesome-icon icon="user-graduate"
+                    /></i>
+                  </router-link>
                 </td>
               </tr>
               <tr class="spacer">
@@ -137,7 +145,7 @@ export default {
     const filterStatus = ref("");
 
     const { getAllExams, getAllExamQuestions } = examService();
-    const {currentUser} = authService();
+    const { currentUser } = authService();
 
     const pagination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
@@ -304,7 +312,7 @@ export default {
       }
     };
 
-     const isVisibleHandle = (authRoles) => {
+    const isVisibleHandle = (authRoles) => {
       if (!currentUser.value) return false;
 
       let userRoles = currentUser.value.roles.split(",");
@@ -338,5 +346,4 @@ export default {
 
 <style scoped>
 @import "../../../assets/css/table.css";
-
 </style>

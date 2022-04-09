@@ -84,6 +84,18 @@ const userService = () => {
         return await get(apiUrl + "/"+id +"/exams"  + query);
     }
 
+    const getExamUsers = async(idExam, page, limit) => {
+
+        let query = "?";
+        if(page) {
+            query  += "page=" + page;
+        }
+        if(limit) {
+            query+= "&limit="+limit;
+        }
+        return await get(apiUrl + "/e/" + idExam + query);
+    }
+
     const addExamToUser = async(data) =>{
         return await post(apiUrl+"/addExam", data);
     }
@@ -92,7 +104,7 @@ const userService = () => {
         return await post(apiUrl+"/removeExam", data);
     }
 
-    return { getAllUsers, getUserExams,addExamToUser, removeExamFromUser, getUserById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
+    return { getAllUsers, getExamUsers, getUserExams,addExamToUser, removeExamFromUser, getUserById, update, changePassword,createUser, addRole, removeRole, removeUser,sendMessage,updateEmail }
 }
 
 

@@ -69,6 +69,14 @@
       <button class="btn btn-outline-danger mx-1" :disabled="loading" @click.prevent="deleteHanlde">Delete</button>
     </form>
   </div>
+   <div class="d-flex justify-content-center" v-if="!examObj">
+      <div
+        class="spinner-border align-center text-primary text-center"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
 </template>
 
 <script>

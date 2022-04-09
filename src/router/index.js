@@ -445,6 +445,19 @@ const routes = [
           layout: 'admin', authorize: ["Teacher"],
         },
       },
+      {
+        path: '/d/exams/:id/user',
+        name: 'ExamUsers',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/admin/exam/listUsers.vue'),
+        beforeEnter: requireAuth,
+        meta: {
+          layout: 'admin', authorize: ["Manager"],
+        },
+        props: true,
+      },
 
     ]
   },
@@ -490,6 +503,8 @@ const routes = [
 
     ]
   },
+
+  /* Rerports by Exam */
   {
     path: '/d/reports/e/',
     name: 'ReportsByExam',

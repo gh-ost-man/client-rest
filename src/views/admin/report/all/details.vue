@@ -3,6 +3,12 @@
     <router-link :to="{ name: 'ReportsList' }" class="btn btn-outline-info">
       <i><font-awesome-icon icon="circle-arrow-left" /></i>
     </router-link>
+    <div v-if="exam" class="mt-3">
+      <h3 class="text-white">
+        {{exam.title}}
+      </h3>
+      <hr class="bg-info" />
+    </div>
     <div class="table-responsive custom-table-responsive">
       <table class="table custom-table mt-5">
         <thead class="table-dark">
@@ -114,13 +120,14 @@ export default {
     const router = useRouter();
 
     const { getReportById, removeReport } = reportService();
-    const { getAllExamQuestions } = examService();
+    const { getAllExamQuestions, getExamById } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
     const { getUserById } = userService();
 
     const report = ref(null);
     const examQuestions = ref(null);
+    const exam = ref(null);
 
     const questions = ref(null);
     const answerKeys = ref([]);
@@ -227,6 +234,21 @@ export default {
             });
           }
         }
+
+        let resExam = await getExamById(report.value.examId);
+
+        if(resExam && resExam.value) {
+          if(resExam.value.status === 200) {
+            exam.value = resExam.value.data;
+          } else {
+             handleResponse(resExam.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+          }
+        }
       }
     });
 
@@ -259,6 +281,7 @@ export default {
       report,
       loading,
       examQuestions,
+      exam,
       questions,
       answerKeys,
       deleteHandle,
