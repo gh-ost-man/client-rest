@@ -58,8 +58,8 @@ export default {
     const toast = getCurrentInstance().appContext.app.$toast;
     const loading = ref(null);
 
-    const email = ref("user1@google.com");
-    const password = ref("User1!");
+    const email = ref(null);
+    const password = ref(null);
     
     const router = useRouter();
     

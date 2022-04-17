@@ -26,7 +26,7 @@
                 />
               </div>
             </div>
-            <div class="col-md-5 my-2">
+            <!-- <div class="col-md-5 my-2">
               <select
                 class="form-select c-select"
                 aria-label="Default select example"
@@ -43,7 +43,7 @@
                   {{ s.title }}
                 </option>
               </select>
-            </div>
+            </div> -->
             <div class="col-md-2 my-1">
               <button class="btn btn-outline-light" @click="resetFilterHandle">
                 Reset
@@ -68,7 +68,7 @@
               <th scope="col">Title</th>
               <th scope="col">DurationTime</th>
               <th scope="col">PassingScore</th>
-              <th scope="col">Status</th>
+              <!-- <th scope="col">Status</th> -->
               <th scope="col">Qty of quesitons</th>
               <th scope="col"></th>
             </tr>
@@ -80,7 +80,7 @@
                 <td>{{ exam.title }}</td>
                 <td>{{ exam.durationTime }}</td>
                 <td>{{ exam.passingScore }}</td>
-                <td>{{ exam.status }}</td>
+                <!-- <td>{{ exam.status }}</td> -->
                 <td>{{ exam.qtyOfQuestions }}</td>
                 <td>
                   <router-link
@@ -142,7 +142,7 @@ export default {
     const exams = ref(null);
 
     const filterTitle = ref("");
-    const filterStatus = ref("");
+    // const filterStatus = ref("");
 
     const { getAllExams, getAllExamQuestions } = examService();
     const { currentUser } = authService();
@@ -153,23 +153,23 @@ export default {
     const middleVal = ref(10);
     const cntBetween = ref(5);
 
-    const statuses = ref([
-      {
-        title: "NotAvailable",
-        key: 0,
-        value: "NotAvailable",
-      },
-      {
-        title: "Available",
-        key: 1,
-        value: "Available",
-      },
-      {
-        title: "Finished",
-        key: 2,
-        value: "Finished",
-      },
-    ]);
+    // const statuses = ref([
+    //   {
+    //     title: "NotAvailable",
+    //     key: 0,
+    //     value: "NotAvailable",
+    //   },
+    //   {
+    //     title: "Available",
+    //     key: 1,
+    //     value: "Available",
+    //   },
+    //   {
+    //     title: "Finished",
+    //     key: 2,
+    //     value: "Finished",
+    //   },
+    // ]);
 
     onMounted(async () => {
       getFilterFromStorage();
@@ -185,9 +185,9 @@ export default {
         filter.title = filterTitle.value;
       }
 
-      if (filterStatus.value) {
-        filter.status = filterStatus.value;
-      }
+      // if (filterStatus.value) {
+      //   filter.status = filterStatus.value;
+      // }
 
       filterStorage();
 
@@ -207,9 +207,9 @@ export default {
           };
           console.log(response.value);
           for (const element of exams.value) {
-            element.status = statuses.value.find(
-              (x) => x.key === element.status
-            ).title;
+            // element.status = statuses.value.find(
+            //   (x) => x.key === element.status
+            // ).title;
 
             let res = await getAllExamQuestions(element.id);
 
@@ -248,10 +248,10 @@ export default {
     /**
      * Filters exams by status exam
      */
-    const filterByStatus = async () => {
-      currentPage.value = 1;
-      await getData();
-    };
+    // const filterByStatus = async () => {
+    //   currentPage.value = 1;
+    //   await getData();
+    // };
 
     /**
      * Changes current page
@@ -279,7 +279,7 @@ export default {
      */
     const resetFilterHandle = async () => {
       filterTitle.value = null;
-      filterStatus.value = "";
+      // filterStatus.value = "";
       currentPage.value = 1;
 
       await getData();
@@ -292,7 +292,7 @@ export default {
       let filterObj = {};
 
       filterObj.title = filterTitle.value;
-      filterObj.status = filterStatus.value;
+      // filterObj.status = filterStatus.value;
       filterObj.currentPage = currentPage.value;
 
       sessionStorage.filterExams = JSON.stringify(filterObj);
@@ -307,7 +307,7 @@ export default {
       if (filter) {
         let filterObj = JSON.parse(filter);
         filterTitle.value = filterObj.title ? filterObj.title : "";
-        filterStatus.value = filterObj.status ? filterObj.status : "";
+        // filterStatus.value = filterObj.status ? filterObj.status : "";
         currentPage.value = filterObj.currentPage || "";
       }
     };
@@ -329,15 +329,15 @@ export default {
       exams,
       sortedExams,
       currentPage,
-      statuses,
+      // statuses,
       filterTitle,
-      filterStatus,
+      // filterStatus,
       pagination,
       middleVal,
       changePage,
       filterByTitle,
       resetFilterHandle,
-      filterByStatus,
+      // filterByStatus,
       isVisibleHandle,
     };
   },

@@ -130,10 +130,10 @@ export default {
       }
 
       loading.value = true;
-      let resAccessCode = await register(newUser.value);
+      let resAccessCode = await sendMessage(newUser.value);
       loading.value = false;
       if (resAccessCode && resAccessCode.value) {
-        if (resAccessCode.value.status === 204) {
+        if (resAccessCode.value.status === 200) {
           console.log(resAccessCode.value.data);
           dialogVisible.value = true;
         } else {

@@ -124,7 +124,7 @@ export default {
             description: null,
             durationTime: 30,
             passingScore: 40,
-            status: 0,
+            // status: 0,
           };
 
           router.push({

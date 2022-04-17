@@ -5,8 +5,8 @@ import { encryptData, decryptData } from "../_helpers/crypto";
 import { useStore } from "vuex";
 
 const authService = () => {
-    // const apiUrl = 'http://localhost:9000/api/auth';
     const store = useStore();
+     //const apiUrl = 'http://localhost:7000/api/auth';
 
     const apiUrl = store.state.apigw.host + '/api/auth';
     //if we changing apiUrl we must change in function refreshToken (useApi.js) !!!!

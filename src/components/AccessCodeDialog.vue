@@ -30,9 +30,12 @@ export default {
   methods: {
     hideDialog() {
       this.$emit("update:show", false);
+
+      this.accessCode = null;
     },
     sendHandle() {
       this.$emit("submit", this.accessCode);
+       this.accessCode = null;
     },
   },
 };
