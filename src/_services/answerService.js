@@ -4,7 +4,8 @@ import { useStore } from "vuex";
 const answerService = () => {
     // const apiUrl = 'http://localhost:9000/api/answers';
     const store = useStore();
-    const apiUrl = store.state.apigw.host + '/api/answers';
+     const apiUrl = store.state.apigw.host + '/api/answers';
+    //const apiUrl = 'http://acme.com/api/answers';
 
     
     const { post, get, put, remove } = useApi();

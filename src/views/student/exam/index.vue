@@ -96,40 +96,6 @@ export default {
               }
             }
           }
-          // await userExams.value.reduce(async (a, item) => {
-          //   let res = await getExamById(item.examId);
-
-          //   if (res && res.value) {
-          //     if (res.value.status === 200) {
-          //       let exam = res.value.data;
-          //       let resQ = await getAllExamQuestions(exam.id);
-
-          //       if (resQ && resQ.value) {
-          //         if (resQ.value.status === 200) {
-          //           exam.qtyOfQuestions = resQ.value.data.items.length;
-          //         } else {
-          //           handleResponse(resQ.value).forEach((element) => {
-          //             toast.error(element, {
-          //               position: "top",
-          //               duration: 5000,
-          //             });
-          //           });
-          //         }
-          //       }
-
-          //       exams.value.push(exam);
-          //     } else {
-          //       handleResponse(res.value).forEach((element) => {
-          //         toast.error(element, {
-          //           position: "top",
-          //           duration: 5000,
-          //         });
-          //       });
-          //     }
-          //   }
-          // }, Promise.resolve());
-
-          console.log(exams.value);
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {

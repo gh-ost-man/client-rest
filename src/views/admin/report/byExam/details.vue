@@ -6,9 +6,13 @@
     >
       <i><font-awesome-icon icon="circle-arrow-left" /></i>
     </router-link>
-    <h3 class="text-white mt-5">Results</h3>
+    <h3 v-if="exam" class="text-white mt-5">{{exam.title}}</h3>
     <div>
-      <button class="btn btn-outline-danger" :disabled="loading" @click="removeAllHandle">
+      <button
+        class="btn btn-outline-danger"
+        :disabled="loading"
+        @click="removeAllHandle"
+      >
         Remove all
       </button>
     </div>
@@ -139,7 +143,7 @@ import questionService from "@/_services/questionService.js";
 import handleResponse from "@/_helpers/handleResponse.js";
 import { computed, onMounted, ref, getCurrentInstance } from "vue";
 import Pagination from "@/components/Pagination";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 export default {
   components: { Pagination },
   props: ["idExam"],
@@ -148,6 +152,7 @@ export default {
     const router = useRouter();
     const loading = ref(false);
 
+    const exam = ref(null);
     const examQuestions = ref(null);
     const reports = ref(null);
     const questions = ref(null);
@@ -166,6 +171,21 @@ export default {
     const filterDate = ref(null);
 
     onMounted(async () => {
+      let response = await getExamById(props.idExam);
+
+      if (response && response.value) {
+        if (response.value.status === 200) {
+          exam.value = response.value.data;
+        } else {
+          handleResponse(response.value).forEach((element) => {
+            toast.error(element, {
+              position: "top",
+              duration: 5000,
+            });
+          });
+        }
+      }
+
       await getData();
     });
 
@@ -338,6 +358,7 @@ export default {
 
     return {
       loading,
+      exam,
       sortedAnswerKeys,
       filterDate,
       reports,

@@ -63,8 +63,7 @@
         </select>
       </div> -->
       <button class="btn btn-outline-info" :disabled="loading">
-        <span v-if="!loading">Update</span>
-        <span v-else>Updating...</span>
+         Update
       </button>
       <button class="btn btn-outline-danger mx-1" :disabled="loading" @click.prevent="deleteHanlde">Delete</button>
     </form>

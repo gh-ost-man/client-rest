@@ -8,7 +8,8 @@ const authService = () => {
     const store = useStore();
      //const apiUrl = 'http://localhost:7000/api/auth';
 
-    const apiUrl = store.state.apigw.host + '/api/auth';
+     const apiUrl = store.state.apigw.host + '/api/auth';
+    //const apiUrl = 'http://acme.com/api/auth';
     //if we changing apiUrl we must change in function refreshToken (useApi.js) !!!!
     
 

@@ -54,44 +54,6 @@
         </div>
       </div>
       <div class="d-flex justify-content-center">
-        <!-- <nav aria-label="Page navigation example">
-          <ul class="pagination">
-            <li class="page-item">
-              <button class="page-link" @click="prevQuestion">Previous</button>
-            </li>
-            <li
-              class="page-item"
-              :class="{
-                active: currentQuestion === index,
-                'bg-success':
-                  userAnswers?.filter((x) => x.idQuesiton === q.id).length > 0,
-              }"
-              @click="changeQuestion(index)"
-              v-for="(q, index) in questionsItems"
-              :key="q.id"
-            >
-              <button
-                class="page-link"
-                :disabled="isFinish"
-                :class="{
-                  'bg-success':
-                    userAnswers?.filter((x) => x.idQuesiton === q.id).length >
-                    0,
-                }"
-              >
-                {{ index + 1 }}
-              </button>
-            </li>
-            <li class="page-item">
-              <button class="page-link" @click="nextQuestion">Next</button>
-            </li>
-            <li class="page-item">
-              <button class="page-link bg-info" @click="finishExam">
-                Finish
-              </button>
-            </li>
-          </ul>
-        </nav> -->
         <div class="pagination w-auto d-flex justify-content-center">
           <ul>
             <li class="btn prev" @click="prevQuestion">Prev</li>
@@ -190,7 +152,7 @@ export default {
     const { getExamById, getAllExamQuestions } = examService();
     const { getQuestionById } = questionService();
     const { getQuestionAnswers } = answerService();
-    const { removeExamFromUser, getUserExams } = userService();
+    const { getUserExams } = userService();
 
     const exam = ref(null);
     const examQuestions = ref(null);
@@ -206,7 +168,6 @@ export default {
 
     onMounted(async () => {
       let resUser = await getUserExams(currentUser.value.id);
-      console.log(resUser.value);
 
       if (resUser && resUser.value) {
         if (resUser.value.status === 200) {
@@ -239,7 +200,6 @@ export default {
           if (resReport.value.status === 200) {
             idReport.value = resReport.value.data;
             sessionStorage.idReport = idReport.value;
-            console.log(idReport.value);
           } else {
             handleResponse(resReport.value).forEach((element) => {
               toast.error(element, {
@@ -280,7 +240,7 @@ export default {
               questions.value = [];
 
               //Get question data
-              for (const iterator of examQuestions.value) {
+              for await (const iterator of examQuestions.value) {
                 let resQ = await getQuestionById(iterator.questionItemId);
                 if (resQ && resQ.value) {
                   if (resQ.value.status === 200) {
@@ -293,7 +253,7 @@ export default {
                         item.answers = resA.value.data;
                         questions.value.push({
                           ...item,
-                          answers: resA.value.data,
+                          answers: resA.value.data.sort((x1 ,x2)=> x1.charKey.localeCompare(x2.charKey) ),
                         });
                       } else {
                         handleResponse(resA.value).forEach((element) => {
@@ -354,7 +314,6 @@ export default {
      * Changes question
      */
     const changeQuestion = async (index) => {
-      console.log("INDEX 1: ", index);
       // if(currentQuestion.value === index) return;
 
       if (question.value?.answerType === 0) {
@@ -367,6 +326,7 @@ export default {
 
       currentQuestion.value = index;
       question.value = questionsItems.value[index - 1];
+
       answerInput.value = null;
 
       //Set answer in the inputAnswer
@@ -509,13 +469,12 @@ export default {
      * Finish exam
      */
     const finishExam = async () => {
-      console.log(questions.value.length);
-      console.log(userAnswers.value.length);
+      clearInterval(timer);
+      sessionStorage.removeItem("idReport");
+      sessionStorage.removeItem("time");
+      sessionStorage.removeItem("answers");
 
       isFinish.value = true;
-
-      console.log(exam.value);
-      console.log(currentUser.value);
 
       if (question.value.answerType === 0) {
         if (answerInput.value) {
@@ -535,22 +494,6 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           console.log("END ***************************************");
-
-          // let res = await removeExamFromUser({
-          //   userId: currentUser.value.id,
-          //   examId: props.idExam,
-          // });
-
-          // if (res && res.value) {
-          //   if (res.value.status !== 200) {
-          //     handleResponse(res.value).forEach((element) => {
-          //       toast.error(element, {
-          //         position: "top",
-          //         duration: 5000,
-          //       });
-          //     });
-          //   }
-          // }
 
           sessionStorage.removeItem("idReport");
           router.push({
@@ -625,8 +568,6 @@ export default {
           1
         );
       }
-
-      console.log("HERE");
 
       return questions.value;
     });

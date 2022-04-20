@@ -4,8 +4,9 @@ import useApi from "../composables/useApi"
 const examService = () => {
     const store=useStore();
     // const apiUrl = 'http://localhost:9000/api/exams'; //Local Ocelot
-     const apiUrl = store.state.apigw.host+'/api/exams'; 
+    const apiUrl = store.state.apigw.host+'/api/exams'; 
     //const apiUrl = 'http://localhost:6012/api/exams'; //Local
+    //const apiUrl = 'http://acme.com/api/exams'; //Kubernets
     const { post, get, put, remove } = useApi();
 
     const getAllExams = async (page,  limit, filter, middleVal, qtyBetween) => {

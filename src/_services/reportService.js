@@ -4,7 +4,8 @@ import useApi from "../composables/useApi"
 const reportService = () => {
     const store = useStore();
     // const apiUrl = 'http://localhost:9000/api/report';
-    const apiUrl = store.state.apigw.host+'/api/reports';
+     const apiUrl = store.state.apigw.host+'/api/reports';
+    //const apiUrl = 'http://acme.com/api/reports';
     const { post, get, put, remove } = useApi();
 
     const getAllReports = async (page, limit, filter, middleVal, qtyBetween) => {

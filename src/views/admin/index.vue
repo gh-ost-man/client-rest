@@ -1,9 +1,6 @@
 <template>
   <div class="text-white p-3">
     <div class="d-flex justify-content-left">
-      <!-- <div class="text-center bg-danger ">
-          <i><font-awesome-icon class="h-100" icon="user-secret"  /></i>
-      </div> -->
       <div class="text-center" v-if="currentUser">
         <h3>{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
         <h5>{{ currentUser.email }}</h5>
@@ -11,12 +8,12 @@
       </div>
     </div>
     <hr class="mt-3" />
-    <div class="row">
+    <div class="row d-flex" style="align-self:stretch!i">
       <div
         class="col-md-4 mt-2"
         v-if="users && isVisibleHandle(['Manager', 'Admin'])"
       >
-        <div class="card border-secondary bg-transparent  ">
+        <div class="card border-secondary bg-transparent">
           <div class="card-header border-secondary">
             Users
             <router-link
@@ -29,12 +26,12 @@
           <div class="card-body">
             <div class="row p-3 text-center">
               <div class="col-md-6 col-sm-6">
-                <h4>Users</h4>
+                <p>Users</p>
                 <!-- <h2>{{ users.length }}</h2> -->
               </div>
               <div class="col-md-6 col-sm-6">
                 <div class="text-center">
-                  <h2>{{ users.length }}</h2>
+                  <p>{{ users.length }}</p>
                 </div>
               </div>
             </div>
@@ -47,7 +44,7 @@
       >
         <div class="card border-secondary bg-transparent bg-dark">
           <div class="card-header border-secondary">
-             Exams
+            Exams
             <router-link
               :to="{ name: 'ExamsList' }"
               class="btn text-white"
@@ -58,12 +55,12 @@
           <div class="card-body">
             <div class="row p-3 text-center">
               <div class="col-md-6 col-sm-6">
-                <h4>Exams</h4>
+                <p>Exams</p>
                 <!-- <h2>{{ exams.length }}</h2> -->
               </div>
               <div class="col-md-6 col-sm-6">
                 <div class="text-center">
-                  <h2>{{ exams.length }}</h2>
+                  <p>{{ exams.length }}</p>
                 </div>
               </div>
             </div>
@@ -73,7 +70,7 @@
       <div class="col-md-4 mt-2" v-if="reports && isVisibleHandle(['Manager'])">
         <div class="card border-secondary bg-transparent bg-dark">
           <div class="card-header border-secondary">
-              Reports
+            Reports
             <router-link
               :to="{ name: 'ReportsList' }"
               class="btn text-white"
@@ -84,12 +81,12 @@
           <div class="card-body">
             <div class="row p-3 text-center">
               <div class="col-md-6 col-sm-6">
-                <h4>Reports</h4>
+                <p>Reports</p>
                 <!-- <h2>{{ reports.length }}</h2> -->
               </div>
               <div class="col-md-6 col-sm-6">
                 <div class="text-center">
-                  <h2>{{ reports.length }}</h2>
+                  <p>{{ reports.length }}</p>
                 </div>
               </div>
             </div>
@@ -113,12 +110,12 @@
           <div class="card-body">
             <div class="row p-3 text-center">
               <div class="col-md-6 col-sm-6">
-                <h4>Questions</h4>
+                <p>Questions</p>
                 <!-- <h2>{{ questions.length }}</h2> -->
               </div>
               <div class="col-md-6 col-sm-6">
                 <div class="text-center">
-                  <h2>{{ questions.length }}</h2>
+                  <p>{{ questions.length }}</p>
                 </div>
               </div>
             </div>
@@ -131,7 +128,7 @@
       >
         <div class="card border-secondary bg-transparent bg-dark">
           <div class="card-header border-secondary">
-             Categories
+            Categories
             <router-link
               :to="{ name: 'CategoriesList' }"
               class="btn text-white"
@@ -142,12 +139,12 @@
           <div class="card-body">
             <div class="row p-3 text-center">
               <div class="col-md-6 col-sm-6">
-                <h4>Categories</h4>
+                <p>Categories</p>
                 <!-- <h2>{{ categories.length }}</h2> -->
               </div>
               <div class="col-md-6 col-sm-6">
                 <div class="text-center">
-                  <h2>{{ categories.length }}</h2>
+                  <p>{{ categories.length }}</p>
                 </div>
               </div>
             </div>
@@ -305,7 +302,6 @@ export default {
 * {
   font-family: "Audiowide", sans-serif;
 }
-
 
 /* body {
   overflow: hidden;
