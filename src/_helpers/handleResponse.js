@@ -28,8 +28,8 @@ const handleResponse = (response) => {
                 return [response.data.title];
             }
 
-            console.clear();
             console.log("BADDDDDDD: ********** : ", response.data);
+            return response.data;
         }
         if (response.status === 405) {
             return ["Method Not Allowed"];

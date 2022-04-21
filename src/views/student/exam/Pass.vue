@@ -16,7 +16,6 @@
     <div v-if="question">
       <div>
         <h4 class="text-white">
-          <span> {{ question.id }}</span>
           <span> {{ question.context }}</span>
         </h4>
       </div>
@@ -109,7 +108,7 @@
           </ul>
         </div>
       </div>
-      <div class="text-white">{{ userAnswers }}</div>
+      <!-- <div class="text-white">{{ userAnswers }}</div> -->
     </div>
   </div>
     <div

@@ -99,8 +99,8 @@ export default {
     //   },
     // ]);
     const examObj = ref({
-      title: null,
-      description: null,
+      title: "",
+      description: "",
       durationTime: 30,
       passingScore: 40,
       // status: 0,
@@ -110,6 +110,24 @@ export default {
      * Creates new Exam
      */
     const submitHandle = async () => {
+      if (!examObj.value.title) {
+        toast.error("Title is required", {
+          position: "top",
+          duration: 3000,
+        });
+
+        return;
+      }
+
+      if (!examObj.value.description) {
+        toast.error("Description is required", {
+          position: "top",
+          duration: 3000,
+        });
+
+        return;
+      }
+
       loading.value = true;
 
       let response = await createExam(examObj.value);
@@ -120,8 +138,8 @@ export default {
         if (response.value.status === 201) {
           toast.success("The test created successfully");
           examObj.value = {
-            title: null,
-            description: null,
+            title: "",
+            description: "",
             durationTime: 30,
             passingScore: 40,
             // status: 0,
@@ -132,6 +150,7 @@ export default {
             params: { id: response.value.data.id },
           });
         } else {
+          console.log(response.value);
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
               position: "top",
@@ -142,7 +161,7 @@ export default {
       }
     };
 
-    return {  loading, examObj, submitHandle };
+    return { loading, examObj, submitHandle };
   },
 };
 </script>
