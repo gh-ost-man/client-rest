@@ -55,7 +55,7 @@
       <div class="d-flex justify-content-center">
         <div class="pagination w-auto d-flex justify-content-center">
           <ul>
-            <li class="btn prev" @click="prevQuestion">Prev</li>
+            <!-- <li class="btn prev" @click="prevQuestion">Prev</li> -->
             <li class="numb"  :class="{
                 'bg-warning text-black': userAnswers?.find(
                   (x) => x.idQuesiton === questionsItems[0].id
@@ -103,7 +103,7 @@
             >
               {{ pagination.totalPages }}
             </li>
-            <li class="btn next" @click="nextQuestion">Next</li>
+            <!-- <li class="btn next" @click="nextQuestion">Next</li> -->
             <li class="btn next" @click="finishExam">Finish</li>
           </ul>
         </div>
@@ -538,20 +538,20 @@ export default {
     /**
      * Next quesiton
      */
-    const nextQuestion = () => {
-      if (currentQuestion.value + 1 < questions.value.length) {
-        changeQuestion(currentQuestion.value + 1);
-      }
-    };
+    // const nextQuestion = () => {
+    //   if (currentQuestion.value + 1 < questions.value.length) {
+    //     changeQuestion(currentQuestion.value + 1);
+    //   }
+    // };
 
     /**
      * Prev question
      */
-    const prevQuestion = () => {
-      if (currentQuestion.value - 1 >= 0) {
-        changeQuestion(currentQuestion.value - 1);
-      }
-    };
+    // const prevQuestion = () => {
+    //   if (currentQuestion.value - 1 >= 0) {
+    //     changeQuestion(currentQuestion.value - 1);
+    //   }
+    // };
 
     const questionsItems = computed(() => {
       if (questions.value) {
@@ -598,8 +598,8 @@ export default {
       finishExam,
       minutes,
       seconds,
-      nextQuestion,
-      prevQuestion,
+      // nextQuestion,
+      // prevQuestion,
       firstHandle,
       lastHandle,
     };
