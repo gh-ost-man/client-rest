@@ -4,7 +4,7 @@
       <nav class="navbar navbar-expand-lg navbar-light bg-light $blue-700">
         <div class="container">
           <!-- <a class="navbar-brand" href="#">ITSTEP</a> -->
-          <router-link class="navbar-brand" :to="{name: 'HomeStudent'}">ITSTEP</router-link>
+          <router-link class="navbar-brand" :to="{name: 'HomeStudent'}">PROUD</router-link>
           <button
             class="navbar-toggler"
             type="button"

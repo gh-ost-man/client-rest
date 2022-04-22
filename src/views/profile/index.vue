@@ -40,7 +40,7 @@
             <div class="col-md-12">
               <label class="labels text-info c-text">UpdatedAt</label>
               <p class="text-warning mx-2">
-                {{ new Date(currentUser.createdAt).toLocaleString() }}
+                {{ new Date(currentUser.updatedAt).toLocaleString() }}
               </p>
             </div>
             <hr class="bg-info" />

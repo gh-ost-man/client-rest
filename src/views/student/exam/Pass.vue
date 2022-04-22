@@ -219,13 +219,13 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           exam.value = response.value.data;
-
+          console.log( response.value.data);
           if (sessionStorage.time) {
             let time = JSON.parse(sessionStorage.time);
             minutes.value = time.minutes;
             seconds.value = time.seconds;
           } else {
-            minutes.value = response.value.data.durationTime;
+            minutes.value =  response.value.data.durationTime;
             seconds.value = 0;
           }
 
@@ -340,9 +340,6 @@ export default {
       }
     };
 
-    //Text   -> 104, 107 110
-    //Single -> 105  108 111 113
-    //Multy  -> 106  109 112
 
     /**
      * Sends answer into db

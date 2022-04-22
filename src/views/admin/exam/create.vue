@@ -110,23 +110,23 @@ export default {
      * Creates new Exam
      */
     const submitHandle = async () => {
-      if (!examObj.value.title) {
-        toast.error("Title is required", {
-          position: "top",
-          duration: 3000,
-        });
+      // if (!examObj.value.title) {
+      //   toast.error("Title is required", {
+      //     position: "top",
+      //     duration: 3000,
+      //   });
 
-        return;
-      }
+      //   return;
+      // }
 
-      if (!examObj.value.description) {
-        toast.error("Description is required", {
-          position: "top",
-          duration: 3000,
-        });
+      // if (!examObj.value.description) {
+      //   toast.error("Description is required", {
+      //     position: "top",
+      //     duration: 3000,
+      //   });
 
-        return;
-      }
+      //   return;
+      // }
 
       loading.value = true;
 

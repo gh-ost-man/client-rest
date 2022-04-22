@@ -40,7 +40,7 @@
               </th>
             </template>
             <th class="border border-dark" scope="col">100</th>
-            <th class="border border-dark" scope="col"></th>
+            <th class="border border-dark" scope="col">{{examQuestions?.length || 0}}</th>
             <th class="border border-dark" scope="col"></th>
           </tr>
 

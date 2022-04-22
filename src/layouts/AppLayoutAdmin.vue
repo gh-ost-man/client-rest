@@ -5,7 +5,7 @@
         <font-awesome-icon icon="user-secret" class="fs-1"
       /></i>
       <span @click="$router.push({ name: 'HomeAdmin' })" class="logo_name fs-3"
-        >IT STEP</span
+        >PROUD</span
       >
     </div>
     <ul class="nav-links">

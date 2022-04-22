@@ -100,6 +100,7 @@
                     /></i>
                   </router-link>
                   <router-link
+                     v-if="isVisibleHandle(['Manager'])"
                     :to="{ name: 'ExamUsers', params: { id: exam.id } }"
                     class="btn btn-outline-light mx-1"
                   >
