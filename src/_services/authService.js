@@ -61,9 +61,17 @@ const authService = () => {
 
 
     const sendMessage = async (data) => {
+        console.log(data);
         return await post(apiUrl + "/SendMessage", data);
     }
 
+    const forgotPassword = async(data)=> {
+        return await post(apiUrl + "/forgotPassword", data);
+    }
+
+    const setNewPassword = async(data) => {
+        return await post(apiUrl + '/setNewPassword', data);
+    }
     const logOut = () => {
         localStorage.removeItem("auth");
         localStorage.removeItem("accessToken");
@@ -72,7 +80,7 @@ const authService = () => {
         currentUser.value = null;
         store.commit('auth/setUser', currentUser.value);
     }
-    return { currentUser, apiUrl,encryptData, decryptData, setAuth, setAuthUser, login, register, sendMessage, logOut }
+    return { currentUser, apiUrl,encryptData, decryptData, setAuth, setAuthUser, login, register, sendMessage, forgotPassword, setNewPassword,logOut }
 }
 
 export default authService

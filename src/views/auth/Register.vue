@@ -1,6 +1,6 @@
 <template>
   <div class="p-5">
-    <form @submit.prevent="sendMessageHandle">
+    <form class="w-50 m-auto" @submit.prevent="sendMessageHandle">
       <h3 class="text-info">Register</h3>
       <div class="form-group mt-1">
         <label class="c-label">

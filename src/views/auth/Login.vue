@@ -1,6 +1,6 @@
 <template>
   <div class="p-5">
-    <form>
+    <form class="w-50 m-auto">
       <h3 class="text-info">Login</h3>
 
       <div class="form-group">
@@ -28,22 +28,28 @@
           :disabled="loading"
         />
       </div>
+      <p class="text-white text-end mt-1" @click="$router.push({name: 'ForgotPassword'})" style="cursor:pointer;">Forgot password?</p>
       <button
         @click.prevent="submit"
         :disabled="loading"
         class="btn btn-outline-info mt-2 mx-1"
+        
       >
         Login
       </button>
+      <!-- <router-link class="btn btn-outline-info mt-2" :to="{name: 'ForgotPassword'}" v-if="!loading">Forgot password</router-link> -->
       <router-link
         class="btn btn-outline-light mt-2 mx-1"
         :to="{ name: 'Register' }"
-        v-if="!loading">
-          Register
-        </router-link
+        v-if="!loading"
       >
+        Register
+      </router-link>
     </form>
   </div>
+
+
+
 </template>
 
 <script>
@@ -60,9 +66,9 @@ export default {
 
     const email = ref(null);
     const password = ref(null);
-    
+
     const router = useRouter();
-    
+
     const { login } = authService();
 
     const submit = async () => {
@@ -119,10 +125,12 @@ export default {
       }
     };
 
+ 
+
     return { email, password, loading, submit };
   },
 };
 </script>
 
-<style>
+<style scoped>
 </style>
