@@ -1,6 +1,6 @@
 <template>
   <div class="p-5">
-    <form class="w-50 m-auto">
+    <form class="w-50 m-auto login">
       <h3 class="text-info">Login</h3>
 
       <div class="form-group">
@@ -133,4 +133,7 @@ export default {
 </script>
 
 <style scoped>
+.login {
+  margin-top: 10% !important;
+}
 </style>

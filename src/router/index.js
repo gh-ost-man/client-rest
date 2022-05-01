@@ -46,7 +46,7 @@ const requireAuth = (to, from, next) => {
         }
       }
     } else {
-      next({ name: 'Login' });
+      next({ name: 'Preload' });
     }
   } else {
     next();
@@ -98,6 +98,14 @@ const routes = [
     path: '/forgotPassword',
     name: 'ForgotPassword',
     component: () => import(/* webpackChunkName: "about" */ '../views/auth/ForgotPassword')
+  },
+  {
+    path: '/preload',
+    name: 'Preload',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Preload')
   },
   {
     path: '/login',

@@ -1,6 +1,6 @@
 <template>
   <div class="p-3">
-    <div class="w-50 m-auto mt-5" v-if="!flag">
+    <div class="w-50 m-auto forgot" v-if="!flag">
       <form>
         <div class="form-group">
           <label class="labels c-label">
@@ -37,7 +37,7 @@
             :disabled="loading"
           />
         </div>
-        <div class="form-group mb-2">
+        <div class="form-group mb-2 newPassoword">
           <label class="labels c-label">
             <font-awesome-icon icon="lock" />
             New password
@@ -248,5 +248,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.forgot, .newPasword {
+ margin-top: 10% !important;
+}
+
 </style>

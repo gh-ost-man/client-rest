@@ -1,6 +1,6 @@
 <template>
   <div class="p-5">
-    <form class="w-50 m-auto" @submit.prevent="sendMessageHandle">
+    <form class="w-50 m-auto register" @submit.prevent="sendMessageHandle">
       <h3 class="text-info">Register</h3>
       <div class="form-group mt-1">
         <label class="c-label">
@@ -198,5 +198,8 @@ export default {
 };
 </script>
 
-<style scopped>
+<style scoped>
+.register {
+    margin-top: 10% !important;
+}
 </style>

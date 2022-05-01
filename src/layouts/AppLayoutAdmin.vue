@@ -2,7 +2,7 @@
   <div class="sidebar" :class="{ close: isClosedSideBar }">
     <div class="logo-details c-logo text-center">
       <i @click="$router.push({ name: 'HomeAdmin' })">
-        <font-awesome-icon icon="user-secret" class="fs-1"
+        <font-awesome-icon icon="house" 
       /></i>
       <span @click="$router.push({ name: 'HomeAdmin' })" class="logo_name fs-3"
         >PROUD</span

@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Iceland&display=swap');
+
+*
+{
+    margin: 0;
+    padding: 0;
+   
+}
+
+body{
+    /* overflow: hidden; */
+    /* background-color: #232526; */
+}
+
+.text-animation{
+    position: absolute;
+    margin-top: 5%;
+    /* top: 20%; */
+    /* left: 50%;  */
+    /* transform: translate(-50%, -50%); */
+    /* width: 80%; */
+    width: 70%;
+    color: #9b9b9b;
+    font-size: 20px; 
+    font-family: "Audiowide", sans-serif !important;
+}
+
+.text-animation span{
+    position: relative;
+    opacity: 0;
+    animation: textAnimation 2.0s ease-in-out forwards;
+    font-family: "Audiowide", sans-serif !important;
+}
+
+@keyframes textAnimation{
+    to{
+        top: 0;
+        left: 0;
+        opacity: 1;
+    }
+}
+
+hr{
+    position: relative;
+    border: 0.7px solid #005766;
+    /* left: 50%; */
+    width: 100%;
+    animation: lineAnimation 1.1s ease-in-out forwards;
+    animation-delay: 1.4s;
+    opacity: 0;
+    overflow: hidden !important;
+}
+
+@keyframes lineAnimation{
+    to{
+        /* top: 0; */
+        /* left: 0; */
+        opacity: 1;
+    }
+}
+
+.text-createby{
+    position: absolute;
+    display: flex;
+    justify-content:space-between;
+    bottom: 30px;
+    /* left: 10%; */
+    width: 70%;
+    font-size: 14px;
+    color: #9b9b9b;
+    animation: createbyAnimation 1.2s ease-in-out forwards;
+    animation-delay: 1.4s;
+    opacity: 0;
+    font-family: "Audiowide", sans-serif;
+
+}
+.text-createby div {
+    font-family: "Audiowide", sans-serif !important; 
+}
+
+@keyframes createbyAnimation{
+    to{
+        opacity: 1;
+    }
+}
+
+.text-main{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    margin-top: 20%;
+    /* margin-left: 20%; *  /
+    width: 100%;
+    /* height: 100%; */
+    /* left: 50%; */
+    /* left:40%;  */
+    
+    /* transform:translate(-30%, -30%);  */
+    font-weight: 900;
+    font-size: 150px;
+    color: #005766;
+    text-shadow: 15px 15px 30px rgba(0,0,0,0.98);;
+    animation: proudAnimation 3s ease-in-out forwards;
+    animation-delay: 1.2s;
+    opacity: 0;
+    transform: scale(1.3);
+    font-family: "Audiowide", sans-serif !important;
+}
+.text-main span {
+    font-family: "Audiowide", sans-serif !important;
+}
+@keyframes proudAnimation{
+    to{
+        opacity: 1;
+        transform: scale(1);
+
+        
+    }
+}
