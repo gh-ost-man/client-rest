@@ -28,12 +28,18 @@
           :disabled="loading"
         />
       </div>
-      <p class="text-white text-end mt-1" v-if="!loading" @click="$router.push({name: 'ForgotPassword'})" style="cursor:pointer;">Forgot password?</p>
+      <p
+        class="text-white text-end mt-1"
+        v-if="!loading"
+        @click="$router.push({ name: 'ForgotPassword' })"
+        style="cursor: pointer"
+      >
+        Forgot password?
+      </p>
       <button
         @click.prevent="submit"
         :disabled="loading"
         class="btn btn-outline-info mt-2 mx-1"
-        
       >
         Login
       </button>
@@ -47,9 +53,6 @@
       </router-link>
     </form>
   </div>
-
-
-
 </template>
 
 <script>
@@ -72,6 +75,16 @@ export default {
     const { login } = authService();
 
     const submit = async () => {
+      if (!email.value) {
+        toast.error("Login is required");
+        return;
+      }
+
+      if (!password.value) {
+        toast.error("Password is required");
+        return;
+      }
+
       loading.value = true;
 
       //Send data
@@ -124,8 +137,6 @@ export default {
         }
       }
     };
-
- 
 
     return { email, password, loading, submit };
   },

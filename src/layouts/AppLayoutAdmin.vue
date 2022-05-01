@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar" :class="{ close: isClosedSideBar }">
     <div class="logo-details c-logo text-center">
-      <i @click="$router.push({ name: 'HomeAdmin' })">
+      <i class="sidebar-icon" @click="$router.push({ name: 'HomeAdmin' })">
         <font-awesome-icon icon="house" 
       /></i>
       <span @click="$router.push({ name: 'HomeAdmin' })" class="logo_name fs-3"
@@ -14,7 +14,7 @@
         :class="{ 'menu-active': $route.fullPath.includes('profile') }"
       >
         <router-link :to="{ name: 'ProfileAdmin' }">
-          <i><font-awesome-icon icon="circle-user" /></i>
+          <i class="sidebar-icon"><font-awesome-icon icon="circle-user" /></i>
           <span class="link_name">Profile</span>
         </router-link>
         <ul class="sub-menu blank">
@@ -28,7 +28,7 @@
           :to="{ name: 'UsersList' }"
           :class="{ 'menu-active': $route.fullPath.includes('users') }"
         >
-          <i> <font-awesome-icon icon="users" /></i>
+          <i class="sidebar-icon"> <font-awesome-icon icon="users" /></i>
           <span class="link_name">Users</span>
         </router-link>
 
@@ -54,7 +54,7 @@
             :to="{ name: 'ExamsList' }"
             :class="{ 'menu-active': $route.fullPath.includes('exams') }"
           >
-            <i class=""> <font-awesome-icon icon="graduation-cap" /></i>
+            <i class="sidebar-icon"> <font-awesome-icon icon="graduation-cap" /></i>
             <span class="link_name">Exams</span>
           </router-link>
           <i class="arrow" @click="showSubExamMenu = !showSubExamMenu" v-if="isVisibleHandle(['Teacher'])">
@@ -90,7 +90,7 @@
             :to="{ name: 'ReportsList' }"
             :class="{ 'menu-active': $route.fullPath.includes('reports') }"
           >
-            <i> <font-awesome-icon icon="clipboard-list" /></i>
+            <i class="sidebar-icon"> <font-awesome-icon icon="clipboard-list" /></i>
             <span class="link_name">Reports</span>
           </router-link>
           <i class="arrow" @click="showSubReportMenu = !showSubReportMenu">
@@ -108,25 +108,7 @@
           </li>
         </ul>
       </li>
-      <!-- <li v-if="isVisibleHandle(['Manager'])">
-        <router-link :to="{ name: 'ReportsList' }">
-          <i> <font-awesome-icon icon="clipboard-list" /></i>
-          <span class="link_name">Reports</span>
-        </router-link>
-        <i class="arrow" @click="showSubReportMenu = !showSubReportMenu">
-          <font-awesome-icon icon="angle-down" />
-        </i>
-        <ul class="sub-menu blank">
-          <li>
-            <router-link :to="{ name: 'ReportsList' }"> Reports </router-link>
-          </li>
-          <li>
-            <router-link :to="{ name: 'ReportsByExamList' }">
-              Reports by exam
-            </router-link>
-          </li>
-        </ul>
-      </li> -->
+     
       <li v-if="isVisibleHandle(['Manager', 'Admin', 'Teacher'])">
         <div class="profile-details">
           <div class="profile-content">
@@ -232,6 +214,9 @@ export default {
 .c-background {
   background: rgba(0, 0, 0, 0.9);
 }
+.sidebar-icon {
+  color: #20b2aa !important;
+}
 
 .c-logo {
   -webkit-box-reflect: below -30px linear-gradient(transparent, #0004);
@@ -269,7 +254,7 @@ export default {
     0 0 80px #03bcf4, 0 0 160px #03bcf4, 0 0 400px #03bcf4; */
 
   /* background: darkcyan; */
-  background: #2b2b2b;
+  background: #274c57;
 }
 /* Google Fonts Import Link */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -397,7 +382,7 @@ export default {
   margin-top: -10px;
   /* background: #1d1b31; */
   /* background: darkcyan; */
-  background: #2b2b2b;
+ background: #274c57;
   display: none;
 }
 
@@ -460,7 +445,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* background: #1d1b31; */
-  background: #2b2b2b;
+  /* background: #2b2b2b; */
   padding: 12px 0;
   transition: all 0.3s ease;
 }
