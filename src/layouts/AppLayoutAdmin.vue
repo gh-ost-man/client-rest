@@ -121,13 +121,13 @@
             </div>
             <div class="job">{{ $store.state.auth.user?.email }}</div>
           </div>
-          <i @click="logout">
+          <i class="sidebar-icon" @click="logout">
             <font-awesome-icon icon="arrow-right-from-bracket"
           /></i>
         </div>
         <div class="logout" v-if="isClosedSideBar">
           <a @click="logout">
-            <i> <font-awesome-icon icon="arrow-right-from-bracket" /></i>
+            <i class="sidebar-icon"> <font-awesome-icon icon="arrow-right-from-bracket" /></i>
           </a>
         </div>
       </li>
