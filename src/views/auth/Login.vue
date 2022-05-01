@@ -28,7 +28,7 @@
           :disabled="loading"
         />
       </div>
-      <p class="text-white text-end mt-1" @click="$router.push({name: 'ForgotPassword'})" style="cursor:pointer;">Forgot password?</p>
+      <p class="text-white text-end mt-1" v-if="!loading" @click="$router.push({name: 'ForgotPassword'})" style="cursor:pointer;">Forgot password?</p>
       <button
         @click.prevent="submit"
         :disabled="loading"

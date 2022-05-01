@@ -68,6 +68,9 @@
         >
           Submit
         </button>
+        <button class="btn btn-outline-light mx-2" @click.prevent="sendEmailHandle">
+          Send a new code
+        </button>
       </form>
     </div>
     <div></div>
@@ -114,6 +117,7 @@ export default {
       if (response && response.value) {
         if (response.value.status === 200) {
           flag.value = true;
+          toast.info("Code was send to your email: " + email.value);
         } else {
           handleResponse(response.value).forEach((element) => {
             toast.error(element, {
@@ -133,6 +137,14 @@ export default {
         });
         return;
       }
+
+      var reg = new RegExp("^[0-9]*$");
+
+      if (reg.test(code.value) == false) {
+        toast.error("Code: Only Numeric is allowed.");
+        return;
+      }
+
       if (!newPassword.value) {
         toast.error("New password is required", {
           position: "top",
@@ -157,9 +169,9 @@ export default {
 
       loading.value = true;
       let response = await setNewPassword({
-          email: email.value,
-          password: newPassword.value,
-          accessCode: code.value
+        email: email.value,
+        password: newPassword.value,
+        accessCode: code.value,
       });
       loading.value = false;
 
