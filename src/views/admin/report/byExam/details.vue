@@ -38,6 +38,15 @@
       </div>
     </div>
     <hr class="bg-info" />
+    <div class="d-flex">
+      <h3 class="legends-style">Legends:</h3>
+      <div class="answer-style is-correct text-center">
+          <span>correct answer</span>
+      </div>
+      <div class="answer-style is-incorrect text-center">
+          <span>incorrect answer</span>
+      </div>
+    </div>
 
     <div class="table-responsive custom-table-responsive" v-if="examQuestions">
       <pagination
@@ -95,6 +104,9 @@
                 v-for="ak in sortedAnswerKeys"
                 :key="ak.idQ"
                 scope="row"
+                
+              >
+                <div class="cell-style" 
                 :class="
                   r.questionUnits
                     .find((x) => x.questionId === ak.idQ)
@@ -103,13 +115,13 @@
                     .join('') === ak.charKey
                     ? 'is-correct'
                     : 'is-incorrect'
-                "
-              >
-                {{
+                ">
+                  {{
                   r.questionUnits
                     .find((x) => x.questionId === ak.idQ)
                     ?.currentKeys.replaceAll(",", "") || "-"
                 }}
+                </div>
               </th>
 
               <td class="border border-dark">{{ r.persentScore }}</td>
@@ -391,5 +403,26 @@ export default {
 .is-incorrect {
   background: darkred;
   color: white;
+}
+
+ .cell-style
+{
+  border: 2px solid #535353;
+  border-radius: 8px;
+  color: white;
+} 
+.legends-style
+{
+  color: #737373;
+}
+.answer-style
+{
+  position: relative;
+  width: 160px;
+  margin-inline: 10px;
+  color:#fff;
+  padding: 5px;
+  border: 2px solid #535353;
+  border-radius: 6px;
 }
 </style>

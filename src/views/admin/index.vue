@@ -493,9 +493,13 @@ export default {
   position: relative;
   min-width: 280px;
   height: 390px;
-  box-shadow: inset 5px 5px 5px rgba(0, 0, 0, 0.2),
+  /* box-shadow: inset 5px 5px 5px rgba(0, 0, 0, 0.2),
     inset -5px -5px 15px rgba(255, 255, 255, 0.1),
-    5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.1);
+    5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.1); */
+  box-shadow: inset 5px 5px 5px darkcyan,
+    inset -5px -5px 15px darkcyan,
+    5px 5px 15px darkcyan, -5px -5px 15px darkcyan;
+  
   border-radius: 15px;
   margin: 30px;
 }
@@ -528,8 +532,8 @@ export default {
 }
 .container-card .card .box:hover {
   transform: translateY(-50px);
-  /* box-shadow: 0 40px 70px rgba(0, 0, 0, 0.05); */
-  box-shadow: cyan;
+  /* box-shadow: 0 40px 70px rgba(0, 0, 0, 0.05) !important; */
+  /* box-shadow: cyan !important; */
 }
 .container-card .card .box .content {
   padding: 20px;

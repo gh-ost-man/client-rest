@@ -9,6 +9,15 @@
       </h3>
       <hr class="bg-info" />
     </div>
+    <div class="d-flex">
+      <h3 class="legends-style">Legends:</h3>
+      <div class="answer-style is-correct text-center">
+        <span>correct answer</span>
+      </div>
+      <div class="answer-style is-incorrect text-center">
+        <span>incorrect answer</span>
+      </div>
+    </div>
     <div class="table-responsive custom-table-responsive">
       <table class="table custom-table mt-5">
         <thead class="table-dark">
@@ -57,7 +66,10 @@
                 v-for="ak in sortedAnswerKeys"
                 :key="ak.idQ"
                 scope="row"
-                :class="
+               
+              >
+              <div class="cell-style"
+               :class="
                   report.questionUnits
                     .find((x) => x.questionId === ak.idQ)
                     ?.currentKeys.split(',')
@@ -65,13 +77,14 @@
                     .join('') === ak.charKey
                     ? 'is-correct'
                     : 'is-incorrect'
-                "
-              >
+                ">
                 {{
                   report.questionUnits
                     .find((x) => x.questionId === ak.idQ)
                     ?.currentKeys.replaceAll(",", "") || "-"
                 }}
+
+              </div>
               </th>
 
               <td class="border border-dark">{{ report.persentScore }}</td>
@@ -305,5 +318,25 @@ export default {
 .is-incorrect {
   background: darkred;
   color: white;
+}
+ .cell-style
+{
+  border: 2px solid #535353;
+  border-radius: 8px;
+  color: white;
+} 
+.legends-style
+{
+  color: #737373;
+}
+.answer-style
+{
+  position: relative;
+  width: 160px;
+  margin-inline: 10px;
+  color:#fff;
+  padding: 5px;
+  border: 2px solid #535353;
+  border-radius: 6px;
 }
 </style>
