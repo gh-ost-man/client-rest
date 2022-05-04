@@ -34,7 +34,7 @@
     </div> -->
     <h3>{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
     <h5>{{ currentUser.email }}</h5>
-    <hr class="mt-3" />
+    <hr class="mt-3 text-secondary" />
     <div class="row d-flex align-content-stretch flex-wrap">
       <div class="col-md-4" v-if="exams">
         <div class="card border-secondary bg-transparent">
