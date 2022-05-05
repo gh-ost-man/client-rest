@@ -7,7 +7,7 @@
         <div class="col-md-4 my-2">
           <div>
             <router-link
-              class="btn btn-outline-light"
+              class="btn btn-outline-info"
               :to="{ name: 'CreateQuestion' }"
               >Create</router-link
             >
@@ -45,7 +45,7 @@
               </select>
             </div>
             <div class="col-md-4 my-1">
-              <button class="btn btn-outline-light" @click="resetFilterHandle">
+              <button class="btn btn-outline-info" @click="resetFilterHandle">
                 Reset
               </button>
             </div>
@@ -82,7 +82,7 @@
                 <td>{{ question.category }}</td>
                 <td>
                   <router-link
-                    class="btn btn-outline-light"
+                    class="btn btn-outline-warning text-warning"
                     :to="{
                       name: 'EditQuestion',
                       params: {

@@ -123,8 +123,8 @@ h2 {
 /* .custom-table tbody tr:hover th, */
 /* .custom-table tbody tr:hover td */
 {
-  color: #fff;
-  background: #2e2e36;
+  color: #ffc107;
+  background: rgba(0,0,0,0.1);
 }
 .custom-table tbody tr.checked-row th,
 .custom-table tbody tr.checked-row td,

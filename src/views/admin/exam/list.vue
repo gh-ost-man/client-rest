@@ -7,7 +7,7 @@
       <div class="row" v-if="exams">
         <div class="col-md-4 my-2">
           <router-link
-            class="btn btn-outline-light"
+            class="btn btn-outline-info"
             :to="{ name: 'CreateExam' }"
             v-if="isVisibleHandle(['Teacher'])"
             >Create</router-link
@@ -45,7 +45,7 @@
               </select>
             </div> -->
             <div class="col-md-2 my-1">
-              <button class="btn btn-outline-light" @click="resetFilterHandle">
+              <button class="btn btn-outline-info" @click="resetFilterHandle">
                 Reset
               </button>
             </div>
@@ -83,15 +83,9 @@
                 <!-- <td>{{ exam.status }}</td> -->
                 <td>{{ exam.qtyOfQuestions }}</td>
                 <td>
+                 
                   <router-link
-                    class="btn btn-outline-light mx-1"
-                    :to="{ name: 'ExamQuestions', params: { id: exam.id } }"
-                    v-if="isVisibleHandle(['Teacher'])"
-                  >
-                    <i class="icon"> <font-awesome-icon icon="list-ul" /></i>
-                  </router-link>
-                  <router-link
-                    class="btn btn-outline-light mx-1"
+                    class="btn btn-outline-warning text-warning mx-1"
                     :to="{ name: 'EditExam', params: { id: exam.id } }"
                     v-if="isVisibleHandle(['Teacher'])"
                   >
@@ -99,10 +93,17 @@
                       <font-awesome-icon icon="pen-to-square"
                     /></i>
                   </router-link>
+                   <router-link
+                    class="btn btn-outline-info text-info mx-1"
+                    :to="{ name: 'ExamQuestions', params: { id: exam.id } }"
+                    v-if="isVisibleHandle(['Teacher'])"
+                  >
+                    <i class="icon"> <font-awesome-icon icon="list-ul" /></i>
+                  </router-link>
                   <router-link
-                     v-if="isVisibleHandle(['Manager'])"
+                    v-if="isVisibleHandle(['Manager'])"
                     :to="{ name: 'ExamUsers', params: { id: exam.id } }"
-                    class="btn btn-outline-light mx-1"
+                    class="btn btn-outline-info text-info mx-1"
                   >
                     <i class="icon">
                       <font-awesome-icon icon="user-graduate"

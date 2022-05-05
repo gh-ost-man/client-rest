@@ -3,8 +3,11 @@
     <div class="container">
       <h2 class="mb-5 c-title">Users</h2>
       <div class="row" v-if="users">
-        <div class="col-md-4" >
-          <router-link  v-if="isVisibleHandle(['Admin'])" class="btn btn-outline-info" :to="{ name: 'CreateUser' }"
+        <div class="col-md-4">
+          <router-link
+            v-if="isVisibleHandle(['Admin'])"
+            class="btn btn-outline-info"
+            :to="{ name: 'CreateUser' }"
             >Create</router-link
           >
         </div>
@@ -72,7 +75,7 @@
             <template v-for="user in users" :key="user.id">
               <tr class="c-table-hover" scope="row">
                 <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
+                <td >{{ user.email }}</td>
                 <td>
                   {{ user.firstName }} {{ user.lastName }}
                   <small class="d-block">
@@ -82,8 +85,8 @@
                 <td>{{ new Date(user.createdAt).toLocaleDateString() }}</td>
                 <td>
                   <router-link
-                   v-if="isVisibleHandle(['Admin'])"
-                    class="btn btn-outline-light mx-1"
+                    v-if="isVisibleHandle(['Admin'])"
+                    class="btn btn-outline-warning text-warning mx-1"
                     :to="{ name: 'EditUser', params: { id: user.id } }"
                   >
                     <i class="icon">
@@ -92,10 +95,12 @@
                   </router-link>
                   <router-link
                     v-if="
-                      user.roles.toLowerCase().includes('Student'.toLowerCase()) 
-                      && isVisibleHandle(['Manager']) 
+                      user.roles
+                        .toLowerCase()
+                        .includes('Student'.toLowerCase()) &&
+                      isVisibleHandle(['Manager'])
                     "
-                    class="btn btn-outline-light mx-1"
+                    class="btn btn-outline-info text-info mx-1"
                     :to="{ name: 'UserExams', params: { id: user.id } }"
                   >
                     <i class="icon">
@@ -139,10 +144,10 @@ export default {
 
     const users = ref(null);
     const roles = ref([]);
-    
+
     const { getAllUsers } = usersService();
     const { currentUser } = authService();
-    
+
     const currentPage = ref(1);
     const pagination = ref({ pages: [1], totalPages: 1 });
     const pageSize = 15;
@@ -176,7 +181,13 @@ export default {
 
       filterStorage();
 
-      var response = await getAllUsers(currentPage.value, pageSize, filter, middleVal.value,cntBetween.value );
+      var response = await getAllUsers(
+        currentPage.value,
+        pageSize,
+        filter,
+        middleVal.value,
+        cntBetween.value
+      );
 
       if (response && response.value) {
         if (response.value.status === 200) {

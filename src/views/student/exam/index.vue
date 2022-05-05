@@ -19,7 +19,7 @@
               <td>{{ exam.passingScore }}</td>
               <td>{{ exam.qtyOfQuestions }}</td>
               <td>
-                <router-link class="btn btn-outline-light btn-pass" :to="{name: 'PassExamStudent', params: {idExam: exam.id}}">Pass</router-link>
+                <router-link class="btn btn-outline-info text-info btn-pass" :to="{name: 'PassExamStudent', params: {idExam: exam.id}}">Pass</router-link>
               </td>
             </tr>
             <tr class="spacer">
@@ -120,7 +120,7 @@ export default {
 <style scoped>
 @import "../../../assets/css/table.css";
 .btn-pass:hover {
-  color:black;
+  color:black !important;
 }
 
 </style>

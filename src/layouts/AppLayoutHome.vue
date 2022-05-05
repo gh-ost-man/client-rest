@@ -1,10 +1,12 @@
 <template>
   <div>
     <header class="">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light $blue-700">
+      <nav class="navbar c-navbar navbar-expand-lg navbar-dark $blue-700">
         <div class="container">
           <!-- <a class="navbar-brand" href="#">ITSTEP</a> -->
-          <router-link class="navbar-brand" :to="{name: 'HomeStudent'}">PROUD</router-link>
+          <router-link class="navbar-brand c-logo " :to="{ name: 'HomeStudent' }"
+            >PROUD</router-link
+          >
           <button
             class="navbar-toggler"
             type="button"
@@ -19,24 +21,33 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <router-link class="nav-link active" :to="{name: 'ExamsStudent'}">Exams</router-link>
+                <router-link
+                  class="nav-link active"
+                  :to="{ name: 'ExamsStudent' }"
+                  >Exams</router-link
+                >
               </li>
               <li class="nav-item">
-                 <router-link class="nav-link active" :to="{name: 'ProfileStudent'}">Profile</router-link>
+                <router-link
+                  class="nav-link active"
+                  :to="{ name: 'ProfileStudent' }"
+                  >Profile</router-link
+                >
               </li>
               <li class="nav-item">
-                 <router-link class="nav-link active" :to="{name: 'HistoryStudent'}">History</router-link>
+                <router-link
+                  class="nav-link active"
+                  :to="{ name: 'HistoryStudent' }"
+                  >History</router-link
+                >
               </li>
             </ul>
             <div class="d-flex">
-              <div class="d-flex justify-content-center">
-                <div><i class="fa-solid fa-user-graduate fs-3"></i></div>
-                <div>
-                  <div> {{$store.state.user?.firstName}} {{$store.state.user?.lastName}}</div>
-                  <div> {{$store.state.user?.email}}</div>
-                </div>
-              </div>
-              <button class="btn btn-dark mx-1" @click="logoutHandle">Logout</button>
+              <button class="btn fs-5 mx-1" @click="logoutHandle">
+                <i class="sidebar-icon" @click="logout">
+                  <font-awesome-icon icon="arrow-right-from-bracket"
+                /></i>
+              </button>
             </div>
           </div>
         </div>
@@ -72,4 +83,7 @@ export default {
 </script>
 
 <style scoped>
+.c-navbar {
+  background: #191919;
+}
 </style>

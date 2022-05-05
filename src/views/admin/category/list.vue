@@ -34,7 +34,7 @@
                 <td>{{ category.name }}</td>
                 <td>
                   <router-link
-                    class="btn btn-outline-light"
+                    class="btn btn-outline-warning text-warning"
                     :to="{ name: 'EditCategory', params: { id: category.id } }"
                   >
                     <i class="icon">

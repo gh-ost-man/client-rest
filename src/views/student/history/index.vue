@@ -1,12 +1,6 @@
 <template>
   <div class="p-3">
     <div class="table-responsive custom-table-responsive" v-if="reports">
-      <!-- <pagination
-          :pages="pagination.pages"
-          :currentPage="currentPage"
-          :totalPages="pagination.totalPages"
-          @changePage="changePage"
-        ></pagination> -->
       <table class="table custom-table">
         <thead>
           <tr>
@@ -23,7 +17,7 @@
               <td class="text-center">{{ r.grade }}</td>
               <td class="text-center">{{ new Date(r.reportDate).toLocaleDateString() }}</td>
               <td class="text-center">
-                <router-link class="btn btn-outline-light btn-hover" :to="{name: 'ExamResult', params: {idReport: r.id}}">View</router-link>
+                <router-link class="btn btn-outline-info text-info btn-hover" :to="{name: 'ExamResult', params: {idReport: r.id}}">View</router-link>
               </td>
 
             </tr>
@@ -121,6 +115,6 @@ export default {
 @import "../../../assets/css/table.css";
 
 .btn-hover:hover {
-  color:black;
+  color:black !important;
 }
 </style>

@@ -165,7 +165,7 @@
                       ><font-awesome-icon icon="user-circle"
                     /></i>
                   </h1>
-                  <h2 class="text-info ">Profile</h2>
+                  <h2 class="text-info">Profile</h2>
                   <h3 class="mb-2 text-warning">Description</h3>
                   <p class="text-secondary">
                     In this card you can view and manage your profile
@@ -439,24 +439,6 @@ export default {
 
 
 <style scoped>
-.author-list-item {
-  display: inline-block;
-  margin-right: 10px;
-}
-.author-list-enter-active,
-.author-list-leave-active {
-  transition: all 0.4s ease;
-}
-.author-list-enter-from,
-.author-list-leave-to {
-  opacity: 0;
-  transform: translateX(130px);
-}
-
-.author-list-move {
-  transition: transform 0.4s ease;
-}
-
 @import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Audiowide&family=Iceland&display=swap");
 
@@ -496,10 +478,9 @@ export default {
   /* box-shadow: inset 5px 5px 5px rgba(0, 0, 0, 0.2),
     inset -5px -5px 15px rgba(255, 255, 255, 0.1),
     5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.1); */
-  box-shadow: inset 5px 5px 5px darkcyan,
-    inset -5px -5px 15px darkcyan,
+  box-shadow: inset 5px 5px 5px darkcyan, inset -5px -5px 15px darkcyan,
     5px 5px 15px darkcyan, -5px -5px 15px darkcyan;
-  
+
   border-radius: 15px;
   margin: 30px;
 }

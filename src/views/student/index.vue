@@ -32,10 +32,78 @@
         </div>
       </div>
     </div> -->
-    <h3>{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
+    <!-- <h3>{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
     <h5>{{ currentUser.email }}</h5>
-    <hr class="mt-3 text-secondary" />
-    <div class="row d-flex align-content-stretch flex-wrap">
+    <hr class="mt-3 text-secondary" /> -->
+    <div class="body">
+      <div v-if="currentUser">
+        <div class="container-card">
+          <div class="card">
+            <router-link :to="{ name: 'ProfileStudent' }">
+              <div class="box">
+                <div class="content">
+                  <h1 class="text-center ">
+                    <i class="text-info "
+                      ><font-awesome-icon icon="user-circle"
+                    /></i>
+                  </h1>
+                  <h2 class="text-info">Profile</h2>
+                  <h3 class="mb-2 text-warning">Description</h3>
+                  <p class="text-secondary fs-6">
+                    Here we can view your profile.
+                  </p>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </div>
+      <div v-if="exams">
+        <div class="container-card">
+          <div class="card">
+            <router-link :to="{ name: 'ExamsStudent' }">
+              <div class="box">
+                <div class="content">
+                  <h1 class="text-center">
+                    <i class="text-info"
+                      ><font-awesome-icon icon="graduation-cap"
+                    /></i>
+                  </h1>
+                  <h2 class="text-info">Exams</h2>
+                  <h3 class="mb-2 text-warning">Description</h3>
+                  <p class="text-secondary fs-6">
+                    Here we can view your exams and pass it.
+                  </p>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </div>
+      <div v-if="reports">
+        <div class="container-card">
+          <div class="card">
+            <router-link :to="{ name: 'HistoryStudent' }">
+              <div class="box">
+                <div class="content">
+                  <h1 class="text-center">
+                    <i class="text-info"
+                      ><font-awesome-icon icon="clipboard-list"
+                    /></i>
+                  </h1>
+                  <h2 class="text-info">Reports</h2>
+                  <h3 class="mb-2 text-warning">Description</h3>
+                  <p class="text-secondary fs-6">
+                    Here we can view your results of exams
+                  </p>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="row d-flex align-content-stretch flex-wrap">
       <div class="col-md-4" v-if="exams">
         <div class="card border-secondary bg-transparent">
           <div class="card-header border-secondary h-100">
@@ -113,7 +181,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -182,94 +250,116 @@ export default {
 }
 
 h4 {
-  font-size: calc( 20 * (100vw / 1280)) !important;
+  font-size: calc(20 * (100vw / 1280)) !important;
 }
 
 @media (max-width: 767px) {
   h4 {
-    font-size: calc(24px + (16 + 16 * 0.7) * ((100vw - 320px) / 1280))
+    font-size: calc(24px + (16 + 16 * 0.7) * ((100vw - 320px) / 1280));
   }
 }
 
-/* body {
-  overflow: hidden;
-  background-color: #232526;
-} */
+@import url("https://fonts.googleapis.com/css2?family=Jaldi:wght@400;700&&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap");
 
-/* .text-animation {
-  position: absolute;
-  top: 24%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  font-family: "Audiowide", sans-serif;
-  color: rgb(240, 240, 240);
-  font-size: 28px;
-} */
-
-/* .text-animation span {
-  position: relative;
-  opacity: 0;
-  animation: textAnimation 2s ease-in-out forwards;
-} */
-
-/* @keyframes textAnimation {
-  to {
-    top: 0;
-    left: 0;
-    opacity: 1;
-  }
-} */
-/* 
-hr {
-  position: relative;
-  border: 0.7px solid rgb(0, 87, 102);
-  left: 50%;
-  width: 100%;
-  animation: lineAnimation 1.1s ease-in-out forwards;
-  animation-delay: 1.4s;
-  opacity: 0;
-    overflow: hidden;
-
-} */
-
-/* @keyframes lineAnimation {
-  to {
-    top: 0;
-    left: 0;
-    opacity: 1;
-  }
-} */
-
-/* .text-createby {
-  position: absolute;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+.body {
   display: flex;
   justify-content: space-between;
-  bottom: 30px;
-  left: 10%;
-  width: 80%;
-  font-family: "Audiowide", sans-serif;
-  font-size: 14px;
-  color: rgb(104, 104, 104);
-  animation: createbyAnimation 1.2s ease-in-out forwards;
-  animation-delay: 1.4s;
-  opacity: 0;
-} */
-/* 
-@keyframes createbyAnimation {
-  to {
-    opacity: 1;
-  }
-} */
+  align-items: center;
+  flex-wrap: wrap;
+}
+.container-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 30px 0;
+}
+.card {
+  background-color: #232427;
+}
+.container-card .card {
+  position: relative;
+  min-width: 280px;
+  height: 390px;
+  /* box-shadow: inset 5px 5px 5px rgba(0, 0, 0, 0.2),
+    inset -5px -5px 15px rgba(255, 255, 255, 0.1),
+    5px 5px 15px rgba(0, 0, 0, 0.3), -5px -5px 15px rgba(255, 255, 255, 0.1); */
+  box-shadow: inset 5px 5px 5px darkcyan, inset -5px -5px 15px darkcyan,
+    5px 5px 15px darkcyan, -5px -5px 15px darkcyan;
 
-/* .text-logoAnimation{
+  border-radius: 15px;
+  margin: 30px;
+}
+.container-card .card .box {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  background: transparent;
+  border: 2px solid #2a2b2f;
+  border-radius: 15px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  transition: 0.5s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+.container-card .card .box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 190%;
+  /* background: rgba(23, 23, 23, 0.1); */
+  pointer-events: none;
+}
+.container-card .card .box:hover {
+  transform: translateY(-50px);
+  /* box-shadow: 0 40px 70px rgba(0, 0, 0, 0.05) !important; */
+  /* box-shadow: cyan !important; */
+}
+.container-card .card .box .content {
+  padding: 20px;
+  text-align: justify;
+}
+.container-card .card .box .content h2 {
+  /* position: absolute; */
+  text-align: center;
+  margin-top: 5%;
+  /* top: 20px; */
+  /* right: 20px; */
+  font-size: 1.7em;
+  /* color: rgba(0, 174, 255, 0.176); */
+  color: darkcyan !important;
+}
+.container-card .card .box .content h3 {
+  font-size: 1.3em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  transition: 0.5s;
+  padding-top: 65px;
+}
+.container-card .card .box .content p {
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  transition: 0.5s;
+}
 
-    position: absolute;
-    top: 40%;
-    text-align: center;
-    width: 100%;
-    font-family: "Audiowide", sans-serif;
-    color: rgb(27, 27, 27);
-    font-size: 90px;
-} */
+.text-body {
+  position: absolute;
+}
 </style>
